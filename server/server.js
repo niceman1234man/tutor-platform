@@ -16,9 +16,13 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 connectDb();
+app.use(cors({
+  origin: "https://skillnesteducation.netlify.app"
+}));
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/resources", resourceRoutes);
 app.listen(process.env.PORT, () =>
   console.log(`Server running on ${process.env.PORT}`)
 );
+
