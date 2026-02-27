@@ -1,4 +1,5 @@
 import React from "react";
+  import { FaFacebook, FaTwitter, FaLinkedin, FaYoutube } from "react-icons/fa";
 
 export default function Home() {
   return (
@@ -159,9 +160,57 @@ export default function Home() {
       </section>
 
       {/* ================= FOOTER ================= */}
-      <footer className="bg-gray-900 text-gray-300 py-8 text-center">
-        <p>© 2026 Skill Nest. All rights reserved.</p>
-      </footer>
+    
+<footer className="bg-gray-900 text-gray-300 py-10">
+  <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+    
+    {/* Logo / About */}
+    <div>
+      <h2 className="text-2xl font-bold text-white">
+        Skill <span className="text-teal-500">Nest</span>
+      </h2>
+      <p className="mt-4 text-gray-400">
+        Learn. Grow. Succeed with expert-led courses designed for your future.
+      </p>
+    </div>
+
+    {/* Quick Links */}
+    <div>
+      <h3 className="text-xl font-semibold text-white mb-4">Quick Links</h3>
+      <ul className="space-y-2">
+        <li><a href="#" className="hover:text-teal-500">Courses</a></li>
+        <li><a href="#" className="hover:text-teal-500">About</a></li>
+        <li><a href="#" className="hover:text-teal-500">Resources</a></li>
+        <li><a href="#" className="hover:text-teal-500">Contact</a></li>
+      </ul>
+    </div>
+
+    {/* Social Media */}
+    <div>
+      <h3 className="text-xl font-semibold text-white mb-4">Follow Us</h3>
+      <div className="flex gap-4">
+        <a href="#" className="text-xl hover:text-teal-500">
+          <FaFacebook />
+        </a>
+        <a href="#" className="text-xl hover:text-teal-500">
+          <FaTwitter />
+        </a>
+        <a href="#" className="text-xl hover:text-teal-500">
+          <FaLinkedin />
+        </a>
+        <a href="#" className="text-xl hover:text-teal-500">
+          <FaYoutube />
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  {/* Bottom */}
+  <div className="text-center mt-10 border-t border-gray-700 pt-4">
+    <p>© 2026 Skill Nest. All rights reserved.</p>
+  </div>
+</footer>
     </>
   );
 }
