@@ -6,30 +6,54 @@ export default function Navbar() {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="bg-blue-600 text-white p-4 flex justify-between">
-      <h1 className="font-bold text-lg">TutorHub</h1>
+    <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
+      
+      {/* Logo */}
+      <h1 className="text-2xl font-bold text-gray-800">
+        Skill <span className="text-teal-600">Nest</span>
+      </h1>
 
-      <div className="space-x-4">
-        <Link to="/">Home</Link>
-        <Link to="/tutors">Tutors</Link>
-        <Link to="/resources">Resources</Link>
+      {/* Links */}
+      <div className="hidden md:flex items-center space-x-6 text-gray-700 font-medium">
+        <Link to="/" className="hover:text-teal-600">Home</Link>
+        <Link to="/tutors" className="hover:text-teal-600">Tutors</Link>
+        <Link to="/resources" className="hover:text-teal-600">Resources</Link>
+      </div>
 
+      {/* Right Side */}
+      <div className="flex items-center space-x-4">
         {!user ? (
           <>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Register</Link>
+            <Link to="/login" className="text-gray-700 hover:text-teal-600">
+              Login
+            </Link>
+            <Link
+              to="/register"
+              className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700"
+            >
+              Sign Up
+            </Link>
           </>
         ) : (
           <>
-            <Link to="/profile" title="Profile">
-              <span className="inline-block align-middle mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z" />
-                </svg>
-              </span>
-              Profile
+            {/* Profile */}
+            <Link
+              to="/profile"
+              className="flex items-center gap-2 text-gray-700 hover:text-teal-600"
+            >
+              <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold">
+                {user?.name?.charAt(0) || "U"}
+              </div>
+              <span className="hidden md:block">Profile</span>
             </Link>
-            <button onClick={logout}>Logout</button>
+
+            {/* Logout */}
+            <button
+              onClick={logout}
+              className="text-red-500 hover:text-red-600 font-medium"
+            >
+              Logout
+            </button>
           </>
         )}
       </div>
