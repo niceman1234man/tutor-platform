@@ -11,10 +11,7 @@ export default function DashboardLayout({
       {/* ===== HEADER ===== */}
       <div className="flex items-center justify-between px-10 py-4 bg-white shadow">
         
-        {/* Logo */}
-        <h1 className="text-2xl font-bold text-gray-800">
-          Skill <span className="text-teal-600">Nest</span>
-        </h1>
+       
 
         {/* Dynamic Title */}
         <h2 className="text-xl font-semibold text-gray-700">
