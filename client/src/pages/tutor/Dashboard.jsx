@@ -1,3 +1,5 @@
+import React from "react";
+import DashboardLayout from "../../components/DashboardLayout";
 export default function TutorDashboard() {
   const links = [
     { to: "#mycourses", label: "My Courses" },
