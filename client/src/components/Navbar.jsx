@@ -38,12 +38,7 @@ export default function Navbar() {
             <Link to="/login" className="text-gray-700 hover:text-teal-600">
               Login
             </Link>
-            <Link
-              to="/register"
-              className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700"
-            >
-              Sign Up
-            </Link>
+
           </>
         ) : (
           <>
