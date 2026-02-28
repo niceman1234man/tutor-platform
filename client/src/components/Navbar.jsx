@@ -9,8 +9,8 @@ export default function Navbar() {
   return (
     <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center relative">
       {/* Logo */}
-      <h1 className="text-2xl font-bold text-gray-800">
-        Skill <span className="text-teal-600">Nest</span>
+      <h1 className="text-2xl font-bold text-gray-800"> <span><img src="/src/assets/logo.png" alt="Skill Nest Logo" className="w-10 h-10" /></span>
+Skill <span className="text-teal-600">Nest</span>
       </h1>
 
       {/* Hamburger Icon for Mobile */}
