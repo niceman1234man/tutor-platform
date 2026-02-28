@@ -2,6 +2,7 @@ import React from "react";
 import Hero from "../assets/Hero.jpg";
 import why from "../assets/why.jpg";
   import { FaFacebook, FaTwitter, FaLinkedin, FaYoutube } from "react-icons/fa";
+  import { FaCertificate,FaGraduationCap,FaBook,FaPersonBooth,FaCalculator,FaProjectDiagram } from "react-icons/fa";
 
 export default function Home() {
   return (
@@ -12,7 +13,7 @@ export default function Home() {
           
           {/* Left Content */}
           <div className="md:w-1/2">
-            <h1 className="text-2xl md:text-5xl font-bold text-gray-800 leading-tight">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-800 leading-tight">
               Learn. Grow. Succeed with{" "}
               <span className="text-teal-600 text-3xl">Skill Nest</span>
             </h1>
@@ -31,9 +32,9 @@ export default function Home() {
 
             {/* Small Features */}
             <div className="flex gap-6 mt-10 text-gray-600">
-              <span>✔ Expert Instructors</span>
-              <span>✔ Flexible Learning</span>
-              <span>✔ Certifications</span>
+              <span className="flex items-center gap-2"><FaGraduationCap className="text-teal-600" /> Expert Instructors</span>
+              <span className="flex items-center gap-2"><FaBook className="text-teal-600" /> Flexible Learning</span>
+              <span className="flex items-center gap-2"><FaCertificate className="text-teal-600" /> Certifications</span>
             </div>
           </div>
 
@@ -113,21 +114,21 @@ export default function Home() {
 
             <div className="space-y-6">
               <div>
-                <h4 className="font-semibold text-lg">Expert Mentors</h4>
+                <h4 className="font-semibold text-lg"> <FaPersonBooth className="text-teal-600 inline mr-2" /> Expert Mentors</h4>
                 <p className="text-gray-600">
                   Learn from industry professionals.
                 </p>
               </div>
 
               <div>
-                <h4 className="font-semibold text-lg">Hands-on Projects</h4>
+                <h4 className="font-semibold text-lg"> <FaProjectDiagram className="text-teal-600 inline mr-2" /> Hands-on Projects</h4>
                 <p className="text-gray-600">
                   Build real-world portfolio projects.
                 </p>
               </div>
 
               <div>
-                <h4 className="font-semibold text-lg">Flexible Learning</h4>
+                <h4 className="font-semibold text-lg"> <FaCalculator className="text-teal-600 inline mr-2" /> Flexible Learning</h4>
                 <p className="text-gray-600">
                   Study anytime, anywhere at your own pace.
                 </p>
