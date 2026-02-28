@@ -18,7 +18,7 @@ export default function Home() {
              
             </h1>
               <h1 className="text-3xl md:text-4xl font-bold text-teal-600 leading-tight mt-2">
-                Skill <span className="text-gray-800">Nest</span>
+                Skill Nest
               </h1>
             <p className="mt-6 text-gray-600 text-lg">
               Explore expert-led courses and build real-world skills for your future.
@@ -122,14 +122,14 @@ export default function Home() {
                   Learn from industry professionals.
                 </p>
               </div>
-
+ <hr />
               <div>
                 <h4 className="font-semibold text-lg"> <FaProjectDiagram className="text-teal-600 inline mr-2" /> Hands-on Projects</h4>
                 <p className="text-gray-600">
                   Build real-world portfolio projects.
                 </p>
               </div>
-
+<hr />
               <div>
                 <h4 className="font-semibold text-lg"> <FaCalculator className="text-teal-600 inline mr-2" /> Flexible Learning</h4>
                 <p className="text-gray-600">
