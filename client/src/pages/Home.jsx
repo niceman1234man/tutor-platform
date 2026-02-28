@@ -1,4 +1,6 @@
 import React from "react";
+import Hero from "../assets/Hero.jpg";
+import why from "../assets/why.jpg";
   import { FaFacebook, FaTwitter, FaLinkedin, FaYoutube } from "react-icons/fa";
 
 export default function Home() {
@@ -38,7 +40,7 @@ export default function Home() {
           {/* Right Image */}
           <div className="md:w-1/2 mt-10 md:mt-0">
             <img
-              src="/hero-image.png"
+              src={Hero}
               alt="learning"
               className="w-full max-w-md mx-auto"
             />
@@ -99,7 +101,7 @@ export default function Home() {
           {/* Left Image */}
           <div className="md:w-1/2">
             <img
-              src="/why-us.png"
+              src={why}
               alt="why choose us"
               className="w-full max-w-md mx-auto"
             />

@@ -8,7 +8,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center relative">
+    <nav className="bg-white shadow-md px-6 py-2 flex justify-between items-center relative">
       {/* Logo */}
       <h1 className="text-2xl font-bold text-gray-800 flex items-center"> <span><img src={logo} alt="Skill Nest Logo" className="w-20 h-20" /></span>
 Skill <span className="text-teal-600">Nest</span>
