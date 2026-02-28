@@ -25,7 +25,7 @@ export default function Home() {
             </p>
 
             <div className="mt-8 flex gap-4">
-              <button className="bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700">
+              <button className="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700">
                 Explore Courses →
               </button>
               <button className="flex items-center gap-2 text-teal-600 font-medium">
