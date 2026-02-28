@@ -12,7 +12,7 @@ export default function Home() {
           
           {/* Left Content */}
           <div className="md:w-1/2">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight">
+            <h1 className="text-3xl md:text-5xl font-bold text-gray-800 leading-tight">
               Learn. Grow. Succeed with{" "}
               <span className="text-teal-600">Skill Nest</span>
             </h1>
