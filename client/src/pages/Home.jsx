@@ -3,6 +3,8 @@ import Hero from "../assets/Hero.jpg";
 import why from "../assets/why.jpg";
   import { FaFacebook, FaTwitter, FaLinkedin, FaYoutube } from "react-icons/fa";
   import { FaCertificate,FaGraduationCap,FaBook,FaPersonBooth,FaCalculator,FaProjectDiagram } from "react-icons/fa";
+  // icons for course cards
+  import { FaLaptopCode, FaChartLine, FaPalette } from "react-icons/fa";
 
 export default function Home() {
   return (
@@ -63,6 +65,9 @@ export default function Home() {
             
             {/* Card 1 */}
             <div className="bg-white shadow-lg rounded-xl p-6">
+              <div className="text-teal-600 text-4xl mb-2">
+                <FaLaptopCode />
+              </div>
               <h3 className="text-xl font-semibold mb-2">Web Development</h3>
               <p className="text-gray-600 mb-4">
                 HTML • CSS • JavaScript
@@ -74,6 +79,9 @@ export default function Home() {
 
             {/* Card 2 */}
             <div className="bg-white shadow-lg rounded-xl p-6">
+              <div className="text-teal-600 text-4xl mb-2">
+                <FaChartLine />
+              </div>
               <h3 className="text-xl font-semibold mb-2">Data Science</h3>
               <p className="text-gray-600 mb-4">
                 Python • ML • Analytics
@@ -85,6 +93,9 @@ export default function Home() {
 
             {/* Card 3 */}
             <div className="bg-white shadow-lg rounded-xl p-6">
+              <div className="text-teal-600 text-4xl mb-2">
+                <FaPalette />
+              </div>
               <h3 className="text-xl font-semibold mb-2">UI/UX Design</h3>
               <p className="text-gray-600 mb-4">
                 Figma • Design Thinking
