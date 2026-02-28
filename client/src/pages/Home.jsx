@@ -15,8 +15,11 @@ export default function Home() {
           <div className="md:w-1/2">
             <h1 className="text-xl md:text-2xl font-bold text-gray-800 leading-tight">
               Learn. Grow. Succeed with{" "}
-              <span className="text-teal-600 text-3xl">Skill Nest</span>
+             
             </h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-teal-600 leading-tight mt-2">
+                Skill <span className="text-gray-800">Nest</span>
+              </h1>
             <p className="mt-6 text-gray-600 text-lg">
               Explore expert-led courses and build real-world skills for your future.
             </p>
