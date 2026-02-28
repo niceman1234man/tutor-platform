@@ -12,9 +12,9 @@ export default function Home() {
           
           {/* Left Content */}
           <div className="md:w-1/2">
-            <h1 className="text-3xl md:text-5xl font-bold text-gray-800 leading-tight">
+            <h1 className="text-2xl md:text-5xl font-bold text-gray-800 leading-tight">
               Learn. Grow. Succeed with{" "}
-              <span className="text-teal-600">Skill Nest</span>
+              <span className="text-teal-600 text-3xl">Skill Nest</span>
             </h1>
             <p className="mt-6 text-gray-600 text-lg">
               Explore expert-led courses and build real-world skills for your future.
