@@ -98,7 +98,7 @@ Skill <span className="text-teal-600">Nest</span>
                 <span>Profile</span>
               </Link>
               <button
-                onClick={() => { setMenuOpen(false); logout(); }}
+                onClick={() => { setMenuOpen(false); logout();Navigate("/login") }}
                 className="text-red-500 hover:text-red-600 font-medium py-2 w-full text-center"
               >
                 Logout

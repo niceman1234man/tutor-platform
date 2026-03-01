@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["student", "tutor", "admin"]
   },
+    active: { type: Boolean, default: true },
 
   phone: String,
   createdAt: { type: Date, default: Date.now }

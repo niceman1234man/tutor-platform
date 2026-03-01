@@ -12,6 +12,10 @@ import TutorDashboard from "./pages/tutor/Dashboard";
 import Profile from "./pages/tutor/Profile";
 import Booking from "./pages/student/Bookings";
 import StudentDashboard from "./pages/student/Dashboard";
+import CategoryResources from "./components/CatagoryResources";
+import TutorDetails from "./pages/TutorDetails";
+import AdminResourceForm from "./pages/admin/AdminResourceForm";
+import User from "./pages/admin/Users";
 
 
 import Tutors from "./pages/Tutors";
@@ -29,11 +33,15 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/resources" element={<AdminResourceForm />} />
+        <Route path="/resources/:category" element={<CategoryResources />} />
         <Route path="/user" element={<UserDashboard />} />
         <Route path="/tutor" element={<TutorDashboard />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/tutors/:id" element={<TutorDetails />} />
         <Route path="/booking/:tutorId" element={<Booking />} />
         <Route path="/student" element={<StudentDashboard />} />
+        <Route path="/admin/users" element={<User />} />
       
       </Routes>
     </BrowserRouter>

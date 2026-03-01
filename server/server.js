@@ -17,7 +17,12 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 connectDb();
 app.use(cors({
-  origin: "https://skillnesteducation1.netlify.app"
+    origin:
+   [
+    "http://localhost:5173",
+    "https://skillnesteducation1.netlify.app"
+  ],
+  credentials: true,
 }));
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);

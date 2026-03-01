@@ -1,97 +1,223 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import API from "../../api/api";
-import useAuth from "../../hooks/useAuth";
 
-const categories = [
-  { label: "Grade 6", value: "grade6" },
-  { label: "Grade 7", value: "grade7" },
-  { label: "Grade 8", value: "grade8" },
-  { label: "Grade 9", value: "grade9" },
-  { label: "Grade 10", value: "grade10" },
-  { label: "Grade 11", value: "grade11" },
-  { label: "Grade 12", value: "grade12" },
-  { label: "Freshman", value: "freshman" },
-  { label: "Exit", value: "exit" },
-];
-
-export default function AdminResourceForm({ onResourceAdded }) {
-  const [form, setForm] = useState({ title: "", category: categories[0].value, file: null });
+export default function AdminResources() {
+  const [resources, setResources] = useState([]);
+  const [form, setForm] = useState({
+    title: "",
+    category: "grade6",
+    department: "",
+    file: null,
+  });
+  const [categories] = useState([
+    { label: "Grade 6", value: "grade6" },
+    { label: "Grade 7", value: "grade7" },
+    { label: "Grade 8", value: "grade8" },
+    { label: "Grade 9", value: "grade9" },
+    { label: "Grade 10", value: "grade10" },
+    { label: "Grade 11", value: "grade11" },
+    { label: "Grade 12", value: "grade12" },
+    { label: "Freshman", value: "freshman" },
+    { label: "Exit", value: "exit" },
+  ]);
+  const [departments, setDepartments] = useState([
+    "Computer Science",
+    "Software Engineering",
+    "Information Technology",
+    "Electrical Engineering",
+  ]);
   const [uploading, setUploading] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
-  const { user } = useAuth();
+
+  // Fetch all resources
+  const fetchResources = async () => {
+    try {
+      const res = await API.get("/resources");
+      setResources(res.data);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch resources");
+    }
+  };
+
+  useEffect(() => {
+    fetchResources();
+  }, []);
 
   const handleFormChange = (e) => {
     const { name, value, files } = e.target;
-    setForm(f => ({ ...f, [name]: files ? files[0] : value }));
+    setForm((f) => ({
+      ...f,
+      [name]: files ? files[0] : value,
+    }));
   };
 
+  // Upload or update resource
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
     setError("");
+
     try {
-      const data = new FormData();
-      data.append("title", form.title);
-      data.append("category", form.category);
-      data.append("file", form.file);
-      await API.post("/resources", data, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const formData = new FormData();
+      formData.append("title", form.title);
+      formData.append("category", form.category);
+      if (form.category === "exit") formData.append("department", form.department);
+      if (form.file) formData.append("file", form.file);
+
+      if (editingId) {
+        await API.put(`/resources/${editingId}`, formData);
+      } else {
+        await API.post("/resources", formData);
+      }
+
+      setForm({
+        title: "",
+        category: "grade6",
+        department: "",
+        file: null,
       });
-      setForm({ title: "", category: categories[0].value, file: null });
-      if (onResourceAdded) onResourceAdded();
+      setEditingId(null);
+      fetchResources();
     } catch (err) {
-      setError("Failed to upload resource.");
+      console.error(err);
+      setError("Failed to save resource");
     } finally {
       setUploading(false);
     }
   };
 
-  if (!user || user.role !== "admin") return null;
+  const handleEdit = (resource) => {
+    setEditingId(resource._id);
+    setForm({
+      title: resource.title,
+      category: resource.category,
+      department: resource.department || "",
+      file: null,
+    });
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this resource?")) return;
+    try {
+      await API.delete(`/resources/${id}`);
+      setResources(resources.filter((r) => r._id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete resource");
+    }
+  };
 
   return (
-    <form className="mb-8 space-y-4" onSubmit={handleSubmit}>
-      <div>
-        <input
-          type="text"
-          name="title"
-          value={form.title}
-          onChange={handleFormChange}
-          placeholder="Resource Title"
-          className="border rounded px-3 py-2 w-full"
-          required
-        />
+    <div className="p-6 max-w-4xl mx-auto space-y-6">
+      {/* Upload / Update Form */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h2 className="text-xl font-bold mb-4">{editingId ? "Edit Resource" : "Upload Resource"}</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            name="title"
+            value={form.title}
+            onChange={handleFormChange}
+            placeholder="Resource Title"
+            className="border rounded px-3 py-2 w-full"
+            required
+          />
+          <select
+            name="category"
+            value={form.category}
+            onChange={handleFormChange}
+            className="border rounded px-3 py-2 w-full"
+          >
+            {categories.map((c) => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+          {form.category === "exit" && (
+            <select
+              name="department"
+              value={form.department}
+              onChange={handleFormChange}
+              className="border rounded px-3 py-2 w-full"
+              required
+            >
+              <option value="">Select Department</option>
+              {departments.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+          )}
+          <input
+            type="file"
+            name="file"
+            onChange={handleFormChange}
+            className="border rounded px-3 py-2 w-full"
+            {...(!editingId && { required: true })}
+          />
+          <button
+            type="submit"
+            className="bg-teal-600 text-white px-4 py-2 rounded w-full"
+            disabled={uploading}
+          >
+            {uploading ? "Saving..." : editingId ? "Update Resource" : "Upload Resource"}
+          </button>
+          {error && <p className="text-red-500">{error}</p>}
+        </form>
       </div>
-      <div>
-        <select
-          name="category"
-          value={form.category}
-          onChange={handleFormChange}
-          className="border rounded px-3 py-2 w-full"
-          required
-        >
-          {categories.map(cat => (
-            <option key={cat.value} value={cat.value}>{cat.label}</option>
-          ))}
-        </select>
+
+      {/* Resources Table */}
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h2 className="text-xl font-bold mb-4">Resources</h2>
+        {resources.length === 0 ? (
+          <p>No resources found.</p>
+        ) : (
+          <table className="min-w-full border border-gray-300">
+            <thead>
+              <tr className="bg-teal-600 text-white">
+                <th className="px-4 py-2">Title</th>
+                <th className="px-4 py-2">Category</th>
+                <th className="px-4 py-2">Department</th>
+                <th className="px-4 py-2">File</th>
+                <th className="px-4 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {resources.map((r) => (
+                <tr key={r._id} className="text-center border-b">
+                  <td className="px-4 py-2">{r.title}</td>
+                  <td className="px-4 py-2">{r.category}</td>
+                  <td className="px-4 py-2">{r.department || "-"}</td>
+                  <td className="px-4 py-2">
+                    <a
+                      href={`https://docs.google.com/viewer?url=${encodeURIComponent(r.fileUrl)}&embedded=true`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-teal-700 underline"
+                    >
+                      View
+                    </a>
+                  </td>
+                  <td className="px-4 py-2 flex justify-center gap-2">
+                    <button
+                      className="bg-blue-500 text-white px-3 py-1 rounded"
+                      onClick={() => handleEdit(r)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-3 py-1 rounded"
+                      onClick={() => handleDelete(r._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
-      <div>
-        <input
-          type="file"
-          name="file"
-          accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip,image/*"
-          onChange={handleFormChange}
-          className="border rounded px-3 py-2 w-full"
-          required
-        />
-      </div>
-      <button
-        type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded font-semibold shadow hover:bg-blue-700"
-        disabled={uploading}
-      >
-        {uploading ? "Uploading..." : "Upload Resource"}
-      </button>
-      {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
-    </form>
+    </div>
   );
 }

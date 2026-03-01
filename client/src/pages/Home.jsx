@@ -1,10 +1,10 @@
 import React from "react";
 import Hero from "../assets/Hero.jpg";
 import why from "../assets/why.jpg";
-  import { FaFacebook, FaTwitter, FaLinkedin, FaYoutube } from "react-icons/fa";
-  import { FaCertificate,FaGraduationCap,FaBook,FaPersonBooth,FaCalculator,FaProjectDiagram } from "react-icons/fa";
-  // icons for course cards
-  import { FaLaptopCode, FaChartLine, FaPalette } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaLinkedin, FaYoutube } from "react-icons/fa";
+import { FaCertificate, FaGraduationCap, FaBook, FaPersonBooth, FaCalculator, FaProjectDiagram } from "react-icons/fa";
+// icons for course cards
+import { FaLaptopCode, FaChartLine, FaPalette } from "react-icons/fa";
 
 export default function Home() {
   return (
@@ -12,16 +12,16 @@ export default function Home() {
       {/* ================= HERO SECTION ================= */}
       <section className="bg-gray-50 py-20">
         <div className="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between">
-          
+
           {/* Left Content */}
           <div className="md:w-1/2">
             <h1 className="text-xl md:text-2xl font-bold text-gray-800 leading-tight">
               Learn. Grow. Succeed with{" "}
-             
+
             </h1>
-              <h1 className="text-3xl md:text-4xl font-bold text-teal-600 leading-tight mt-2">
-                Skill Nest
-              </h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-teal-700 leading-tight mt-2">
+              Skill Nest
+            </h1>
             <p className="mt-6 text-gray-600 text-lg">
               Explore expert-led courses and build real-world skills for your future.
             </p>
@@ -30,16 +30,16 @@ export default function Home() {
               <button className="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700">
                 Explore Courses →
               </button>
-              <button className="flex items-center gap-2 text-teal-600 font-medium">
+              <button className="flex items-center gap-2 text-teal-700 font-medium">
                 ▶ Watch Demo
               </button>
             </div>
 
             {/* Small Features */}
             <div className="flex gap-6 mt-10 text-gray-600">
-              <span className="flex items-center gap-2"><FaGraduationCap className="text-teal-600" /> Expert Instructors</span>
-              <span className="flex items-center gap-2"><FaBook className="text-teal-600" /> Flexible Learning</span>
-              <span className="flex items-center gap-2"><FaCertificate className="text-teal-600" /> Certifications</span>
+              <span className="flex items-center gap-2"><FaGraduationCap className="text-teal-700" /> Expert Instructors</span>
+              <span className="flex items-center gap-2"><FaBook className="text-teal-700" /> Flexible Learning</span>
+              <span className="flex items-center gap-2"><FaCertificate className="text-teal-700" /> Certifications</span>
             </div>
           </div>
 
@@ -62,7 +62,7 @@ export default function Home() {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
+
             {/* Card 1 */}
             <div className="bg-white shadow-lg rounded-xl p-6">
               <div className="text-teal-600 text-4xl mb-2">
@@ -72,35 +72,35 @@ export default function Home() {
               <p className="text-gray-600 mb-4">
                 HTML • CSS • JavaScript
               </p>
-              <button className="bg-teal-600 text-white px-4 py-2 rounded-lg">
+              <button className="bg-teal-700 text-white px-4 py-2 rounded-lg">
                 Start Course
               </button>
             </div>
 
             {/* Card 2 */}
             <div className="bg-white shadow-lg rounded-xl p-6">
-              <div className="text-teal-600 text-4xl mb-2">
+              <div className="text-teal-700 text-4xl mb-2">
                 <FaChartLine />
               </div>
               <h3 className="text-xl font-semibold mb-2">Data Science</h3>
               <p className="text-gray-600 mb-4">
                 Python • ML • Analytics
               </p>
-              <button className="bg-teal-600 text-white px-4 py-2 rounded-lg">
+              <button className="bg-teal-700 text-white px-4 py-2 rounded-lg">
                 Start Course
               </button>
             </div>
 
             {/* Card 3 */}
-            <div className="bg-white shadow-lg rounded-xl p-6">
-              <div className="text-teal-600 text-4xl mb-2">
+            <div className="bg-white shadow-xl rounded-xl p-6">
+              <div className="text-teal-700 text-4xl mb-2">
                 <FaPalette />
               </div>
               <h3 className="text-xl font-semibold mb-2">UI/UX Design</h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-700 mb-4">
                 Figma • Design Thinking
               </p>
-              <button className="bg-teal-600 text-white px-4 py-2 rounded-lg">
+              <button className="bg-teal-700 text-white px-4 py-2 rounded-lg">
                 Start Course
               </button>
             </div>
@@ -112,7 +112,7 @@ export default function Home() {
       {/* ================= WHY CHOOSE US ================= */}
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-10">
-          
+
           {/* Left Image */}
           <div className="md:w-1/2">
             <img
@@ -124,26 +124,26 @@ export default function Home() {
 
           {/* Right Content */}
           <div className="md:w-1/2">
-            <h2 className="text-3xl font-bold mb-8">Why Choose Skill Nest?</h2>
+            <h2 className="text-3xl font-bold mb-8"><span className="underline">Why</span>  Choose Skill Nest?</h2>
 
             <div className="space-y-6">
               <div>
-                <h4 className="font-semibold text-lg"> <FaPersonBooth className="text-teal-600 inline mr-2" /> Expert Mentors</h4>
-                <p className="text-gray-600">
+                <h4 className="font-semibold text-lg"> <FaPersonBooth className="text-teal-700 inline mr-2" /> Expert Mentors</h4>
+                <p className="text-gray-700">
                   Learn from industry professionals.
                 </p>
               </div>
- <hr />
+              <hr className="border-gray-300 my-4" />
               <div>
-                <h4 className="font-semibold text-lg"> <FaProjectDiagram className="text-teal-600 inline mr-2" /> Hands-on Projects</h4>
-                <p className="text-gray-600">
+                <h4 className="font-semibold text-lg"> <FaProjectDiagram className="text-teal-700 inline mr-2" /> Hands-on Projects</h4>
+                <p className="text-gray-700">
                   Build real-world portfolio projects.
                 </p>
               </div>
-<hr />
+              <hr className="border-gray-300 my-4" />
               <div>
-                <h4 className="font-semibold text-lg"> <FaCalculator className="text-teal-600 inline mr-2" /> Flexible Learning</h4>
-                <p className="text-gray-600">
+                <h4 className="font-semibold text-lg"> <FaCalculator className="text-teal-700 inline mr-2" /> Flexible Learning</h4>
+                <p className="text-gray-700">
                   Study anytime, anywhere at your own pace.
                 </p>
               </div>
@@ -177,57 +177,57 @@ export default function Home() {
       </section>
 
       {/* ================= FOOTER ================= */}
-    
-<footer className="bg-gray-900 text-gray-300 py-10">
-  <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-    
-    {/* Logo / About */}
-    <div>
-      <h2 className="text-2xl font-bold text-white">
-        Skill <span className="text-teal-500">Nest</span>
-      </h2>
-      <p className="mt-4 text-gray-400">
-        Learn. Grow. Succeed with expert-led courses designed for your future.
-      </p>
-    </div>
 
-    {/* Quick Links */}
-    <div>
-      <h3 className="text-xl font-semibold text-white mb-4">Quick Links</h3>
-      <ul className="space-y-2">
-        <li><a href="#" className="hover:text-teal-500">Courses</a></li>
-        <li><a href="#" className="hover:text-teal-500">About</a></li>
-        <li><a href="#" className="hover:text-teal-500">Resources</a></li>
-        <li><a href="#" className="hover:text-teal-500">Contact</a></li>
-      </ul>
-    </div>
+      <footer className="bg-gray-900 text-gray-300 py-10">
+        <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
 
-    {/* Social Media */}
-    <div>
-      <h3 className="text-xl font-semibold text-white mb-4">Follow Us</h3>
-      <div className="flex gap-4">
-        <a href="#" className="text-xl hover:text-teal-500">
-          <FaFacebook />
-        </a>
-        <a href="#" className="text-xl hover:text-teal-500">
-          <FaTwitter />
-        </a>
-        <a href="#" className="text-xl hover:text-teal-500">
-          <FaLinkedin />
-        </a>
-        <a href="#" className="text-xl hover:text-teal-500">
-          <FaYoutube />
-        </a>
-      </div>
-    </div>
+          {/* Logo / About */}
+          <div>
+            <h2 className="text-2xl font-bold text-white">
+              Skill <span className="text-teal-700">Nest</span>
+            </h2>
+            <p className="mt-4 text-gray-400">
+              Learn. Grow. Succeed with expert-led courses designed for your future.
+            </p>
+          </div>
 
-  </div>
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              <li><a href="#" className="hover:text-teal-700">Courses</a></li>
+              <li><a href="#" className="hover:text-teal-700">About</a></li>
+              <li><a href="#" className="hover:text-teal-700">Resources</a></li>
+              <li><a href="#" className="hover:text-teal-700">Contact</a></li>
+            </ul>
+          </div>
 
-  {/* Bottom */}
-  <div className="text-center mt-10 border-t border-gray-700 pt-4">
-    <p>© 2026 Skill Nest. All rights reserved.</p>
-  </div>
-</footer>
+          {/* Social Media */}
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-4">Follow Us</h3>
+            <div className="flex gap-4">
+              <a href="#" className="text-xl hover:text-teal-700">
+                <FaFacebook />
+              </a>
+              <a href="#" className="text-xl hover:text-teal-700">
+                <FaTwitter />
+              </a>
+              <a href="#" className="text-xl hover:text-teal-700">
+                <FaLinkedin />
+              </a>
+              <a href="#" className="text-xl hover:text-teal-700">
+                <FaYoutube />
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Bottom */}
+        <div className="text-center mt-10 border-t border-gray-700 pt-4">
+          <p>© 2026 Skill Nest. All rights reserved.</p>
+        </div>
+      </footer>
     </>
   );
 }
