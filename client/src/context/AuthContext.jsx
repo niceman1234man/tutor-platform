@@ -1,30 +1,29 @@
-import React,{ createContext, useState, useEffect } from "react";
+// AuthContext.jsx
+import  React,{ createContext, useState, useEffect } from "react";
 
+// ✅ Export the context itself
 export const AuthContext = createContext();
 
-export default function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem("user");
+    return stored ? JSON.parse(stored) : null;
+  });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setUser({ token }); // later decode JWT
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
     }
-  }, []);
+  }, [user]);
 
-  const login = (data) => {
-    localStorage.setItem("token", data.token);
-    setUser(data.user);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-  };
+  const login = (userData) => setUser(userData);
+  const logout = () => setUser(null);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};

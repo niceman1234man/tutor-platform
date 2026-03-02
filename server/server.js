@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import authRoutes from "./routers/authRoutes.js";
 import adminRoutes from "./routers/adminRoutes.js";
 import resourceRoutes from "./routers/resourceRoutes.js";
+import applicationRoutes from "./routers/applicationRoutes.js";
+import courseRoutes from "./routers/courseRoutes.js";
 import path from "path";
 
 
@@ -27,6 +29,8 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/resources", resourceRoutes);
+app.use("/api/applications", applicationRoutes);
+app.use("/api/courses", courseRoutes);
 app.listen(process.env.PORT, () =>
   console.log(`Server running on ${process.env.PORT}`)
 );

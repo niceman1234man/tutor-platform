@@ -16,13 +16,16 @@ import CategoryResources from "./components/CatagoryResources";
 import TutorDetails from "./pages/TutorDetails";
 import AdminResourceForm from "./pages/admin/AdminResourceForm";
 import User from "./pages/admin/Users";
-
-
+import ApplicationForm from "./pages/tutor/ApplicationForm";
+import MyApplications from "./pages/tutor/MyApplications";
+import AdminTutors from "./pages/admin/Tutors";
 import Tutors from "./pages/Tutors";
+import Course from "./pages/tutor/Course";
+
 
 function App() {
   return (
-    <BrowserRouter>
+    <>
       <Navbar />
 
       <Routes>
@@ -34,17 +37,21 @@ function App() {
         <Route path="/resources" element={<Resources />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/resources" element={<AdminResourceForm />} />
+        <Route path="/admin/tutors" element={<AdminTutors />} />
         <Route path="/resources/:category" element={<CategoryResources />} />
         <Route path="/user" element={<UserDashboard />} />
         <Route path="/tutor" element={<TutorDashboard />} />
+        <Route path="/tutor/mycourses" element={<Course />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/tutors/:id" element={<TutorDetails />} />
         <Route path="/booking/:tutorId" element={<Booking />} />
         <Route path="/student" element={<StudentDashboard />} />
         <Route path="/admin/users" element={<User />} />
+        <Route path="/tutor/applications" element={<ApplicationForm />} />
+        <Route path="/tutor/my-applications" element={<MyApplications />} />
       
       </Routes>
-    </BrowserRouter>
+   </>
   );
 }
 

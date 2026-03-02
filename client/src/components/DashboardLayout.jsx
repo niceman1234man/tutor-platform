@@ -24,10 +24,10 @@ export default function DashboardLayout({
         </div>
       </div>
 
-      <div className="flex">
+      <div className="">
 
         {/* ===== SIDEBAR ===== */}
-        <aside className="w-64 p-6 space-y-6">
+        <aside className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 p-10 max-w-4xl mx-auto">
           {links.map((link) => (
             <a
               key={link.to}
@@ -42,19 +42,7 @@ export default function DashboardLayout({
         {/* ===== MAIN CONTENT ===== */}
         <main className="flex-1 p-10">
 
-          {/* Search Bar */}
-          <div className="flex justify-center mb-10">
-            <div className="flex w-full max-w-xl border-2 border-black rounded-full overflow-hidden">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="flex-1 px-6 py-3 outline-none"
-              />
-              <button className="px-8 text-green-600 font-semibold">
-                Search
-              </button>
-            </div>
-          </div>
+          
 
           {children}
         </main>

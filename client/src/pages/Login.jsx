@@ -8,7 +8,7 @@ export default function Login() {
   const [form, setForm] = useState({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, setUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -18,6 +18,7 @@ export default function Login() {
     try {
       const res = await API.post("/auth/login", form);
       login(res.data);
+      
       // Redirect based on role
       const role = res.data.user.role;
       if (role === "admin") {
