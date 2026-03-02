@@ -21,6 +21,8 @@ import MyApplications from "./pages/tutor/MyApplications";
 import AdminTutors from "./pages/admin/Tutors";
 import Tutors from "./pages/Tutors";
 import Course from "./pages/tutor/Course";
+import TutorsMaterials from "./pages/admin/TutorsMaterials";
+import ManageTutor from "./pages/admin/ManageTutor";
 
 
 function App() {
@@ -38,6 +40,8 @@ function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/resources" element={<AdminResourceForm />} />
         <Route path="/admin/tutors" element={<AdminTutors />} />
+        <Route path="/admin/manage-tutors" element={<ManageTutor />} />
+        <Route path="/admin/tutors-materials" element={<TutorsMaterials />} />
         <Route path="/resources/:category" element={<CategoryResources />} />
         <Route path="/user" element={<UserDashboard />} />
         <Route path="/tutor" element={<TutorDashboard />} />

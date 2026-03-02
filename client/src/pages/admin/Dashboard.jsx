@@ -4,7 +4,7 @@ import DashboardLayout from "../../components/DashboardLayout";
 export default function AdminDashboard() {
   const links = [
     { to: "/admin/users", label: "Manage" },
-    { to: "/admin/tutors", label: "Tutors" },
+    { to: "/admin/manage-tutors", label: "Tutors" },
     { to: "/admin/resources", label: "Resources" },
     { to: "/admin/payments", label: "Payments" },
   ];

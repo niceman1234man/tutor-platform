@@ -359,3 +359,13 @@ export const deleteCourse = async (req, res) => {
 /**
  * @desc Admin - Approve Application
  */
+
+export const getAllCourses = async (req, res) => {
+  try {
+    const courses = await Course.find().sort({ createdAt: -1 });
+    res.json(courses);
+  } catch (err) {
+    console.error("GET ALL COURSES ERROR 👉", err);
+    res.status(500).json({ message: err.message });
+  }
+};

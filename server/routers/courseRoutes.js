@@ -10,6 +10,7 @@ import {
   addChapter,
   updateChapter,
   deleteChapter,
+  getAllCourses
 } from "../controllers/courseController.js";
 
 
@@ -22,6 +23,7 @@ const router = express.Router();
 // =======================
 
 // Get all courses of the logged-in tutor
+router.get("/",protect,authorize("admin"), getAllCourses);
 router.get("/my", protect, authorize("tutor"), getMyCourses);
 
 // Create a new course
@@ -33,9 +35,6 @@ router.patch("/:id", protect, authorize("tutor"), upload.single("image"), update
 // Delete a course
 router.delete("/:id", protect, authorize("tutor"), deleteCourse);
 
-// =======================
-// Chapters
-// =======================
 
 // Add a new chapter to a course
 router.post("/:courseId/chapters", protect, authorize("tutor"), upload.array("files", 10), addChapter);
