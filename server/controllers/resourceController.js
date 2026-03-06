@@ -6,38 +6,64 @@ export const createResource = async (req, res) => {
   try {
     const { title, category, department } = req.body;
 
-    if (!req.file) {
-      return res.status(400).json({ message: "File is required" });
+    let fileUrl = "";
+    let filePublicId = "";
+
+    let imageUrl = "";
+    let imagePublicId = "";
+
+    // Upload FILE
+    if (req.files?.file) {
+      const file = req.files.file[0];
+
+      const uploadedFile = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "resources",
+            resource_type: "raw"
+          },
+          (error, result) => (result ? resolve(result) : reject(error))
+        );
+
+        stream.end(file.buffer);
+      });
+
+      fileUrl = uploadedFile.secure_url;
+      filePublicId = uploadedFile.public_id;
     }
 
-    // Upload file to Cloudinary (non-image files)
-    const uploaded = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        {
-          folder: "resources",
-          resource_type: "raw", // important for PDFs, DOCs, PPTs
-        },
-        (error, result) => {
-          if (result) resolve(result);
-          else reject(error);
-        }
-      );
+    // Upload IMAGE
+    if (req.files?.image) {
+      const image = req.files.image[0];
 
-      stream.end(req.file.buffer);
-    });
+      const uploadedImage = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "resource-images",
+            resource_type: "image"
+          },
+          (error, result) => (result ? resolve(result) : reject(error))
+        );
 
-    // Save resource in DB
+        stream.end(image.buffer);
+      });
+
+      imageUrl = uploadedImage.secure_url;
+      imagePublicId = uploadedImage.public_id;
+    }
+
     const resource = await Resource.create({
       title,
       category,
-      department: category === "exit" ? department : null,
-      fileUrl: uploaded.secure_url,
-      publicId: uploaded.public_id,
-      fileName: req.file.originalname,
-      uploadedBy: req.user?.id, // optional, if you have authentication
+      department,
+      fileUrl,
+      publicId: filePublicId,
+      imageUrl,
+      imagePublicId
     });
 
-    res.status(201).json({ message: "Resource uploaded successfully", resource });
+    res.status(201).json(resource);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message });
@@ -47,12 +73,36 @@ export const createResource = async (req, res) => {
 // GET All Resources (optional filter by category)
 export const getResources = async (req, res) => {
   try {
-    const { category } = req.query;
-    const filter = category ? { category } : {};
-    const resources = await Resource.find(filter).sort({ createdAt: -1 });
+    
+    const resources = await Resource.find().sort({ createdAt: -1 });
     res.json(resources);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const getResourcesByCategory = async (req, res) => {
+
+  try {
+    const { category } = req.query;
+
+    let filter = {};
+
+    if (category === "grade6-8") {
+      filter.category = { $in: ["grade6", "grade7", "grade8"] };
+    } 
+    else if (category === "grade9-12") {
+      filter.category = { $in: ["grade9", "grade10", "grade11", "grade12"] };
+    } 
+    else {
+      filter.category = category;
+    }
+
+    const resources = await Resource.find(filter).sort({ createdAt: -1 });
+
+    res.json(resources);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 

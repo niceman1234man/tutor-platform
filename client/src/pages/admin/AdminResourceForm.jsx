@@ -8,6 +8,7 @@ export default function AdminResources() {
     category: "grade6",
     department: "",
     file: null,
+    image: null
   });
   const [categories] = useState([
     { label: "Grade 6", value: "grade6" },
@@ -61,10 +62,21 @@ export default function AdminResources() {
 
     try {
       const formData = new FormData();
+
       formData.append("title", form.title);
       formData.append("category", form.category);
-      if (form.category === "exit") formData.append("department", form.department);
-      if (form.file) formData.append("file", form.file);
+
+      if (form.category === "exit") {
+        formData.append("department", form.department);
+      }
+
+      if (form.file) {
+        formData.append("file", form.file);
+      }
+
+      if (form.image) {
+        formData.append("image", form.image);
+      }
 
       if (editingId) {
         await API.put(`/resources/${editingId}`, formData);
@@ -77,7 +89,9 @@ export default function AdminResources() {
         category: "grade6",
         department: "",
         file: null,
+        image: null
       });
+
       setEditingId(null);
       fetchResources();
     } catch (err) {
@@ -148,6 +162,15 @@ export default function AdminResources() {
               ))}
             </select>
           )}
+          <div className="font-medium">Cover Image</div>
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={handleFormChange}
+            className="border rounded px-3 py-2 w-full"
+          />
+          <div className="font-medium">Resource File</div>
           <input
             type="file"
             name="file"

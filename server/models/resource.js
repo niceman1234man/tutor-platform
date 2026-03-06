@@ -36,6 +36,8 @@ const resourceSchema = new mongoose.Schema(
       type: String, // Cloudinary public_id
       required: true,
     },
+     imageUrl: String,
+  imagePublicId: String,
     fileName: {
       type: String, // original file name
     },

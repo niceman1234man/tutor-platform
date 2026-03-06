@@ -6,6 +6,7 @@ import {
   getResourceById,
   updateResource,
   deleteResource,
+  getResourcesByCategory,
 } from "../controllers/resourceController.js";
 
 import { upload } from "../middleware/upload.js";
@@ -14,10 +15,16 @@ import { upload } from "../middleware/upload.js";
 const router = express.Router();
 
 // Admin upload
-router.post("/", upload.single("file"), createResource);
+router.post("/",  upload.fields([
+    { name: "file", maxCount: 1 },
+    { name: "image", maxCount: 1 }
+  ]), createResource);
 
 // Get all / filter
 router.get("/", getResources);
+
+// Get resources by category
+router.get("/category", getResourcesByCategory);
 
 // Get one
 router.get("/:id", getResourceById);

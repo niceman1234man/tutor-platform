@@ -10,7 +10,7 @@ export default function CategoryResources() {
 
   useEffect(() => {
     setLoading(true);
-    API.get(`/resources?category=${category}`)
+    API.get(`/resources/category/?category=${category}`)
       .then((res) => setResources(res.data))
       .catch(() => setError("Failed to load resources"))
       .finally(() => setLoading(false));
@@ -35,6 +35,9 @@ export default function CategoryResources() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {resources.map((r) => (
   <div key={r._id} className="bg-white rounded-xl shadow p-6">
+    {r.imageUrl && (
+      <img src={r.imageUrl} alt={r.title} className="w-full h-48 object-cover mb-4" />
+    )}
     <h3 className="text-lg font-bold text-teal-700 mb-3">{r.title}</h3>
     <h2 className="text-sm text-gray-600 mb-2">{r.department}</h2>
 
