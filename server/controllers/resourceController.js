@@ -144,19 +144,44 @@ export const updateResource = async (req, res) => {
       return res.status(404).json({ message: "Resource not found" });
     }
 
+    // Update text fields
     resource.title = req.body.title || resource.title;
     resource.category = req.body.category || resource.category;
-    resource.department =
-      req.body.category === "exit" ? req.body.department || resource.department : null;
 
-    if (req.file) {
-      // Delete old file from Cloudinary
+    resource.department =
+      req.body.category === "exit"
+        ? req.body.department || resource.department
+        : null;
+
+    // =========================
+    // UPDATE RESOURCE FILE
+    // =========================
+    if (req.files?.file) {
+      // delete old file
       if (resource.publicId) {
-        await cloudinary.uploader.destroy(resource.publicId);
+        await cloudinary.uploader.destroy(resource.publicId, {
+          resource_type: "raw",
+        });
       }
 
-      resource.fileUrl = req.file.path;
-      resource.publicId = req.file.filename;
+      const file = req.files.file[0];
+
+      resource.fileUrl = file.path;
+      resource.publicId = file.filename;
+    }
+
+    // =========================
+    // UPDATE IMAGE
+    // =========================
+    if (req.files?.image) {
+      if (resource.imagePublicId) {
+        await cloudinary.uploader.destroy(resource.imagePublicId);
+      }
+
+      const image = req.files.image[0];
+
+      resource.imageUrl = image.path;
+      resource.imagePublicId = image.filename;
     }
 
     await resource.save();
@@ -166,7 +191,7 @@ export const updateResource = async (req, res) => {
       resource,
     });
   } catch (error) {
-    console.error(error);
+    console.error("UPDATE RESOURCE ERROR 👉", error);
     res.status(500).json({ message: error.message });
   }
 };

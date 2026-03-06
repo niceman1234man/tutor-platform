@@ -30,7 +30,10 @@ router.get("/category", getResourcesByCategory);
 router.get("/:id", getResourceById);
 
 // Update
-router.put("/:id", upload.single("file"), updateResource);
+router.put("/:id",  upload.fields([
+    { name: "file", maxCount: 1 },
+    { name: "image", maxCount: 1 }
+  ]), updateResource);
 
 // Delete
 router.delete("/:id", deleteResource);
