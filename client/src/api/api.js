@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://tutor-platform-3zkg.onrender.com"
 });
 
 // 🔥 attach token automatically
@@ -14,5 +14,6 @@ API.interceptors.request.use((req) => {
 
   return req;
 });
+
 
 export default API;
