@@ -41,7 +41,7 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-200">
       <ToastContainer position="top-center" autoClose={2000} />
       <div className="w-full max-w-lg p-10 bg-white rounded-2xl shadow-2xl flex flex-col items-center">
-        <h2 className="text-3xl font-bold mb-6 text-blue-700">Create Account</h2>
+        <h2 className="text-3xl font-bold mb-6 text-teal-700">Create Account</h2>
         <form onSubmit={handleSubmit} className="w-full">
           {error && (
             <div className="bg-red-100 text-red-700 p-2 mb-3 rounded text-center">
@@ -89,7 +89,7 @@ export default function Register() {
             <label className="block text-gray-700 mb-1" htmlFor="role">Role</label>
             <select
               id="role"
-              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-300"
               value={form.role}
               onChange={(e) => setForm({ ...form, role: e.target.value })}
             >
@@ -99,7 +99,7 @@ export default function Register() {
           </div>
 
           <button
-            className="w-full bg-blue-600 text-white p-2 rounded font-semibold shadow hover:bg-blue-700 transition disabled:opacity-60"
+            className="w-full bg-teal-600 text-white p-2 rounded font-semibold shadow hover:bg-teal-700 transition disabled:opacity-60"
             disabled={loading}
           >
             {loading ? "Registering..." : "Register"}

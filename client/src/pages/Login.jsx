@@ -40,7 +40,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-200">
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl flex flex-col items-center">
-        <h2 className="text-3xl font-bold mb-6 text-blue-700">Welcome Back</h2>
+        <h2 className="text-3xl font-bold mb-6 text-teal-700">Welcome Back</h2>
         <form onSubmit={handleSubmit} className="w-full">
           {error && (
             <div className="bg-red-100 text-red-700 p-2 mb-3 rounded text-center">
@@ -75,7 +75,7 @@ export default function Login() {
           </div>
 
           <button
-            className="bg-blue-600 text-white w-full p-2 rounded font-semibold shadow hover:bg-blue-700 transition disabled:opacity-60"
+            className="bg-teal-600 text-white w-full p-2 rounded font-semibold shadow hover:bg-teal-700 transition disabled:opacity-60"
             disabled={loading}
           >
             {loading ? "Logging in..." : "Login"}
@@ -83,13 +83,13 @@ export default function Login() {
 
           <div className="flex justify-between mt-4 text-sm">
             <span
-              className="text-blue-600 hover:underline cursor-pointer"
+              className="text-teal-600 hover:underline cursor-pointer"
               onClick={() => navigate("/forgot")}
             >
               Forgot Password?
             </span>
             <span
-              className="text-blue-600 hover:underline cursor-pointer"
+              className="text-teal-600 hover:underline cursor-pointer"
               onClick={() => navigate("/register")}
             >
               Create Account

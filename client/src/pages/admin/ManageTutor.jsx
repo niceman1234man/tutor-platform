@@ -1,13 +1,31 @@
 import React from "react";
 
-
 export default function ManageTutor() {
- 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Manage Tutor</h1>
- <a href="/admin/tutors/" className="block mb-2 text-blue-500 hover:underline">Tutor Applicatios</a>
- <a href="/admin/tutors-materials" className="block text-blue-500 hover:underline">Tutor Materials</a>
+    <div className="min-h-screen bg-slate-50 py-8">
+      <div className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-lg ring-1 ring-slate-200">
+        <h1 className="mb-6 text-3xl font-semibold text-slate-900">Manage Tutor</h1>
+
+        <p className="mb-8 text-slate-600">
+          Quick links for tutor workflows. Click one to manage applications or materials.
+        </p>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <a
+            href="/admin/tutors/"
+            className="rounded-xl border border-blue-200 bg-blue-50 px-6 py-4 text-center text-blue-700 transition hover:bg-blue-100 hover:text-blue-900"
+          >
+            Tutor Applications
+          </a>
+
+          <a
+            href="/admin/tutors-materials"
+            className="rounded-xl border border-indigo-200 bg-indigo-50 px-6 py-4 text-center text-indigo-700 transition hover:bg-indigo-100 hover:text-indigo-900"
+          >
+            Tutor Materials
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
