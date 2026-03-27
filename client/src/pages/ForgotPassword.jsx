@@ -25,7 +25,7 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-200">
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl flex flex-col items-center">
-        <h2 className="text-2xl font-bold mb-6 text-blue-700">Forgot Password</h2>
+        <h2 className="text-2xl font-bold mb-6 text-teal-700">Forgot Password</h2>
         <form onSubmit={handleSubmit} className="w-full">
           {message && (
             <div className="bg-green-100 text-green-700 p-2 mb-3 rounded text-center">{message}</div>
@@ -38,7 +38,7 @@ export default function ForgotPassword() {
             <input
               id="email"
               type="email"
-              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-teal-300"
               placeholder="Enter your email"
               required
               value={email}
@@ -46,7 +46,7 @@ export default function ForgotPassword() {
             />
           </div>
           <button
-            className="bg-blue-600 text-white w-full p-2 rounded font-semibold shadow hover:bg-blue-700 transition disabled:opacity-60"
+            className="bg-teal-600 text-white w-full p-2 rounded font-semibold shadow hover:bg-teal-700 transition disabled:opacity-60"
             disabled={loading}
           >
             {loading ? "Sending..." : "Send Reset Link"}
