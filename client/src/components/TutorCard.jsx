@@ -6,28 +6,28 @@ export default function TutorCard({ tutor }) {
 
   return (
     <div
-      onClick={() => navigate(`/tutors/${tutor._id}`)}
+      onClick={() => navigate(`/courses/${tutor._id}`)}
       className="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden cursor-pointer flex flex-col"
     >
       {/* Image */}
       <div className="h-40 w-full overflow-hidden">
         <img
-          src={tutor.profileImage || "/default.jpg"}
-          alt={tutor.userId.name}
+          src={tutor.imageUrl || "/default.jpg"}
+          alt="Tutor Image"
           className="w-full h-full object-cover"
         />
       </div>
-
+""
       {/* Content */}
       <div className="p-4 flex flex-col flex-grow">
         {/* Title */}
         <h3 className="text-lg font-bold text-gray-800 line-clamp-2">
-          {tutor.userId.name}
+          {"tutor.userId.name"}
         </h3>
 
         {/* Bio */}
         <p className="text-sm text-gray-500 mb-2 line-clamp-2">
-          {tutor.bio}
+          {tutor.title} - {tutor.description}
         </p>
 
         {/* Subjects */}

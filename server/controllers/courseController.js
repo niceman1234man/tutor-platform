@@ -363,6 +363,7 @@ export const deleteCourse = async (req, res) => {
 export const getAllCourses = async (req, res) => {
   try {
     const courses = await Course.find().sort({ createdAt: -1 });
+    console.log("Fetched courses:", courses);
     res.json(courses);
   } catch (err) {
     console.error("GET ALL COURSES ERROR 👉", err);

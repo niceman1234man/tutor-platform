@@ -7,7 +7,7 @@ const categories = [
   { label: "Grade 9-12", value: "grade9-12" },
   { label: "Exit Exams", value: "exit" },
   { label: "Web Development", value: "web" },
-  { label: "Others", value: "others" },
+  { label: "Freshman Resources", value: "freshman" },
 ];
 
 export default function Resources() {

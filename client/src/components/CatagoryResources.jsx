@@ -29,7 +29,7 @@ export default function CategoryResources() {
         <p className="text-center text-red-500">{error}</p>
       ) : resources.length === 0 ? (
         <p className="text-center text-gray-500">
-          No resources found.
+          No resources found.We are actively adding more resources, so please check back soon!
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
@@ -47,7 +47,7 @@ export default function CategoryResources() {
       rel="noopener noreferrer"
       className="block text-center bg-teal-600 text-white py-2 rounded hover:bg-teal-700 transition"
     >
-      View Resource
+     Read
     </a>
   </div>
 ))}
