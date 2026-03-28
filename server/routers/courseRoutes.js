@@ -23,7 +23,7 @@ const router = express.Router();
 // =======================
 
 // Get all courses of the logged-in tutor
-router.get("/",protect,authorize("admin"), getAllCourses);
+router.get("/", getAllCourses);
 router.get("/my", protect, authorize("tutor"), getMyCourses);
 
 // Create a new course

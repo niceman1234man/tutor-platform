@@ -4,10 +4,10 @@ import useAuth from "../../hooks/useAuth";
 import formateDate from "../../utils/formateDate";
 
 export default function AdminTutors() {
-  const { user } = useAuth(); // Admin must be logged in
+  const { user } = useAuth();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(null); // track approve/reject
+  const [actionLoading, setActionLoading] = useState(null);
 
   useEffect(() => {
     if (!user?.token) return;
@@ -66,74 +66,105 @@ export default function AdminTutors() {
   };
 
   if (loading) {
-    return <p className="text-center text-gray-500">Loading applications...</p>;
+    return (
+      <div className="flex justify-center items-center min-h-[40vh]">
+        <div className="text-lg text-gray-500">Loading applications...</div>
+      </div>
+    );
   }
 
   if (!applications.length) {
-    return <p className="text-center text-gray-500">No tutor applications found.</p>;
+    return (
+      <div className="flex justify-center items-center min-h-[40vh]">
+        <div className="text-lg text-gray-500">No tutor applications found.</div>
+      </div>
+    );
   }
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-6">Tutor Applications</h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <h2 className="text-3xl font-bold mb-8 text-slate-800 border-b pb-3">Tutor Applications</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {applications.map((app) => (
           <div
             key={app._id}
-            className="bg-white shadow-lg rounded-xl p-5 flex flex-col justify-between"
+            className="bg-white shadow-xl rounded-2xl border border-slate-100 p-7 flex flex-col justify-between transition hover:shadow-2xl"
           >
             <div>
-              <h3 className="text-lg font-semibold mb-2">{app.userId.name}</h3>
-              <p className="mb-1"><strong>Email:</strong> {app.userId.email}</p>
-              <p className="mb-2"><strong>Letter:</strong> {app.letter}</p>
-              <p className="mb-2">
-                <strong>CV:</strong>{" "}
+              <div className="flex items-center gap-3 mb-3">
+                <div className="bg-blue-100 text-blue-700 rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl uppercase">
+                  {app.userId.name?.[0] || "?"}
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-900">{app.userId.name}</h3>
+                  <p className="text-sm text-slate-500">{app.userId.email}</p>
+                </div>
+              </div>
+              <div className="mb-2">
+                <span className="font-medium text-slate-700">Letter:</span>
+                <p className="text-slate-600 bg-slate-50 rounded p-2 mt-1">{app.letter}</p>
+              </div>
+              <div className="mb-2">
+                <span className="font-medium text-slate-700">CV:</span>{" "}
                 <a
                   href={app.cvUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-blue-500 underline"
+                  className="text-indigo-600 underline hover:text-indigo-800"
                 >
                   View CV
                 </a>
-              </p>
+              </div>
               {app.experiences?.length > 0 && (
                 <div className="mb-2">
-                  <h4 className="font-semibold mb-1">Experiences:</h4>
-                  {app.experiences.map((exp, i) => (
-                    <div key={i} className="border p-2 rounded mb-1">
-                      <p><strong>Company:</strong> {exp.company}</p>
-                      <p><strong>Position:</strong> {exp.position}</p>
-                      <p>
-                        <strong>Duration:</strong> {formateDate(exp.startDate)} → {formateDate(exp.isCurrent ? new Date() : exp.endDate || "N/A")}
-                      </p>
-                    </div>
-                  ))}
+                  <h4 className="font-semibold text-slate-700 mb-1">Experiences:</h4>
+                  <ul className="space-y-2">
+                    {app.experiences.map((exp, i) => (
+                      <li key={i} className="border border-slate-100 bg-slate-50 rounded-lg p-2">
+                        <div className="flex justify-between">
+                          <span className="font-medium">Company:</span>
+                          <span>{exp.company}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium">Position:</span>
+                          <span>{exp.position}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium">Duration:</span>
+                          <span>
+                            {formateDate(exp.startDate)} &rarr;{" "}
+                            {formateDate(exp.isCurrent ? new Date() : exp.endDate || "N/A")}
+                          </span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
-              <p className="mt-1"><strong>Status:</strong>{" "}
+              <div className="mt-2">
+                <span className="font-medium text-slate-700">Status:</span>{" "}
                 <span
-                  className={`font-semibold ${
+                  className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
                     app.status === "approved"
-                      ? "text-green-600"
+                      ? "bg-green-100 text-green-700"
                       : app.status === "rejected"
-                      ? "text-red-600"
-                      : "text-yellow-600"
+                      ? "bg-red-100 text-red-700"
+                      : "bg-yellow-100 text-yellow-700"
                   }`}
                 >
                   {app.status || "pending"}
                 </span>
-              </p>
+              </div>
             </div>
-
             {app.status === "pending" && (
-              <div className="mt-4 flex gap-2">
+              <div className="mt-6 flex gap-3">
                 <button
                   onClick={() => handleApprove(app._id)}
                   disabled={actionLoading === app._id}
-                  className={`flex-1 py-2 px-4 rounded-lg text-white font-medium ${
-                    actionLoading === app._id ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+                  className={`flex-1 py-2 px-4 rounded-lg font-semibold shadow-sm transition text-white ${
+                    actionLoading === app._id
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-700"
                   }`}
                 >
                   {actionLoading === app._id ? "Processing..." : "Approve"}
@@ -141,8 +172,10 @@ export default function AdminTutors() {
                 <button
                   onClick={() => handleReject(app._id)}
                   disabled={actionLoading === app._id}
-                  className={`flex-1 py-2 px-4 rounded-lg text-white font-medium ${
-                    actionLoading === app._id ? "bg-gray-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700"
+                  className={`flex-1 py-2 px-4 rounded-lg font-semibold shadow-sm transition text-white ${
+                    actionLoading === app._id
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-red-600 hover:bg-red-700"
                   }`}
                 >
                   {actionLoading === app._id ? "Processing..." : "Reject"}
