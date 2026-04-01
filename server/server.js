@@ -8,6 +8,7 @@ import resourceRoutes from "./routers/resourceRoutes.js";
 import applicationRoutes from "./routers/applicationRoutes.js";
 import courseRoutes from "./routers/courseRoutes.js";
 import tutorRoutes from "./routers/tutorRoutes.js";
+import paymentRoutes from "./routers/paymentRoutes.js";
 import path from "path";
 
 
@@ -22,8 +23,8 @@ connectDb();
 app.use(cors({
     origin:
    [
-    "http://localhost:5173",
-    "https://skillnesteducation1.netlify.app"
+    "https://skillnesteducation1.netlify.app",
+      "http://localhost:5173",
   ],
   credentials: true,
 }));
@@ -33,6 +34,7 @@ app.use("/api/resources", resourceRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/tutors", tutorRoutes);
+app.use("/api/payments", paymentRoutes);
 app.listen(process.env.PORT, () =>
   console.log(`Server running on ${process.env.PORT}`)
 );

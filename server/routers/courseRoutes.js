@@ -10,7 +10,9 @@ import {
   addChapter,
   updateChapter,
   deleteChapter,
-  getAllCourses
+  getAllCourses,
+  getCourseById,
+  getRegisteredCourses
 } from "../controllers/courseController.js";
 
 
@@ -22,9 +24,14 @@ const router = express.Router();
 // Courses
 // =======================
 
-// Get all courses of the logged-in tutor
-router.get("/", getAllCourses);
+
+
+// Get all courses (public)
+router.get("/registered", protect, getRegisteredCourses); // <-- Place before /:id
 router.get("/my", protect, authorize("tutor"), getMyCourses);
+router.get("/", getAllCourses);
+router.get("/:id", getCourseById);
+
 
 // Create a new course
 router.post("/", protect, authorize("tutor"), upload.single("image"), createCourse);

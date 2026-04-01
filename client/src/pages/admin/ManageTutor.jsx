@@ -24,6 +24,18 @@ export default function ManageTutor() {
           >
             Tutor Materials
           </a>
+          <a
+            href="/admin/assign-student"
+            className="rounded-xl border border-green-200 bg-green-50 px-6 py-4 text-center text-green-700 transition hover:bg-green-100 hover:text-green-900"
+          >
+            Assign Student
+          </a>
+          <a
+            href="/admin/payments"
+            className="rounded-xl border border-teal-200 bg-teal-50 px-6 py-4 text-center text-teal-700 transition hover:bg-teal-100 hover:text-teal-900"
+          >
+            Payments
+          </a>
         </div>
       </div>
     </div>

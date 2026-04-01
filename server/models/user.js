@@ -1,4 +1,9 @@
 import mongoose from "mongoose";
+
+
+
+
+
 const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
@@ -8,7 +13,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["student", "tutor", "admin"]
   },
-    active: { type: Boolean, default: true },
+  active: { type: Boolean, default: true },
+
+  // For tutors: assigned students
+  assignedStudents: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  registeredCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
 
   phone: String,
   createdAt: { type: Date, default: Date.now }

@@ -3,6 +3,26 @@ import Tutor from "../models/tutor.js";
 import Payment from "../models/payment.js";
 
 // USERS
+export const assignStudentToTutor = async (req, res) => {
+  const { tutorId, studentId } = req.body;
+
+  try {
+    const tutor = await Tutor.findById(tutorId);
+    const student = await User.findById(studentId);
+
+    if (!tutor || !student) {
+      return res.status(404).json({ msg: "Tutor or Student not found" });
+    }
+
+    tutor.assignedStudents.push(studentId);
+    await tutor.save();
+
+    res.json({ msg: "Student assigned to tutor successfully" });
+  } catch (error) {
+    res.status(500).json({ msg: "Error assigning student to tutor" });
+  }
+};
+
 export const getUsers = async (req, res) => {
   const users = await User.find();
   res.json(users);

@@ -18,6 +18,7 @@ const chapterSchema = new mongoose.Schema( {
     ]
   });
 
+
 const courseSchema = new mongoose.Schema({
   tutorId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   title: { type: String, required: true },
@@ -26,6 +27,8 @@ const courseSchema = new mongoose.Schema({
   price: { type: Number, default: 0 },
   imageUrl: { type: String },
   chapters: [chapterSchema], // 🔥 Embed chapters
+  type: { type: String, enum: ["free", "pro"], default: "free" },
+  students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Registered students
   createdAt: { type: Date, default: Date.now },
 });
 

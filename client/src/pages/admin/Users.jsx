@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "../../api/api";
 import useAuth from "../../hooks/useAuth";
+import { FaUser, FaUserShield, FaUserGraduate, FaUserTie, FaCheckCircle, FaTimesCircle, FaSyncAlt, FaTrashAlt } from "react-icons/fa";
 
 export default function Users() {
   const { user } = useAuth();
@@ -77,79 +78,105 @@ export default function Users() {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Users Management</h2>
+      <h2 className="text-3xl font-extrabold mb-6 flex items-center gap-3 text-teal-700">
+        <FaUserShield className="text-4xl" /> Users Management
+      </h2>
 
-      {/* Filter */}
-      <div className="mb-4 flex gap-4 items-center">
-        <label>Filter by role:</label>
-        <select value={filterRole} onChange={(e) => setFilterRole(e.target.value)} className="border px-2 py-1 rounded">
-          <option value="">All</option>
-          <option value="student">Student</option>
-          <option value="admin">Admin</option>
-          <option value="tutor">Tutor</option>
-        </select>
+      {/* Filter Card */}
+      <div className="mb-8 flex justify-center">
+        <div className="bg-white rounded-xl shadow-lg px-6 py-4 flex gap-6 items-center">
+          <label className="font-semibold text-gray-700">Filter by role:</label>
+          <select value={filterRole} onChange={(e) => setFilterRole(e.target.value)} className="border px-3 py-2 rounded-lg focus:ring-2 focus:ring-teal-400">
+            <option value="">All</option>
+            <option value="student">Student</option>
+            <option value="admin">Admin</option>
+            <option value="tutor">Tutor</option>
+          </select>
+        </div>
       </div>
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="flex justify-center items-center h-40">
+          <FaSyncAlt className="animate-spin text-3xl text-teal-500 mr-2" />
+          <span className="text-lg font-medium text-teal-700">Loading...</span>
+        </div>
       ) : error ? (
-        <p className="text-red-500">{error}</p>
+        <p className="text-red-500 text-center font-semibold">{error}</p>
       ) : users.length === 0 ? (
-        <p>No users found</p>
+        <p className="text-gray-500 text-center">No users found</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded shadow">
+        <div className="overflow-x-auto rounded-xl shadow-lg">
+          <table className="min-w-full bg-white rounded-xl">
             <thead>
-              <tr className="bg-teal-600 text-white">
-                <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">Email</th>
-                <th className="px-4 py-2">Role</th>
-                <th className="px-4 py-2">Active</th>
-                <th className="px-4 py-2">Actions</th>
+              <tr className="bg-gradient-to-r from-teal-600 to-teal-400 text-white">
+                <th className="px-6 py-3 text-lg font-semibold">Name</th>
+                <th className="px-6 py-3 text-lg font-semibold">Email</th>
+                <th className="px-6 py-3 text-lg font-semibold">Role</th>
+                <th className="px-6 py-3 text-lg font-semibold">Active</th>
+                <th className="px-6 py-3 text-lg font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((u) => (
-                <tr key={u._id} className="text-center border-b border-gray-400">
-                  <td className="px-4 py-2">{u.name}</td>
-                  <td className="px-4 py-2">{u.email}</td>
-                  <td className="px-4 py-2">
-                    <select
-                      value={u.newRole}
-                      onChange={(e) => {
-                        u.newRole = e.target.value;
-                        setUsers([...users]);
-                      }}
-                      className="border px-1 rounded"
-                    >
-                      <option value="student">Student</option>
-                      <option value="admin">Admin</option>
-                      <option value="tutor">Tutor</option>
-                    </select>
+              {users.map((u, idx) => (
+                <tr
+                  key={u._id}
+                  className={`text-center transition-all duration-200 ${idx % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-teal-50`}
+                >
+                  <td className="px-6 py-3 flex items-center gap-2 justify-center">
+                    <FaUser className="text-teal-500 mr-1" />
+                    <span className="font-medium">{u.name}</span>
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-6 py-3">{u.email}</td>
+                  <td className="px-6 py-3">
+                    <div className="flex items-center gap-2 justify-center">
+                      {u.newRole === "admin" && <FaUserShield className="text-indigo-600" title="Admin" />}
+                      {u.newRole === "student" && <FaUserGraduate className="text-amber-600" title="Student" />}
+                      {u.newRole === "tutor" && <FaUserTie className="text-purple-600" title="Tutor" />}
+                      <select
+                        value={u.newRole}
+                        onChange={(e) => {
+                          u.newRole = e.target.value;
+                          setUsers([...users]);
+                        }}
+                        className="border px-2 py-1 rounded-lg focus:ring-2 focus:ring-teal-400"
+                      >
+                        <option value="student">Student</option>
+                        <option value="admin">Admin</option>
+                        <option value="tutor">Tutor</option>
+                      </select>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3">
                     <button
                       onClick={() => {
                         u.newActive = !u.newActive;
                         setUsers([...users]);
                       }}
-                      className={`px-2 py-1 rounded ${u.newActive ? "bg-green-500" : "bg-gray-500"} text-white`}
+                      className={`flex items-center gap-2 px-3 py-1 rounded-full font-semibold shadow transition-all duration-200 ${u.newActive ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-gray-200 text-gray-500 hover:bg-gray-300"}`}
                     >
-                      {u.newActive ? "Active" : "Inactive"}
+                      {u.newActive ? (
+                        <>
+                          <FaCheckCircle className="text-green-500" /> Active
+                        </>
+                      ) : (
+                        <>
+                          <FaTimesCircle className="text-gray-400" /> Inactive
+                        </>
+                      )}
                     </button>
                   </td>
-                  <td className="px-4 py-2 flex justify-center gap-2">
+                  <td className="px-6 py-3 flex justify-center gap-2">
                     <button
-                      className="bg-blue-500 text-white px-3 py-1 rounded"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition-all duration-200 flex items-center gap-2"
                       onClick={() => handleUpdate(u)}
                     >
-                      Update
+                      <FaSyncAlt /> Update
                     </button>
                     <button
-                      className="bg-red-500 text-white px-3 py-1 rounded"
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition-all duration-200 flex items-center gap-2"
                       onClick={() => handleDelete(u._id)}
                     >
-                      Delete
+                      <FaTrashAlt /> Delete
                     </button>
                   </td>
                 </tr>

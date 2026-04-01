@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import logo from "../assets/logo.png";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  // Support user object with nested user property
+  const userInfo = user && user.user ? user.user : user;
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <nav className="bg-white shadow-md px-6 py-2 flex justify-between items-center relative">
@@ -34,7 +38,7 @@ Skill <span className="text-teal-600">Nest</span>
 
       {/* Right Side (Desktop) */}
       <div className="hidden md:flex items-center space-x-4">
-        {!user ? (
+        {!userInfo ? (
           <>
             <Link to="/login" className="text-gray-700 hover:text-teal-600">
               Login
@@ -49,14 +53,17 @@ Skill <span className="text-teal-600">Nest</span>
               className="flex items-center gap-2 text-gray-700 hover:text-teal-600"
             >
               <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold">
-                {user?.name?.charAt(0) || "U"}
+                {userInfo?.name?.charAt(0) || "U"}
               </div>
               <span className="hidden md:block">Profile</span>
             </Link>
 
             {/* Logout */}
             <button
-              onClick={logout}
+              onClick={() => {
+                logout();
+                navigate("/login");
+              }}
               className="text-red-500 hover:text-red-600 font-medium"
             >
               Logout
@@ -72,7 +79,7 @@ Skill <span className="text-teal-600">Nest</span>
           <Link to="/tutors" className="py-2 w-full text-center hover:text-teal-600" onClick={() => setMenuOpen(false)}>Tutors</Link>
           <Link to="/resources" className="py-2 w-full text-center hover:text-teal-600" onClick={() => setMenuOpen(false)}>Resources</Link>
           <div className="border-t w-4/5 my-2" />
-          {!user ? (
+          {!userInfo ? (
             <>
               <Link to="/login" className="py-2 w-full text-center hover:text-teal-600" onClick={() => setMenuOpen(false)}>
                 Login
@@ -93,12 +100,16 @@ Skill <span className="text-teal-600">Nest</span>
                 onClick={() => setMenuOpen(false)}
               >
                 <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold">
-                  {user?.name?.charAt(0) || "U"}
+                  {userInfo?.name?.charAt(0) || "U"}
                 </div>
                 <span>Profile</span>
               </Link>
               <button
-                onClick={() => { setMenuOpen(false); logout();Navigate("/login") }}
+                onClick={() => {
+                  setMenuOpen(false);
+                  logout();
+                  navigate("/login");
+                }}
                 className="text-red-500 hover:text-red-600 font-medium py-2 w-full text-center"
               >
                 Logout

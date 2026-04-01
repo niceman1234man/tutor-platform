@@ -2,7 +2,7 @@
 import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema({
-  bookingId: { type: mongoose.Schema.Types.ObjectId, ref: "Booking" },
+  courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
   amount: Number,
   receiptImage: String,
   method: String, // Telebirr, Bank

@@ -1,11 +1,21 @@
+
 import Course from "../models/course.js";
 import cloudinary from "../config/cloudinary.js";
 
-/**
- * @desc Create a new course
- * @route POST /api/courses
- * @access Tutor
- */
+
+
+export const getRegisteredCourses = async (req, res) => {
+  try {
+    // Find all courses where this user is in the students array
+    const courses = await Course.find({ students: req.user.id });
+    res.json(courses);
+  } catch (err) {
+    console.error("GET REGISTERED COURSES ERROR 👉", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
 export const createCourse = async (req, res) => {
   try {
     const { title, description, category, price } = req.body;
@@ -45,11 +55,6 @@ export const createCourse = async (req, res) => {
   }
 };
 
-/**
- * @desc Add a chapter to a course
- * @route POST /api/courses/:courseId/chapters
- * @access Tutor
- */
 export const addChapter = async (req, res) => {
   try {
     const { title, description, order } = req.body;
@@ -104,11 +109,7 @@ export const addChapter = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-/**
- * @desc Update a chapter
- * @route PATCH /api/courses/:courseId/chapters/:chapterId
- * @access Tutor
- */
+
 export const updateChapter = async (req, res) => {
   try {
     const { title, description, order } = req.body;
@@ -178,11 +179,7 @@ export const updateChapter = async (req, res) => {
   }
 };
 
-/**
- * @desc Delete a chapter
- * @route DELETE /api/courses/:courseId/chapters/:chapterId
- * @access Tutor
- */
+
 export const deleteChapter = async (req, res) => {
   try {
     const { courseId, chapterId } = req.params;
@@ -232,11 +229,7 @@ export const deleteChapter = async (req, res) => {
   }
 };
 
-/**
- * @desc Get all courses for tutor
- * @route GET /api/courses/my
- * @access Tutor
- */
+
 export const getMyCourses = async (req, res) => {
   try {
     const courses = await Course.find({ tutorId: req.user.id }).sort({ createdAt: -1 });
@@ -247,11 +240,7 @@ export const getMyCourses = async (req, res) => {
   }
 };
 
-/**
- * @desc Get a single course (with chapters)
- * @route GET /api/courses/:id
- * @access Tutor / Student
- */
+
 export const getCourseById = async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
@@ -266,7 +255,7 @@ export const getCourseById = async (req, res) => {
 
 export const updateCourse = async (req, res) => {
   try {
-    const { title, description, category, price } = req.body;
+    const { title, description, category, price, type } = req.body;
     const course = await Course.findById(req.params.id);
     if (!course) return res.status(404).json({ message: "Course not found" });
     if (course.tutorId.toString() !== req.user.id) return res.status(403).json({ message: "Not authorized" });
@@ -276,6 +265,9 @@ export const updateCourse = async (req, res) => {
     course.description = description ?? course.description;
     course.category = category ?? course.category;
     course.price = price ?? course.price;
+    if (type && ["free", "pro"].includes(type)) {
+      course.type = type;
+    }
 
     // Update image if new file is uploaded
     if (req.file) {
@@ -355,10 +347,6 @@ export const deleteCourse = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
-/**
- * @desc Admin - Approve Application
- */
 
 export const getAllCourses = async (req, res) => {
   try {
