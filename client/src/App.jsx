@@ -29,6 +29,9 @@ import AdminPayments from "./pages/admin/Payments";
 import CourseProgress from "./pages/student/CourseProgress";
 import RegisteredCourses from "./pages/student/RegisteredCourses";
 import AssignStudent from "./pages/admin/AssignStudent";
+import AdminExamForm from "./pages/admin/ExamForm";
+import ListOfExams from "./pages/admin/ListOfExams";
+import ExamDetail from "./pages/ExamDetail";
 
 function App() {
   return (
@@ -44,6 +47,9 @@ function App() {
         <Route path="/resources" element={<Resources />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/resources" element={<AdminResourceForm />} />
+        <Route path="/admin/exams" element={<AdminExamForm />} />
+        <Route path="/exams/list" element={<ListOfExams />} />
+        <Route path="/exam/:id" element={<ExamDetail />} />
         <Route path="/admin/tutors" element={<AdminTutors />} />
         <Route path="/admin/payments" element={<AdminPayments />} />
         <Route path="/admin/manage-tutors" element={<ManageTutor />} />

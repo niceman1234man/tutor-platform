@@ -34,6 +34,9 @@ Skill <span className="text-teal-600">Nest</span>
         <Link to="/" className="hover:text-teal-600">Home</Link>
         <Link to="/tutors" className="hover:text-teal-600">Tutors</Link>
         <Link to="/resources" className="hover:text-teal-600">Resources</Link>
+        
+          <Link to="/exams/list" className="hover:text-teal-600">Exams</Link>
+     
       </div>
 
       {/* Right Side (Desktop) */}
@@ -78,6 +81,9 @@ Skill <span className="text-teal-600">Nest</span>
           <Link to="/" className="py-2 w-full text-center hover:text-teal-600" onClick={() => setMenuOpen(false)}>Home</Link>
           <Link to="/tutors" className="py-2 w-full text-center hover:text-teal-600" onClick={() => setMenuOpen(false)}>Tutors</Link>
           <Link to="/resources" className="py-2 w-full text-center hover:text-teal-600" onClick={() => setMenuOpen(false)}>Resources</Link>
+          {userInfo?.role === "admin" && (
+            <Link to="/admin/exams/list" className="py-2 w-full text-center hover:text-teal-600" onClick={() => setMenuOpen(false)}>Exams</Link>
+          )}
           <div className="border-t w-4/5 my-2" />
           {!userInfo ? (
             <>

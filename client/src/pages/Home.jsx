@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import API from "../api/api";
 import Hero from "../assets/Hero.jpg";
 import why from "../assets/why.jpg";
 import { FaFacebook, FaTwitter, FaLinkedin, FaYoutube } from "react-icons/fa";
@@ -7,6 +8,26 @@ import { FaCertificate, FaGraduationCap, FaBook, FaPersonBooth, FaCalculator, Fa
 import { FaLaptopCode, FaChartLine, FaPalette } from "react-icons/fa";
 
 export default function Home() {
+  const [exams, setExams] = useState([]);
+  const [loadingExams, setLoadingExams] = useState(true);
+  const [examError, setExamError] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchExams = async () => {
+      try {
+        const { data } = await API.get("/admin/exams");
+        if (mounted) setExams(Array.isArray(data) ? data : []);
+      } catch (err) {
+        setExamError("Failed to load exams.");
+      } finally {
+        if (mounted) setLoadingExams(false);
+      }
+    };
+    fetchExams();
+    return () => { mounted = false; };
+  }, []);
+
   return (
     <>
       {/* ================= HERO SECTION ================= */}
@@ -50,6 +71,36 @@ export default function Home() {
               alt="learning"
               className="w-full max-w-md mx-auto"
             />
+          </div>
+        </div>
+      </section>
+
+      {/* ========== FEATURED EXAMS ========== */}
+      <section className="py-16">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-bold text-gray-800 mb-10 text-center">Featured Exams</h2>
+          {loadingExams ? (
+            <div className="text-center text-gray-500 py-10">Loading exams…</div>
+          ) : examError ? (
+            <div className="text-center text-red-600 py-10">{examError}</div>
+          ) : exams.length === 0 ? (
+            <div className="text-center text-gray-500 py-10">No exams found.</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-8">
+              {exams.slice(0, 3).map((ex, idx) => (
+                <div key={ex._id || idx} className={`bg-white shadow-lg rounded-xl p-6 flex flex-col items-start border-t-4 ${idx === 0 ? 'border-teal-500' : idx === 1 ? 'border-indigo-500' : 'border-pink-500'}`}>
+                  <div className="text-xl font-semibold text-indigo-700 mb-1 truncate">{ex.title}</div>
+                  <div className="text-sm text-gray-500 mb-2">Category: {ex.category || '—'}</div>
+                  <div className="text-xs text-gray-400 mb-4">Duration: {ex.duration ? `${ex.duration} min` : '—'}</div>
+                  <button className="mt-auto bg-gradient-to-r from-teal-500 to-indigo-500 text-white px-4 py-2 rounded-lg shadow hover:scale-105 transition" onClick={() => window.location.href = `/exam/${ex._id}`}>Start</button>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex justify-center">
+            <button className="bg-indigo-600 text-white px-8 py-2 rounded-lg font-semibold shadow hover:bg-indigo-700 transition" onClick={() => window.location.href = '/exams/list'}>
+              Show More Exams
+            </button>
           </div>
         </div>
       </section>
