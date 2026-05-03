@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import API from "../../api/api";
+import { Link } from "react-router-dom";
 
 export default function ExamForm() {
   const [exam, setExam] = useState({
@@ -84,8 +85,11 @@ export default function ExamForm() {
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl mx-auto p-6 bg-gradient-to-br from-white to-gray-50 shadow rounded space-y-6">
       <div className="flex items-center justify-between">
+        <Link to="/admin/manage-exams" className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+          Manage Existed Exams
+        </Link>
         <div>
-          <h2 className="text-2xl font-bold">Create Exam</h2>
+          <h2 className="text-2xl font-bold">Create New Exam</h2>
           <p className="text-sm text-gray-500">Design assessments for your students — add questions below.</p>
         </div>
         <div className="text-sm text-gray-600">Questions: <span className="font-medium">{exam.questions.length}</span></div>

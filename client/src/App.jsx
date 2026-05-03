@@ -32,6 +32,7 @@ import AssignStudent from "./pages/admin/AssignStudent";
 import AdminExamForm from "./pages/admin/ExamForm";
 import ListOfExams from "./pages/admin/ListOfExams";
 import ExamDetail from "./pages/ExamDetail";
+import AdminExamManager from "./pages/admin/ManageExam";
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/resources" element={<AdminResourceForm />} />
         <Route path="/admin/exams" element={<AdminExamForm />} />
+        <Route path="/admin/manage-exams" element={<AdminExamManager />} />
         <Route path="/exams/list" element={<ListOfExams />} />
         <Route path="/exam/:id" element={<ExamDetail />} />
         <Route path="/admin/tutors" element={<AdminTutors />} />

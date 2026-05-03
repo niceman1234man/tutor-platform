@@ -1,3 +1,5 @@
+// ADD QUESTION TO EXAM
+
 import User from "../models/user.js";
 import Tutor from "../models/tutor.js";
 import Payment from "../models/payment.js";
@@ -124,5 +126,108 @@ export const getExamById = async (req, res) => {
   } catch (err) {
     console.error("GET EXAM ERROR 👉", err);
     res.status(500).json({ message: "Failed to fetch exam" });
+  }
+};
+
+
+export const updateQuestion = async (req, res) => {
+  try {
+    const { examId, questionId } = req.params;
+
+    const exam = await Exam.findById(examId);
+    if (!exam) return res.status(404).json({ message: "Exam not found" });
+
+    const question = exam.questions.id(questionId);
+    if (!question) return res.status(404).json({ message: "Question not found" });
+
+    question.question = req.body.question || question.question;
+    question.options = req.body.options || question.options;
+    question.correctAnswer =
+      req.body.correctAnswer ?? question.correctAnswer;
+    question.explanation =
+      req.body.explanation || question.explanation;
+
+    await exam.save();
+
+    res.json({ message: "Question updated", exam });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const deleteQuestion = async (req, res) => {
+  try {
+    const { examId, questionId } = req.params;
+
+    const exam = await Exam.findById(examId);
+    if (!exam) return res.status(404).json({ message: "Exam not found" });
+
+    const question = exam.questions.id(questionId);
+    if (!question) return res.status(404).json({ message: "Question not found" });
+
+    // Remove the question using array filter
+    exam.questions = exam.questions.filter(q => q._id.toString() !== questionId);
+    exam.markModified && exam.markModified("questions");
+
+    await exam.save();
+
+    res.json({ message: "Question deleted", exam });
+  } catch (err) {
+    console.error("DELETE QUESTION ERROR 👉", err);
+    res.status(500).json({ message: err.message, stack: err.stack });
+  }
+};
+
+
+export const deleteExam = async (req, res) => {
+  try {
+    const exam = await Exam.findById(req.params.id);
+
+    if (!exam) {
+      return res.status(404).json({ message: "Exam not found" });
+    }
+
+    await exam.deleteOne(); // ✅ correct method
+
+    res.json({ message: "Exam deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+export const addQuestion = async (req, res) => {
+  try {
+    const { examId } = req.params;
+    const { question, options, correctAnswer, explanation } = req.body;
+
+    if (!question || !options || options.length !== 4 || correctAnswer === undefined) {
+      return res.status(400).json({ message: "Invalid question data" });
+    }
+
+    // Normalize options
+    const normalizedOptions = options.map((opt) =>
+      typeof opt === "object" && opt !== null && typeof opt.text === "string"
+        ? { text: opt.text }
+        : { text: String(opt) }
+    );
+
+    const exam = await Exam.findById(examId);
+    if (!exam) return res.status(404).json({ message: "Exam not found" });
+
+    const newQuestion = {
+      question,
+      options: normalizedOptions,
+      correctAnswer: typeof correctAnswer === "number" ? correctAnswer : Number(correctAnswer),
+      explanation: explanation || "",
+    };
+
+    exam.questions.push(newQuestion);
+    await exam.save();
+
+    // Return the newly added question (last in array)
+    res.status(201).json(exam.questions[exam.questions.length - 1]);
+  } catch (err) {
+    console.error("ADD QUESTION ERROR 👉", err);
+    res.status(500).json({ message: err.message });
   }
 };

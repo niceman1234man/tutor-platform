@@ -11,7 +11,7 @@ const questionSchema = new mongoose.Schema({
 
   correctAnswer: { type: Number, required: true }, // index (0,1,2,3)
 
-  explanation: { type: String, required: true }, // 🔥 important
+  explanation: { type: String }, // 🔥 important (now optional)
 });
 
 const examSchema = new mongoose.Schema(

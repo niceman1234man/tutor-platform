@@ -9,7 +9,9 @@ export default function AdminDashboard() {
     { to: "/admin/users", label: "Manage Users" },
     { to: "/admin/manage-tutors", label: "Tutors" },
     { to: "/admin/resources", label: "Resources" },
+    { to: "/admin/exams", label: "Exams" },
     { to: "/admin/payments", label: "Payments" },
+    
   ];
 
   const [numStudents, setNumStudents] = useState(0);
