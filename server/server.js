@@ -11,23 +11,17 @@ import tutorRoutes from "./routers/tutorRoutes.js";
 import paymentRoutes from "./routers/paymentRoutes.js";
 import path from "path";
 
-
-
-
 dotenv.config();
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 connectDb();
-app.use(cors({
-    origin:
-   [
-    "https://skillnesteducation1.netlify.app",
-      "http://localhost:5173",
-  ],
-  credentials: true,
-}));
+
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/resources", resourceRoutes);
@@ -35,7 +29,8 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/tutors", tutorRoutes);
 app.use("/api/payments", paymentRoutes);
-app.listen(process.env.PORT, () =>
-  console.log(`Server running on ${process.env.PORT}`)
-);
 
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, "localhost", () =>
+  console.log(`Server running on port ${PORT}`)
+);
