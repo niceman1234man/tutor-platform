@@ -5,15 +5,18 @@ import {
   FaMoneyBillWave,
   FaCheckCircle,
   FaTimesCircle,
+  FaHourglassHalf,
   FaUpload,
   FaPaperPlane,
 } from "react-icons/fa";
 
 const PAYMENT_METHODS = ["Telebirr", "Bank Transfer", "Credit Card", "PayPal", "Cash"];
+const STATUS_FILTERS = ["All", "Pending", "Approved", "Rejected"];
 
 export default function Payments() {
   const { user } = useAuth();
   const [payments, setPayments] = useState([]);
+  const [filter, setFilter] = useState("All");
   const [form, setForm] = useState({ amount: "", method: "", receipt: null });
   const [preview, setPreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -84,6 +87,22 @@ export default function Payments() {
     }
   };
 
+  const filtered = filter === "All"
+    ? payments
+    : payments.filter((p) => p.status === filter.toLowerCase());
+
+  const statusBadge = (status) => {
+    if (status === "approved") return (
+      <span className="text-green-600 flex items-center gap-1"><FaCheckCircle /> Approved</span>
+    );
+    if (status === "pending") return (
+      <span className="text-yellow-600 flex items-center gap-1"><FaHourglassHalf /> Pending</span>
+    );
+    return (
+      <span className="text-red-600 flex items-center gap-1"><FaTimesCircle /> Rejected</span>
+    );
+  };
+
   return (
     <section id="payments" className="mb-10 space-y-8">
       {/* Submit Payment Form */}
@@ -93,7 +112,6 @@ export default function Payments() {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Amount */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-semibold text-gray-700">Amount ($)</label>
             <input
@@ -108,7 +126,6 @@ export default function Payments() {
             />
           </div>
 
-          {/* Payment Method */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-semibold text-gray-700">Payment Method</label>
             <select
@@ -124,7 +141,6 @@ export default function Payments() {
             </select>
           </div>
 
-          {/* Receipt Upload */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-semibold text-gray-700">
               Receipt / Proof of Payment <span className="text-gray-400 font-normal">(optional)</span>
@@ -151,7 +167,6 @@ export default function Payments() {
             )}
           </div>
 
-          {/* Feedback */}
           {error && <p className="text-red-600 text-sm">{error}</p>}
           {success && <p className="text-green-600 text-sm font-medium">{success}</p>}
 
@@ -168,14 +183,38 @@ export default function Payments() {
 
       {/* Payment History */}
       <div>
-        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-green-700">
-          <FaMoneyBillWave /> Payment History
-        </h2>
-        {payments.length === 0 ? (
-          <p className="text-gray-500">No payment records found.</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <h2 className="text-2xl font-bold flex items-center gap-2 text-green-700">
+            <FaMoneyBillWave /> Payment History
+          </h2>
+          {/* Status Filter Tabs */}
+          <div className="flex gap-2 flex-wrap">
+            {STATUS_FILTERS.map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition ${
+                  filter === f
+                    ? "bg-green-600 text-white border-green-600"
+                    : "bg-white text-gray-600 border-gray-300 hover:border-green-400 hover:text-green-700"
+                }`}
+              >
+                {f}
+                <span className="ml-1 text-xs opacity-75">
+                  ({f === "All"
+                    ? payments.length
+                    : payments.filter((p) => p.status === f.toLowerCase()).length})
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {filtered.length === 0 ? (
+          <p className="text-gray-500">No {filter !== "All" ? filter.toLowerCase() : ""} payment records found.</p>
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
-            {payments.map((p) => (
+            {filtered.map((p) => (
               <div
                 key={p._id}
                 className="bg-white/90 p-5 rounded-2xl shadow border border-green-100 flex flex-col gap-2"
@@ -190,19 +229,7 @@ export default function Payments() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-gray-800">Status:</span>
-                  {p.status === "approved" ? (
-                    <span className="text-green-600 flex items-center gap-1">
-                      <FaCheckCircle /> Approved
-                    </span>
-                  ) : p.status === "pending" ? (
-                    <span className="text-yellow-600 flex items-center gap-1">
-                      <FaTimesCircle /> Pending
-                    </span>
-                  ) : (
-                    <span className="text-red-600 flex items-center gap-1">
-                      <FaTimesCircle /> Rejected
-                    </span>
-                  )}
+                  {statusBadge(p.status)}
                 </div>
                 {p.receiptImage && (
                   <img
