@@ -17,7 +17,7 @@ const TutorApplicationSchema = new mongoose.Schema({
 },
 cvPublicId: {
   type: String,
-  required: true,
+  default: "",
 },
 
   experiences: [
