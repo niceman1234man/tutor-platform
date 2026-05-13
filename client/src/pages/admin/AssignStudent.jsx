@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../../api/api";
-import { FaUserTie, FaUserGraduate, FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
+import { FaUserTie, FaUserGraduate, FaCheckCircle } from "react-icons/fa";
 
 export default function AssignStudent() {
   const [tutors, setTutors] = useState([]);
@@ -87,8 +87,6 @@ export default function AssignStudent() {
     }
   };
 
-  const selectedTutorObj = tutors.find(t => t.userId === selectedTutor || t.tutorProfileId === selectedTutor);
-
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-3xl font-extrabold mb-6 flex items-center gap-3 text-teal-700">
@@ -121,18 +119,11 @@ export default function AssignStudent() {
               {tutors.map((t, i) => (
                 <option key={t.tutorProfileId || t.userId || i} value={t.userId || t.tutorProfileId}>
                   {t.displayName}
-                  {!t.tutorProfileId ? " (no profile)" : ""}
                 </option>
               ))}
             </select>
           )}
 
-          {/* Warning if selected tutor has no profile */}
-          {selectedTutorObj && !selectedTutorObj.tutorProfileId && (
-            <p className="text-amber-600 text-sm mt-1 flex items-center gap-1">
-              <FaExclamationTriangle /> This tutor hasn't set up a profile yet — assignment may not work.
-            </p>
-          )}
         </div>
 
         {/* Student Checkboxes */}
