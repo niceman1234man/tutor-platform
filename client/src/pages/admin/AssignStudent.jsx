@@ -14,12 +14,11 @@ export default function AssignStudent() {
   useEffect(() => {
     setLoading(true);
     Promise.all([
-     
+      API.get("/admin/tutors"),
       API.get("/admin/users"),
-       API.get("/admin/users")
     ])
       .then(([tutorRes, userRes]) => {
-        setTutors(tutorRes.data.filter(t => t.role === "tutor")); // Only show tutors with user accounts
+        setTutors(tutorRes.data);
         setStudents(userRes.data.filter(u => u.role === "student"));
       })
       .catch(() => setError("Failed to fetch tutors or students"))
@@ -35,9 +34,9 @@ export default function AssignStudent() {
     try {
       // Assign each student individually as per backend API
       for (const studentId of selectedStudents) {
-        await API.post("/admin/assign-student", {
+        await API.patch(`/admin/users/${studentId}`, {
           tutorId: selectedTutor,
-          studentId
+          studentId,
         });
       }
       setSuccess("Students assigned successfully!");
@@ -75,7 +74,7 @@ export default function AssignStudent() {
             <option value="">-- Choose a Tutor --</option>
             {tutors.map(t => (
               <option key={t._id} value={t._id}>
-                {t.userId?.name || t.name}
+                {t.userId?.name || t.name || "Unnamed Tutor"}
               </option>
             ))}
           </select>
