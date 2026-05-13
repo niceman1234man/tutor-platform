@@ -17,12 +17,15 @@ export const assignStudentToTutor = async (req, res) => {
       return res.status(404).json({ msg: "Tutor or Student not found" });
     }
 
-    tutor.assignedStudents.push(studentId);
-    await tutor.save();
+    if (!tutor.assignedStudents.includes(studentId)) {
+      tutor.assignedStudents.push(studentId);
+      await tutor.save();
+    }
 
     res.json({ msg: "Student assigned to tutor successfully" });
   } catch (error) {
-    res.status(500).json({ msg: "Error assigning student to tutor" });
+    console.error("Assign student error:", error.message);
+    res.status(500).json({ msg: "Error assigning student to tutor", detail: error.message });
   }
 };
 
