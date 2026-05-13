@@ -61,11 +61,7 @@ export default function AssignStudent() {
     if (!selectedTutor || selectedStudents.length === 0) return;
 
     const tutor = tutors.find(t => t.userId === selectedTutor || t.tutorProfileId === selectedTutor);
-
-    if (!tutor?.tutorProfileId) {
-      setError("This tutor has no profile set up yet and cannot be assigned students.");
-      return;
-    }
+    const tutorId = tutor?.tutorProfileId || tutor?.userId || selectedTutor;
 
     setLoading(true);
     setSuccess("");
@@ -73,7 +69,7 @@ export default function AssignStudent() {
     try {
       for (const studentId of selectedStudents) {
         await API.patch(`/admin/users/${studentId}`, {
-          tutorId: tutor.tutorProfileId,
+          tutorId,
           studentId,
         });
       }
