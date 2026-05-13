@@ -10,7 +10,13 @@ import {
   FaPaperPlane,
 } from "react-icons/fa";
 
-const PAYMENT_METHODS = ["Telebirr", "Bank Transfer", "Credit Card", "PayPal", "Cash"];
+const PAYMENT_METHODS = [
+  "Telebirr",
+  "Bank Transfer",
+  "Credit Card",
+  "PayPal",
+  "Cash",
+];
 const STATUS_FILTERS = ["All", "Pending", "Approved", "Rejected"];
 
 export default function Payments() {
@@ -87,19 +93,28 @@ export default function Payments() {
     }
   };
 
-  const filtered = filter === "All"
-    ? payments
-    : payments.filter((p) => p.status === filter.toLowerCase());
+  const filtered =
+    filter === "All"
+      ? payments
+      : payments.filter((p) => p.status === filter.toLowerCase());
 
   const statusBadge = (status) => {
-    if (status === "approved") return (
-      <span className="text-green-600 flex items-center gap-1"><FaCheckCircle /> Approved</span>
-    );
-    if (status === "pending") return (
-      <span className="text-yellow-600 flex items-center gap-1"><FaHourglassHalf /> Pending</span>
-    );
+    if (status === "approved")
+      return (
+        <span className="text-green-600 flex items-center gap-1">
+          <FaCheckCircle /> Approved
+        </span>
+      );
+    if (status === "pending")
+      return (
+        <span className="text-yellow-600 flex items-center gap-1">
+          <FaHourglassHalf /> Pending
+        </span>
+      );
     return (
-      <span className="text-red-600 flex items-center gap-1"><FaTimesCircle /> Rejected</span>
+      <span className="text-red-600 flex items-center gap-1">
+        <FaTimesCircle /> Rejected
+      </span>
     );
   };
 
@@ -113,7 +128,9 @@ export default function Payments() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-semibold text-gray-700">Amount ($)</label>
+            <label className="text-sm font-semibold text-gray-700">
+              Amount (Birr)
+            </label>
             <input
               type="number"
               name="amount"
@@ -127,7 +144,9 @@ export default function Payments() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-semibold text-gray-700">Payment Method</label>
+            <label className="text-sm font-semibold text-gray-700">
+              Payment Method
+            </label>
             <select
               name="method"
               value={form.method}
@@ -136,14 +155,17 @@ export default function Payments() {
             >
               <option value="">-- Select a method --</option>
               {PAYMENT_METHODS.map((m) => (
-                <option key={m} value={m}>{m}</option>
+                <option key={m} value={m}>
+                  {m}
+                </option>
               ))}
             </select>
           </div>
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-semibold text-gray-700">
-              Receipt / Proof of Payment <span className="text-gray-400 font-normal">(optional)</span>
+              Receipt / Proof of Payment{" "}
+              <span className="text-gray-400 font-normal">(optional)</span>
             </label>
             <label className="flex items-center gap-3 border border-dashed border-green-300 rounded-xl px-4 py-3 cursor-pointer hover:bg-green-50 transition">
               <FaUpload className="text-green-500" />
@@ -168,7 +190,9 @@ export default function Payments() {
           </div>
 
           {error && <p className="text-red-600 text-sm">{error}</p>}
-          {success && <p className="text-green-600 text-sm font-medium">{success}</p>}
+          {success && (
+            <p className="text-green-600 text-sm font-medium">{success}</p>
+          )}
 
           <button
             type="submit"
@@ -201,9 +225,12 @@ export default function Payments() {
               >
                 {f}
                 <span className="ml-1 text-xs opacity-75">
-                  ({f === "All"
+                  (
+                  {f === "All"
                     ? payments.length
-                    : payments.filter((p) => p.status === f.toLowerCase()).length})
+                    : payments.filter((p) => p.status === f.toLowerCase())
+                        .length}
+                  )
                 </span>
               </button>
             ))}
@@ -211,7 +238,10 @@ export default function Payments() {
         </div>
 
         {filtered.length === 0 ? (
-          <p className="text-gray-500">No {filter !== "All" ? filter.toLowerCase() : ""} payment records found.</p>
+          <p className="text-gray-500">
+            No {filter !== "All" ? filter.toLowerCase() : ""} payment records
+            found.
+          </p>
         ) : (
           <div className="grid md:grid-cols-2 gap-6">
             {filtered.map((p) => (
@@ -221,7 +251,9 @@ export default function Payments() {
               >
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-gray-800">Amount:</span>
-                  <span className="text-green-700 font-semibold">${p.amount}</span>
+                  <span className="text-green-700 font-semibold">
+                    ${p.amount}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-gray-800">Method:</span>
