@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import API from "../../api/api";
-import { FaUserTie, FaUserGraduate, FaCheckCircle } from "react-icons/fa";
+import { FaUserTie, FaUserGraduate, FaCheckCircle, FaInfoCircle } from "react-icons/fa";
 
 export default function AssignStudent() {
-  const [tutors, setTutors] = useState([]);
+  const [tutors, setTutors] = useState([]);      // only tutors WITH a profile doc
   const [students, setStudents] = useState([]);
   const [selectedTutor, setSelectedTutor] = useState("");
   const [selectedStudents, setSelectedStudents] = useState([]);
@@ -13,46 +13,24 @@ export default function AssignStudent() {
 
   useEffect(() => {
     setLoading(true);
-
     Promise.all([
       API.get("/admin/tutors").catch(() => ({ data: [] })),
       API.get("/admin/users").catch(() => ({ data: [] })),
     ])
       .then(([tutorProfileRes, userRes]) => {
-        const tutorProfiles = tutorProfileRes.data;  // Tutor documents
+        const tutorProfiles = tutorProfileRes.data;
         const allUsers = userRes.data;
 
-        const tutorUsers = allUsers.filter(u => u.role === "tutor");
-        const studentUsers = allUsers.filter(u => u.role === "student");
+        // Only keep tutors that have an actual Tutor profile document
+        const validTutors = tutorProfiles.map(profile => ({
+          tutorProfileId: profile._id,
+          displayName: profile.userId?.name || profile.name || "Unnamed Tutor",
+        }));
 
-        // Merge: match each tutor user to their Tutor document (if it exists)
-        const merged = tutorUsers.map(user => {
-          const profile = tutorProfiles.find(
-            p => p.userId?._id === user._id || p.userId === user._id
-          );
-          return {
-            displayName: user.name,
-            userId: user._id,
-            tutorProfileId: profile?._id || null, // null = no Tutor doc yet
-          };
-        });
-
-        // Also include Tutor profiles whose userId isn't in the user list
-        tutorProfiles.forEach(profile => {
-          const alreadyAdded = merged.find(m => m.tutorProfileId === profile._id);
-          if (!alreadyAdded) {
-            merged.push({
-              displayName: profile.userId?.name || "Unknown Tutor",
-              userId: profile.userId?._id || null,
-              tutorProfileId: profile._id,
-            });
-          }
-        });
-
-        setTutors(merged);
-        setStudents(studentUsers);
+        setTutors(validTutors);
+        setStudents(allUsers.filter(u => u.role === "student"));
       })
-      .catch(() => setError("Failed to fetch users"))
+      .catch(() => setError("Failed to fetch data."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -60,24 +38,22 @@ export default function AssignStudent() {
     e.preventDefault();
     if (!selectedTutor || selectedStudents.length === 0) return;
 
-    const tutor = tutors.find(t => t.userId === selectedTutor || t.tutorProfileId === selectedTutor);
-    const tutorId = tutor?.tutorProfileId || tutor?.userId || selectedTutor;
-
     setLoading(true);
     setSuccess("");
     setError("");
     try {
       for (const studentId of selectedStudents) {
         await API.patch(`/admin/users/${studentId}`, {
-          tutorId,
+          tutorId: selectedTutor,
           studentId,
         });
       }
-      setSuccess("Students assigned successfully!");
+      setSuccess(`${selectedStudents.length} student(s) assigned successfully!`);
       setSelectedTutor("");
       setSelectedStudents([]);
-    } catch {
-      setError("Failed to assign students. Please try again.");
+    } catch (err) {
+      const msg = err?.response?.data?.msg || err?.response?.data?.message || "Assignment failed.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -90,20 +66,30 @@ export default function AssignStudent() {
       </h1>
 
       {success && (
-        <div className="bg-green-100 text-green-700 px-4 py-2 rounded flex items-center gap-2 mb-4">
+        <div className="bg-green-100 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2 mb-4">
           <FaCheckCircle /> {success}
         </div>
       )}
       {error && (
-        <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">{error}</div>
+        <div className="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4">{error}</div>
       )}
 
       <form onSubmit={handleAssign} className="bg-white rounded-xl shadow-lg p-6 space-y-6">
+
         {/* Tutor Dropdown */}
         <div>
           <label className="block font-semibold mb-2 text-gray-700">Select Tutor:</label>
-          {tutors.length === 0 && !loading ? (
-            <p className="text-gray-400 text-sm italic">No tutors found in the system.</p>
+
+          {loading ? (
+            <p className="text-gray-400 text-sm italic">Loading tutors...</p>
+          ) : tutors.length === 0 ? (
+            <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-sm px-4 py-3 rounded-lg">
+              <FaInfoCircle className="mt-0.5 shrink-0" />
+              <span>
+                No approved tutors found. Tutors must submit an application and be approved before they can be assigned students.
+                Go to <strong>Manage Tutors</strong> to approve pending applications.
+              </span>
+            </div>
           ) : (
             <select
               className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-teal-400"
@@ -112,14 +98,13 @@ export default function AssignStudent() {
               required
             >
               <option value="">-- Choose a Tutor --</option>
-              {tutors.map((t, i) => (
-                <option key={t.tutorProfileId || t.userId || i} value={t.userId || t.tutorProfileId}>
+              {tutors.map(t => (
+                <option key={t.tutorProfileId} value={t.tutorProfileId}>
                   {t.displayName}
                 </option>
               ))}
             </select>
           )}
-
         </div>
 
         {/* Student Checkboxes */}
@@ -162,7 +147,7 @@ export default function AssignStudent() {
         <button
           type="submit"
           className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-lg shadow transition-all duration-200 text-lg disabled:opacity-50"
-          disabled={loading || tutors.length === 0}
+          disabled={loading || tutors.length === 0 || selectedStudents.length === 0 || !selectedTutor}
         >
           {loading ? "Assigning..." : "Assign Students"}
         </button>
