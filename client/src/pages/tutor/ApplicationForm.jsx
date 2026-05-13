@@ -1,9 +1,7 @@
-
 import React, { useState } from "react";
-import { FaUserTie, FaFileUpload, FaPlus, FaMinus, FaRegPaperPlane, FaBuilding, FaBriefcase, FaCalendarAlt, FaCheckCircle } from "react-icons/fa";
+import { FaUserTie, FaFileUpload, FaPlus, FaMinus, FaRegPaperPlane, FaBuilding, FaBriefcase, FaCalendarAlt, FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import API from "../../api/api";
 import useAuth from "../../hooks/useAuth";
-
 
 export default function ApplicationForm() {
   const { user } = useAuth();
@@ -11,16 +9,12 @@ export default function ApplicationForm() {
     letter: "",
     cv: null,
     experiences: [
-      {
-        company: "",
-        position: "",
-        description: "",
-        startDate: "",
-        endDate: "",
-        isCurrent: false,
-      },
+      { company: "", position: "", description: "", startDate: "", endDate: "", isCurrent: false },
     ],
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,64 +24,63 @@ export default function ApplicationForm() {
     setForm({ ...form, cv: e.target.files[0] });
   };
 
-  // Experience change
   const handleExperienceChange = (index, e) => {
     const values = [...form.experiences];
     values[index][e.target.name] =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
-
     if (e.target.name === "isCurrent" && e.target.checked) {
       values[index].endDate = "";
     }
-
     setForm({ ...form, experiences: values });
   };
 
-  // Add experience
   const addExperience = () => {
     setForm({
       ...form,
       experiences: [
         ...form.experiences,
-        {
-          company: "",
-          position: "",
-          description: "",
-          startDate: "",
-          endDate: "",
-          isCurrent: false,
-        },
+        { company: "", position: "", description: "", startDate: "", endDate: "", isCurrent: false },
       ],
     });
   };
 
-  // Remove experience
   const removeExperience = (index) => {
     const values = [...form.experiences];
     values.splice(index, 1);
     setForm({ ...form, experiences: values });
   };
 
-  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
+    setSubmitting(true);
 
     try {
       const data = new FormData();
       data.append("letter", form.letter);
       data.append("cv", form.cv);
       data.append("experiences", JSON.stringify(form.experiences));
-await API.post("/applications", data, {
-  headers: {
-    "Content-Type": "multipart/form-data",
-    Authorization: `Bearer ${user.token}`, // 👈 REQUIRED
-  },
-});
 
-      alert("Application submitted successfully!");
+      await API.post("/applications", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setSuccess("Application submitted successfully! We'll review it and get back to you.");
+      setForm({
+        letter: "",
+        cv: null,
+        experiences: [{ company: "", position: "", description: "", startDate: "", endDate: "", isCurrent: false }],
+      });
     } catch (err) {
-      console.error(err);
-      alert("Error submitting application");
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.msg ||
+        err?.message ||
+        "Failed to submit application. Please try again.";
+      setError(msg);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -101,10 +94,27 @@ await API.post("/applications", data, {
           </span>
         </div>
         <h2 className="text-4xl font-extrabold text-gray-800 mb-2 tracking-tight drop-shadow-lg">Tutor Application</h2>
-        <p className="text-lg text-gray-600">Apply to become a tutor and share your expertise with students. Fill out the form below to get started!</p>
+        <p className="text-lg text-gray-600">Apply to become a tutor and share your expertise with students.</p>
       </div>
 
       <div className="max-w-4xl mx-auto p-8 bg-white/90 shadow-2xl rounded-3xl border border-purple-100">
+
+        {/* Success Banner */}
+        {success && (
+          <div className="flex items-start gap-3 bg-green-50 border border-green-300 text-green-800 px-4 py-3 rounded-xl mb-6">
+            <FaCheckCircle className="mt-0.5 shrink-0 text-green-500" />
+            <span>{success}</span>
+          </div>
+        )}
+
+        {/* Error Banner */}
+        {error && (
+          <div className="flex items-start gap-3 bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-xl mb-6">
+            <FaExclamationCircle className="mt-0.5 shrink-0 text-red-500" />
+            <span>{error}</span>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Application Letter */}
           <div>
@@ -133,6 +143,9 @@ await API.post("/applications", data, {
               className="w-full border-2 border-purple-200 p-3 rounded-xl bg-purple-50"
               required
             />
+            {form.cv && (
+              <p className="text-sm text-gray-500 mt-1">Selected: {form.cv.name}</p>
+            )}
           </div>
 
           {/* Experiences */}
@@ -228,14 +241,16 @@ await API.post("/applications", data, {
                     />
                     <span className="text-gray-700">Currently Working Here</span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => removeExperience(index)}
-                    className="absolute top-3 right-3 text-red-500 hover:text-red-700 bg-white rounded-full p-2 shadow-md transition"
-                    title="Remove Experience"
-                  >
-                    <FaMinus />
-                  </button>
+                  {form.experiences.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeExperience(index)}
+                      className="absolute top-3 right-3 text-red-500 hover:text-red-700 bg-white rounded-full p-2 shadow-md transition"
+                      title="Remove Experience"
+                    >
+                      <FaMinus />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -251,9 +266,11 @@ await API.post("/applications", data, {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-4 rounded-2xl text-xl font-bold shadow-xl hover:scale-105 transition flex items-center justify-center gap-3"
+            disabled={submitting}
+            className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-4 rounded-2xl text-xl font-bold shadow-xl hover:scale-105 transition flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            <FaRegPaperPlane className="text-white text-2xl" /> Submit Application
+            <FaRegPaperPlane className="text-white text-2xl" />
+            {submitting ? "Submitting..." : "Submit Application"}
           </button>
         </form>
       </div>

@@ -2,6 +2,11 @@ import TutorApplication from "../models/application.js";
 import User from "../models/user.js";
 import cloudinary from "../config/cloudinary.js";
 
+const cloudinaryConfigured =
+  process.env.CLOUDINARY_CLOUD_NAME &&
+  process.env.CLOUDINARY_API_KEY &&
+  process.env.CLOUDINARY_API_SECRET;
+
 /**
  * @desc Submit Tutor Application
  * @route POST /api/applications
@@ -14,9 +19,7 @@ export const submitApplication = async (req, res) => {
     // prevent duplicate applications
     const existing = await TutorApplication.findOne({ userId });
     if (existing) {
-      return res.status(400).json({
-        message: "You already submitted an application",
-      });
+      return res.status(400).json({ message: "You already submitted an application" });
     }
 
     const { letter, experiences } = req.body;
@@ -25,32 +28,34 @@ export const submitApplication = async (req, res) => {
       return res.status(400).json({ message: "CV is required" });
     }
 
-    // 🔥 Upload to Cloudinary
-  
-const uploaded = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        {
-          folder: "cv-resumes",
-          resource_type: "raw", // important for PDFs, DOCs, PPTs
-        },
-        (error, result) => {
-          if (result) resolve(result);
-          else reject(error);
-        }
-      );
+    let cvUrl = "";
+    let cvPublicId = "";
 
-      stream.end(req.file.buffer);
-    });
+    if (cloudinaryConfigured && req.file.buffer) {
+      // Upload to Cloudinary using memory buffer
+      const uploaded = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "cv-resumes", resource_type: "raw" },
+          (error, result) => {
+            if (result) resolve(result);
+            else reject(error);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+      cvUrl = uploaded.secure_url;
+      cvPublicId = uploaded.public_id;
+    } else {
+      // Fallback: file was saved to disk by uploadCV middleware
+      cvUrl = `/uploads/cv/${req.file.filename}`;
+      cvPublicId = "";
+    }
 
     // Parse experiences
     let parsedExperiences = [];
     if (experiences) {
-      parsedExperiences = JSON.parse(experiences);
-
-      parsedExperiences = parsedExperiences.map((exp) => {
-        if (exp.isCurrent) {
-          exp.endDate = null;
-        }
+      parsedExperiences = JSON.parse(experiences).map((exp) => {
+        if (exp.isCurrent) exp.endDate = null;
         return exp;
       });
     }
@@ -58,17 +63,18 @@ const uploaded = await new Promise((resolve, reject) => {
     const application = await TutorApplication.create({
       userId,
       letter,
-      cvUrl: uploaded.secure_url,
-      cvPublicId: uploaded.public_id, // for delete later
+      cvUrl,
+      cvPublicId,
       experiences: parsedExperiences,
     });
 
     res.status(201).json(application);
   } catch (error) {
-      console.error("FULL ERROR 👉", error); // 👈 IMPORTANT
+    console.error("Submit application error:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
 /**
  * @desc Get My Application
  * @route GET /api/applications/me
@@ -76,13 +82,8 @@ const uploaded = await new Promise((resolve, reject) => {
  */
 export const getMyApplications = async (req, res) => {
   try {
-    console.log ("User ID 👉", req.user.id); // 👈 DEBUG
-    const applications = await TutorApplication.find({
-      userId: req.user.id,
-    }).sort({ createdAt: -1 });
-
+    const applications = await TutorApplication.find({ userId: req.user.id }).sort({ createdAt: -1 });
     res.json(applications);
-    console.log("My Applications 👉", applications); // 👈 DEBUG
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -98,7 +99,6 @@ export const getAllApplications = async (req, res) => {
     const applications = await TutorApplication.find()
       .populate("userId", "name email role")
       .sort({ createdAt: -1 });
-
     res.json(applications);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -110,13 +110,10 @@ export const getAllApplications = async (req, res) => {
  */
 export const getApplicationById = async (req, res) => {
   try {
-    const application = await TutorApplication.findById(req.params.id)
-      .populate("userId", "name email");
-
+    const application = await TutorApplication.findById(req.params.id).populate("userId", "name email");
     if (!application) {
       return res.status(404).json({ message: "Application not found" });
     }
-
     res.json(application);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -129,18 +126,12 @@ export const getApplicationById = async (req, res) => {
 export const approveApplication = async (req, res) => {
   try {
     const app = await TutorApplication.findById(req.params.id);
-
-    if (!app) {
-      return res.status(404).json({ message: "Application not found" });
-    }
+    if (!app) return res.status(404).json({ message: "Application not found" });
 
     app.status = "approved";
     await app.save();
 
-    // update user role
-    await User.findByIdAndUpdate(app.userId, {
-      role: "tutor",
-    });
+    await User.findByIdAndUpdate(app.userId, { role: "tutor" });
 
     res.json({ message: "Application approved" });
   } catch (error) {
@@ -154,10 +145,7 @@ export const approveApplication = async (req, res) => {
 export const rejectApplication = async (req, res) => {
   try {
     const app = await TutorApplication.findById(req.params.id);
-
-    if (!app) {
-      return res.status(404).json({ message: "Application not found" });
-    }
+    if (!app) return res.status(404).json({ message: "Application not found" });
 
     app.status = "rejected";
     await app.save();
@@ -174,27 +162,17 @@ export const rejectApplication = async (req, res) => {
 export const deleteApplication = async (req, res) => {
   try {
     const app = await TutorApplication.findById(req.params.id);
+    if (!app) return res.status(404).json({ message: "Application not found" });
 
-    if (!app) {
-      return res.status(404).json({ message: "Application not found" });
-    }
-
-    if (
-      app.userId.toString() !== req.user.id &&
-      req.user.role !== "admin"
-    ) {
+    if (app.userId.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(403).json({ message: "Not authorized" });
     }
 
-    // 🔥 delete from Cloudinary
-    if (app.cvPublicId) {
-      await cloudinary.uploader.destroy(app.cvPublicId, {
-        resource_type: "raw",
-      });
+    if (cloudinaryConfigured && app.cvPublicId) {
+      await cloudinary.uploader.destroy(app.cvPublicId, { resource_type: "raw" });
     }
 
     await app.deleteOne();
-
     res.json({ message: "Application deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
