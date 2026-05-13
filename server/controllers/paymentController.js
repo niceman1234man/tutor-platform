@@ -2,11 +2,19 @@ import Payment from "../models/payment.js";
 
 // CREATE
 export const createPayment = async (req, res) => {
-  const payment = await Payment.create({
-    ...req.body,
-    receiptImage: req.file?.path
-  });
-  res.json(payment);
+  try {
+    const receiptImage = req.file
+      ? `/uploads/${req.file.filename}`
+      : undefined;
+
+    const payment = await Payment.create({
+      ...req.body,
+      ...(receiptImage && { receiptImage }),
+    });
+    res.json(payment);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to create payment", error: err.message });
+  }
 };
 
 // READ ALL
