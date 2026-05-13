@@ -70,12 +70,10 @@ export default function Payments() {
 
     setSubmitting(true);
     try {
-      const data = new FormData();
-      data.append("amount", form.amount);
-      data.append("method", form.method);
-      if (form.receipt) data.append("receiptImage", form.receipt);
-
-      await API.post("/payments", data);
+      await API.post("/payments", {
+        amount: Number(form.amount),
+        method: form.method,
+      });
 
       setSuccess("Payment submitted successfully!");
       setForm({ amount: "", method: "", receipt: null });
