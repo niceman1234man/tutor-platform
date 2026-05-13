@@ -75,12 +75,7 @@ export default function Payments() {
       data.append("method", form.method);
       if (form.receipt) data.append("receiptImage", form.receipt);
 
-      await API.post("/payments", data, {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await API.post("/payments", data);
 
       setSuccess("Payment submitted successfully!");
       setForm({ amount: "", method: "", receipt: null });
