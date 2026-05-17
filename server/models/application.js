@@ -51,7 +51,14 @@ cvPublicId: {
     enum: ["pending", "approved", "rejected"],
     default: "pending",
   }
-
+,
+  approvedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  approvedAt: {
+    type: Date,
+  }
 }, { timestamps: true });
 
 const TutorApplication = mongoose.model("TutorApplication", TutorApplicationSchema);

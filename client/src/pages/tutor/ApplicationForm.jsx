@@ -62,9 +62,7 @@ export default function ApplicationForm() {
       data.append("cv", form.cv);
       data.append("experiences", JSON.stringify(form.experiences));
 
-      await API.post("/applications", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await API.post("/applications", data);
 
       setSuccess("Application submitted successfully! We'll review it and get back to you.");
       setForm({
@@ -139,6 +137,7 @@ export default function ApplicationForm() {
             </label>
             <input
               type="file"
+              name="cv"
               onChange={handleFileChange}
               className="w-full border-2 border-purple-200 p-3 rounded-xl bg-purple-50"
               required

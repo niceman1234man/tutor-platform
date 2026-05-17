@@ -3,8 +3,9 @@ import API from "../../api/api";
 import { FaUserTie, FaUserGraduate, FaCheckCircle, FaInfoCircle } from "react-icons/fa";
 
 export default function AssignStudent() {
-  const [tutors, setTutors] = useState([]);      // only tutors WITH a profile doc
+  const [tutors, setTutors] = useState([]);      
   const [students, setStudents] = useState([]);
+  const [assignedStudents, setAssignedStudents] = useState([]);
   const [selectedTutor, setSelectedTutor] = useState("");
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [success, setSuccess] = useState("");
@@ -14,21 +15,24 @@ export default function AssignStudent() {
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      API.get("/admin/tutors").catch(() => ({ data: [] })),
+      API.get("/admin/tutors/approved-applications").catch(() => ({ data: [] })),
       API.get("/admin/users").catch(() => ({ data: [] })),
+      API.get("/admin/students/assigned").catch(() => ({ data: [] })),
     ])
-      .then(([tutorProfileRes, userRes]) => {
+      .then(([tutorProfileRes, userRes, assignedRes]) => {
         const tutorProfiles = tutorProfileRes.data;
         const allUsers = userRes.data;
+        const assigned = assignedRes.data;
 
-        // Only keep tutors that have an actual Tutor profile document
+        // Only keep tutors that have an actual approved application
         const validTutors = tutorProfiles.map(profile => ({
           tutorProfileId: profile._id,
-          displayName: profile.userId?.name || profile.name || "Unnamed Tutor",
+          displayName: profile.displayName || profile.userId?.name || "Unnamed Tutor",
         }));
 
         setTutors(validTutors);
-        setStudents(allUsers.filter(u => u.role === "student"));
+        setStudents(allUsers.filter(u => u.role === "student" && !u.tutorId));
+        setAssignedStudents(assigned);
       })
       .catch(() => setError("Failed to fetch data."))
       .finally(() => setLoading(false));
@@ -51,6 +55,14 @@ export default function AssignStudent() {
       setSuccess(`${selectedStudents.length} student(s) assigned successfully!`);
       setSelectedTutor("");
       setSelectedStudents([]);
+      
+      // Refresh the assigned students list
+      const assignedRes = await API.get("/admin/students/assigned");
+      setAssignedStudents(assignedRes.data);
+      
+      // Refresh unassigned students
+      const userRes = await API.get("/admin/users");
+      setStudents(userRes.data.filter(u => u.role === "student" && !u.tutorId));
     } catch (err) {
       const msg = err?.response?.data?.msg || err?.response?.data?.message || "Assignment failed.";
       setError(msg);
@@ -152,6 +164,37 @@ export default function AssignStudent() {
           {loading ? "Assigning..." : "Assign Students"}
         </button>
       </form>
+
+      {/* Assigned Students List */}
+      <div className="mt-10">
+        <h2 className="text-2xl font-extrabold mb-4 text-gray-800">Assigned Students</h2>
+        {assignedStudents.length === 0 ? (
+          <p className="text-gray-500 italic">No students assigned yet.</p>
+        ) : (
+          <div className="overflow-x-auto bg-white rounded-lg shadow">
+            <table className="w-full">
+              <thead className="bg-gray-100 border-b">
+                <tr>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Student Name</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Student Email</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Assigned Tutor</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Tutor Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                {assignedStudents.map((student) => (
+                  <tr key={student._id} className="border-b hover:bg-gray-50">
+                    <td className="px-4 py-3 text-gray-800">{student.name}</td>
+                    <td className="px-4 py-3 text-gray-600">{student.email}</td>
+                    <td className="px-4 py-3 text-gray-800 font-medium">{student.tutorName || "N/A"}</td>
+                    <td className="px-4 py-3 text-gray-600">{student.tutorEmail || "N/A"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -6,6 +6,49 @@ import Payment from "../models/payment.js";
 import Exam from "../models/exam.js";
 
 // USERS
+export const getAssignedStudents = async (req, res) => {
+  try {
+    console.log("[getAssignedStudents] fetching from Tutor.assignedStudents...");
+    
+    // Fetch all tutors with their assigned students
+    const tutors = await Tutor.find({ assignedStudents: { $exists: true, $ne: [] } })
+      .populate({
+        path: "assignedStudents",
+        select: "name email",
+        model: "User"
+      })
+      .populate("userId", "name email")
+      .lean();
+    
+    console.log(`[getAssignedStudents] found ${tutors.length} tutors with assignedStudents`);
+    
+    // Flatten the result: for each tutor, create a row for each assigned student
+    const result = [];
+    for (const tutor of tutors) {
+      const tutorName = tutor.userId?.name || "Unknown";
+      const tutorEmail = tutor.userId?.email || "";
+      
+      if (Array.isArray(tutor.assignedStudents)) {
+        for (const student of tutor.assignedStudents) {
+          result.push({
+            _id: student._id,
+            name: student.name,
+            email: student.email,
+            tutorName,
+            tutorEmail,
+          });
+        }
+      }
+    }
+    
+    console.log(`[getAssignedStudents] returning ${result.length} assigned student records`);
+    res.json(result);
+  } catch (err) {
+    console.error("GET ASSIGNED STUDENTS ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch assigned students", error: err.message });
+  }
+};
+
 export const assignStudentToTutor = async (req, res) => {
   const { tutorId, studentId } = req.body;
 
@@ -21,6 +64,9 @@ export const assignStudentToTutor = async (req, res) => {
       tutor.assignedStudents.push(studentId);
       await tutor.save();
     }
+    
+    // Also update student's tutorId
+    await User.findByIdAndUpdate(studentId, { tutorId });
 
     res.json({ msg: "Student assigned to tutor successfully" });
   } catch (error) {
@@ -41,8 +87,52 @@ export const deleteUser = async (req, res) => {
 
 // TUTORS
 export const getAllTutors = async (req, res) => {
-  const tutors = await Tutor.find().populate("userId");
-  res.json(tutors);
+  try {
+    // Allow debug mode: ?all=true to return all tutor profiles
+    const filter = req.query.all === "true" ? {} : { approved: true };
+    const tutors = await Tutor.find(filter).populate("userId", "name email");
+    console.log(`[getAllTutors] returning ${tutors.length} tutors (filter: ${JSON.stringify(filter)})`);
+    // log ids for debugging
+    console.log("[getAllTutors] tutor ids:", tutors.map(t => t._id.toString()));
+    res.json(tutors);
+  } catch (err) {
+    console.error("GET ALL TUTORS ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch tutors" });
+  }
+};
+
+export const getApprovedTutorApplications = async (req, res) => {
+  try {
+    // Fetch tutors whose applications have been approved
+    const TutorApplication = await import("../models/application.js").then(m => m.default);
+    const approvedApps = await TutorApplication.find({ status: "approved" })
+      .populate("userId", "name email _id")
+      .lean();
+    
+    console.log(`[getApprovedTutorApplications] found ${approvedApps.length} approved applications`);
+    
+    // For each application, find or create the corresponding Tutor profile
+    const tutors = await Promise.all(approvedApps.map(async (app) => {
+      let tutorProfile = await Tutor.findOne({ userId: app.userId._id });
+      if (!tutorProfile) {
+        // Create if doesn't exist
+        tutorProfile = await Tutor.create({ userId: app.userId._id, approved: true });
+      }
+      
+      return {
+        _id: tutorProfile._id, // Tutor profile ID for assignment
+        userId: app.userId,
+        displayName: app.userId?.name || "Unnamed Tutor",
+        status: app.status,
+        applicationId: app._id,
+      };
+    }));
+    
+    res.json(tutors);
+  } catch (err) {
+    console.error("GET APPROVED TUTOR APPLICATIONS ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch approved tutors" });
+  }
 };
 
 
