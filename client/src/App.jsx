@@ -10,6 +10,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import UserDashboard from "./pages/student/Dashboard";
 import TutorDashboard from "./pages/tutor/Dashboard";
 import Profile from "./pages/tutor/Profile";
+import AssignedStudents from "./pages/tutor/AssignedStudents";
 
 import StudentDashboard from "./pages/student/Dashboard";
 import CategoryResources from "./components/CatagoryResources";
@@ -64,7 +65,7 @@ function App() {
         <Route path="/tutor/mycourses" element={<Course />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/tutors/:id" element={<TutorDetails />} />
-   
+        <Route path="/tutor/students" element={<AssignedStudents/>}/>
         <Route path="/student" element={<StudentDashboard />} />
         <Route path="/student/payments" element={<Payments />} />
         <Route path="/student/progress" element={<CourseProgress />} />
