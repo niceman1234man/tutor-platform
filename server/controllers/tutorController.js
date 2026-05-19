@@ -29,6 +29,22 @@ export const getTutorById = async (req, res) => {
   res.json(tutor);
 };
 
+// GET MY ASSIGNED STUDENTS (for logged-in tutor)
+export const getMyAssignedStudents = async (req, res) => {
+  try {
+    const tutor = await Tutor.findOne({ userId: req.user.id })
+      .populate("assignedStudents", "name email");
+
+    if (!tutor) {
+      return res.status(404).json({ message: "Tutor profile not found" });
+    }
+
+    res.json(tutor.assignedStudents || []);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // UPDATE
 export const updateTutor = async (req, res) => {
   const tutor = await Tutor.findByIdAndUpdate(
