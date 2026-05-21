@@ -8,8 +8,8 @@ import API from "../api/api";
 export default function TutorCard({ tutor }) {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [imgError, setImgError] = useState(false);
 
-  // Only show Start button. On click: check login, then registration, then go to registered course or registration page.
   const handleStart = async (e) => {
     e.stopPropagation();
     if (!user) {
@@ -17,16 +17,13 @@ export default function TutorCard({ tutor }) {
       return;
     }
     try {
-      // Check if registered
       const regRes = await API.get("/courses/registered", {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       const found = regRes.data.find((c) => c._id === tutor._id);
       if (found) {
-        // Already registered: go to registered course page
         navigate(`/courses/${tutor._id}/start`);
       } else {
-        // Not registered: go to registration page (or register directly)
         navigate(`/courses/${tutor._id}/register`);
       }
     } catch (err) {
@@ -37,19 +34,29 @@ export default function TutorCard({ tutor }) {
   return (
     <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden flex flex-col">
       {/* Image */}
-      <div className="h-40 w-full overflow-hidden">
-        <img
-          src={tutor.imageUrl || "/default.jpg"}
-          alt="Tutor Image"
-          className="w-full h-full object-cover"
-        />
+      <div className="h-40 w-full overflow-hidden bg-gradient-to-br from-teal-100 to-blue-100 flex items-center justify-center">
+        {!imgError && tutor.imageUrl ? (
+          <img
+            src={tutor.imageUrl}
+            alt="Course"
+            className="w-full h-full object-cover"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center">
+            <span className="text-5xl">📚</span>
+            <span className="text-sm text-teal-700 font-medium mt-1 px-4 text-center line-clamp-1">
+              {tutor.title || "Course"}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
       <div className="p-4 flex flex-col flex-grow">
         {/* Title */}
         <h3 className="text-lg font-bold text-gray-800 line-clamp-2">
-          {tutor.userId?.name || tutor.title}
+          { tutor.title}
         </h3>
 
         {/* Bio */}
@@ -57,11 +64,6 @@ export default function TutorCard({ tutor }) {
           {tutor.title} - {tutor.description}
         </p>
 
-        {/* Subjects */}
-        <p className="text-sm text-gray-600 mb-2">
-          <span className="font-semibold">Subjects:</span>{" "}
-          {tutor.subjects?.join(", ")}
-        </p>
 
         {/* Type Badge */}
         <div className="mb-2">
@@ -83,10 +85,10 @@ export default function TutorCard({ tutor }) {
         {/* Price */}
         <div className="mt-auto flex items-center gap-2">
           <span className="text-lg font-bold text-black">
-            ${tutor.pricePerHour}
+            ${tutor.price}
           </span>
           <span className="text-sm text-gray-400 line-through">
-            ${(tutor.pricePerHour * 1.5).toFixed(2)}
+            ${(tutor.price * 1.5).toFixed(2)}
           </span>
         </div>
 
