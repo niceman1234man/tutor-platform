@@ -18,24 +18,7 @@ export const getRegisteredCourses = async (req, res) => {
 
 export const createCourse = async (req, res) => {
   try {
-    const { title, description, category, price } = req.body;
-
-    // optional course image
-    let imageUrl = null;
-    let imagePublicId = null;
-
-    if (req.file) {
-      const uploaded = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: "courses" },
-          (error, result) => (result ? resolve(result) : reject(error))
-        );
-        stream.end(req.file.buffer);
-      });
-
-      imageUrl = uploaded.secure_url;
-      imagePublicId = uploaded.public_id;
-    }
+    const { title, description, category, price, imageUrl } = req.body;
 
     const course = await Course.create({
       tutorId: req.user.id,
@@ -43,8 +26,7 @@ export const createCourse = async (req, res) => {
       description,
       category,
       price,
-      imageUrl,
-      imagePublicId,
+      imageUrl: imageUrl || null,
       chapters: [],
     });
 
