@@ -167,19 +167,18 @@ export default function Course() {
     /** EDIT COURSE */
     const handleEditCourseSubmit = async (e) => {
         e.preventDefault();
-        const formData = new FormData();
-        Object.keys(editCourse).forEach((key) => {
-            if (editCourse[key]) formData.append(key, editCourse[key]);
-        });
         try {
             const res = await API.patch(
                 `/courses/${editCourse._id}`,
-                formData,
                 {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                        Authorization: `Bearer ${user.token}`,
-                    },
+                    title: editCourse.title,
+                    description: editCourse.description,
+                    category: editCourse.category,
+                    price: editCourse.price,
+                    imageUrl: editCourse.imageUrl,
+                },
+                {
+                    headers: { Authorization: `Bearer ${user.token}` },
                 },
             );
             setCourses(
@@ -642,16 +641,31 @@ export default function Course() {
                                 className="border-2 border-green-200 p-3 w-full rounded-xl bg-green-50"
                                 required
                             />
-                            <input
-                                type="file"
-                                onChange={(e) =>
-                                    setEditCourse({
-                                        ...editCourse,
-                                        image: e.target.files[0],
-                                    })
-                                }
-                                className="w-full border-2 border-purple-200 p-2 rounded-xl bg-purple-50"
-                            />
+                            <div>
+                                <label className="flex items-center gap-2 text-gray-600 text-sm font-medium mb-1">
+                                    <FaImage className="text-purple-400" /> Course Image URL (optional)
+                                </label>
+                                <input
+                                    type="url"
+                                    placeholder="https://example.com/image.jpg"
+                                    value={editCourse.imageUrl || ""}
+                                    onChange={(e) =>
+                                        setEditCourse({
+                                            ...editCourse,
+                                            imageUrl: e.target.value,
+                                        })
+                                    }
+                                    className="w-full border-2 border-purple-200 p-3 rounded-xl bg-purple-50 focus:ring-2 focus:ring-purple-300"
+                                />
+                                {editCourse.imageUrl && (
+                                    <img
+                                        src={editCourse.imageUrl}
+                                        alt="Preview"
+                                        className="mt-2 h-20 w-full object-cover rounded-lg border border-purple-200"
+                                        onError={(e) => (e.target.style.display = "none")}
+                                    />
+                                )}
+                            </div>
                             <div className="flex justify-end gap-2">
                                 <button
                                     type="button"

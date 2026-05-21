@@ -237,12 +237,11 @@ export const getCourseById = async (req, res) => {
 
 export const updateCourse = async (req, res) => {
   try {
-    const { title, description, category, price, type } = req.body;
+    const { title, description, category, price, type, imageUrl } = req.body;
     const course = await Course.findById(req.params.id);
     if (!course) return res.status(404).json({ message: "Course not found" });
     if (course.tutorId.toString() !== req.user.id) return res.status(403).json({ message: "Not authorized" });
-    
-    // Update fields
+
     course.title = title ?? course.title;
     course.description = description ?? course.description;
     course.category = category ?? course.category;
@@ -250,24 +249,8 @@ export const updateCourse = async (req, res) => {
     if (type && ["free", "pro"].includes(type)) {
       course.type = type;
     }
-
-    // Update image if new file is uploaded
-    if (req.file) {
-      // delete old image from Cloudinary
-      if (course.imagePublicId) {
-        await cloudinary.uploader.destroy(course.imagePublicId);
-      }
-
-      const uploaded = await new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { folder: "courses" },
-          (error, result) => (result ? resolve(result) : reject(error))
-        );
-        stream.end(req.file.buffer);
-      });
-
-      course.imageUrl = uploaded.secure_url;
-      course.imagePublicId = uploaded.public_id;
+    if (imageUrl !== undefined) {
+      course.imageUrl = imageUrl || null;
     }
 
     await course.save();
