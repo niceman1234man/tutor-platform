@@ -1,8 +1,5 @@
-
 import Course from "../models/course.js";
 import cloudinary from "../config/cloudinary.js";
-
-
 
 export const getRegisteredCourses = async (req, res) => {
   try {
@@ -15,7 +12,6 @@ export const getRegisteredCourses = async (req, res) => {
   }
 };
 
-
 export const createCourse = async (req, res) => {
   try {
     const { title, description, category, price, imageUrl } = req.body;
@@ -26,7 +22,7 @@ export const createCourse = async (req, res) => {
       description,
       category,
       price,
-      imageUrl: imageUrl || null,
+      imageUrl: imageUrl,
       chapters: [],
     });
 
@@ -42,8 +38,7 @@ export const addChapter = async (req, res) => {
     const { title, description, order } = req.body;
 
     const course = await Course.findById(req.params.courseId);
-    if (!course)
-      return res.status(404).json({ message: "Course not found" });
+    if (!course) return res.status(404).json({ message: "Course not found" });
 
     if (course.tutorId.toString() !== req.user.id)
       return res.status(403).json({ message: "Not authorized" });
@@ -52,7 +47,6 @@ export const addChapter = async (req, res) => {
 
     if (req.files && req.files.length > 0) {
       for (let file of req.files) {
-
         const isVideo = file.mimetype.startsWith("video");
 
         const uploaded = await new Promise((resolve, reject) => {
@@ -61,7 +55,7 @@ export const addChapter = async (req, res) => {
               folder: "course-contents",
               resource_type: isVideo ? "video" : "raw",
             },
-            (error, result) => (result ? resolve(result) : reject(error))
+            (error, result) => (result ? resolve(result) : reject(error)),
           );
 
           stream.end(file.buffer);
@@ -137,7 +131,7 @@ export const updateChapter = async (req, res) => {
           (error, result) => {
             if (error) return reject(error);
             resolve(result);
-          }
+          },
         );
 
         stream.end(req.file.buffer);
@@ -154,13 +148,11 @@ export const updateChapter = async (req, res) => {
       message: "Chapter updated successfully",
       course,
     });
-
   } catch (err) {
     console.error("UPDATE CHAPTER ERROR 👉", err);
     res.status(500).json({ message: err.message });
   }
 };
-
 
 export const deleteChapter = async (req, res) => {
   try {
@@ -195,7 +187,7 @@ export const deleteChapter = async (req, res) => {
 
     // ✅ Remove chapter safely
     course.chapters = course.chapters.filter(
-      (ch) => ch._id.toString() !== chapterId
+      (ch) => ch._id.toString() !== chapterId,
     );
 
     await course.save();
@@ -204,24 +196,23 @@ export const deleteChapter = async (req, res) => {
       message: "Chapter deleted successfully",
       course,
     });
-
   } catch (err) {
     console.error("DELETE CHAPTER ERROR 👉", err);
     res.status(500).json({ message: err.message });
   }
 };
 
-
 export const getMyCourses = async (req, res) => {
   try {
-    const courses = await Course.find({ tutorId: req.user.id }).sort({ createdAt: -1 });
+    const courses = await Course.find({ tutorId: req.user.id }).sort({
+      createdAt: -1,
+    });
     res.json(courses);
   } catch (err) {
     console.error("GET MY COURSES ERROR 👉", err);
     res.status(500).json({ message: err.message });
   }
 };
-
 
 export const getCourseById = async (req, res) => {
   try {
@@ -234,13 +225,13 @@ export const getCourseById = async (req, res) => {
   }
 };
 
-
 export const updateCourse = async (req, res) => {
   try {
     const { title, description, category, price, type, imageUrl } = req.body;
     const course = await Course.findById(req.params.id);
     if (!course) return res.status(404).json({ message: "Course not found" });
-    if (course.tutorId.toString() !== req.user.id) return res.status(403).json({ message: "Not authorized" });
+    if (course.tutorId.toString() !== req.user.id)
+      return res.status(403).json({ message: "Not authorized" });
 
     course.title = title ?? course.title;
     course.description = description ?? course.description;
@@ -248,10 +239,9 @@ export const updateCourse = async (req, res) => {
     course.price = price ?? course.price;
     if (type && ["free", "pro"].includes(type)) {
       course.type = type;
-    }
-    if (imageUrl !== undefined) {
-      course.imageUrl = imageUrl || null;
-    }
+      }
+      course.imageUrl = imageUrl;
+    
 
     await course.save();
     res.json(course);
@@ -273,7 +263,9 @@ export const deleteCourse = async (req, res) => {
     // 🔥 Delete course image from Cloudinary
     if (course.imagePublicId) {
       try {
-        await cloudinary.uploader.destroy(course.imagePublicId, { resource_type: "image" });
+        await cloudinary.uploader.destroy(course.imagePublicId, {
+          resource_type: "image",
+        });
       } catch (cloudErr) {
         console.error("Cloudinary delete image error 👉", cloudErr.message);
       }
@@ -283,7 +275,9 @@ export const deleteCourse = async (req, res) => {
     for (const chapter of course.chapters) {
       if (chapter.videoPublicId) {
         try {
-          await cloudinary.uploader.destroy(chapter.videoPublicId, { resource_type: "video" });
+          await cloudinary.uploader.destroy(chapter.videoPublicId, {
+            resource_type: "video",
+          });
         } catch (cloudErr) {
           console.error("Cloudinary delete video error 👉", cloudErr.message);
         }
@@ -294,9 +288,14 @@ export const deleteCourse = async (req, res) => {
         for (const content of chapter.contents) {
           if (content.publicId) {
             try {
-              await cloudinary.uploader.destroy(content.publicId, { resource_type: content.type === "video" ? "video" : "raw" });
+              await cloudinary.uploader.destroy(content.publicId, {
+                resource_type: content.type === "video" ? "video" : "raw",
+              });
             } catch (cloudErr) {
-              console.error("Cloudinary delete content error 👉", cloudErr.message);
+              console.error(
+                "Cloudinary delete content error 👉",
+                cloudErr.message,
+              );
             }
           }
         }

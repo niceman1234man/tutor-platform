@@ -25,7 +25,7 @@ const courseSchema = new mongoose.Schema({
   description: { type: String },
   category: { type: String },
   price: { type: Number, default: 0 },
-  image: { type: String },
+  imageUrl: { type: String },
   chapters: [chapterSchema], // 🔥 Embed chapters
   type: { type: String, enum: ["free", "pro"], default: "free" },
   students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Registered students

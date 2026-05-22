@@ -61,15 +61,19 @@ export default function Course() {
     const handleCourseSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await API.post("/courses", {
-                title: newCourse.title,
-                description: newCourse.description,
-                category: newCourse.category,
-                price: newCourse.price,
-                imageUrl: newCourse.image,
-            }, {
-                headers: { Authorization: `Bearer ${user.token}` },
-            });
+            const res = await API.post(
+                "/courses",
+                {
+                    title: newCourse.title,
+                    description: newCourse.description,
+                    category: newCourse.category,
+                    price: newCourse.price,
+                    imageUrl: newCourse.image,
+                },
+                {
+                    headers: { Authorization: `Bearer ${user.token}` },
+                },
+            );
             setCourses([res.data, ...courses]);
             setNewCourse({
                 title: "",
@@ -299,7 +303,8 @@ export default function Course() {
                         />
                         <div>
                             <label className="flex items-center gap-2 text-gray-700 font-medium mb-1">
-                                <FaImage className="text-purple-400" /> Course Image URL (optional)
+                                <FaImage className="text-purple-400" /> Course
+                                Image URL (optional)
                             </label>
                             <input
                                 type="url"
@@ -318,7 +323,9 @@ export default function Course() {
                                     src={newCourse.image}
                                     alt="Preview"
                                     className="mt-2 h-20 w-full object-cover rounded-lg border border-purple-200"
-                                    onError={(e) => e.target.style.display = "none"}
+                                    onError={(e) =>
+                                        (e.target.style.display = "none")
+                                    }
                                 />
                             )}
                         </div>
@@ -643,7 +650,8 @@ export default function Course() {
                             />
                             <div>
                                 <label className="flex items-center gap-2 text-gray-600 text-sm font-medium mb-1">
-                                    <FaImage className="text-purple-400" /> Course Image URL (optional)
+                                    <FaImage className="text-purple-400" />{" "}
+                                    Course Image URL (optional)
                                 </label>
                                 <input
                                     type="url"
@@ -657,14 +665,8 @@ export default function Course() {
                                     }
                                     className="w-full border-2 border-purple-200 p-3 rounded-xl bg-purple-50 focus:ring-2 focus:ring-purple-300"
                                 />
-                                {editCourse.imageUrl && (
-                                    <img
-                                        src={editCourse.imageUrl}
-                                        alt="Preview"
-                                        className="mt-2 h-20 w-full object-cover rounded-lg border border-purple-200"
-                                        onError={(e) => (e.target.style.display = "none")}
-                                    />
-                                )}
+                               
+                                
                             </div>
                             <div className="flex justify-end gap-2">
                                 <button
