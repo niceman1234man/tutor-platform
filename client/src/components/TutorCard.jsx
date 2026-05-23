@@ -67,7 +67,7 @@ export default function TutorCard({ tutor }) {
 
         {/* Rating */}
          <div className="flex items-center gap-2 mb-2">
-        <div className="flex items-center gap-2 mb-2">
+        <div >
           <span className="text-yellow-500 font-semibold">
             ⭐ {tutor.rating || 4.5}
           </span>
@@ -77,13 +77,11 @@ export default function TutorCard({ tutor }) {
         </div>
 
         {/* Price */}
-        <div className="mt-auto flex items-center gap-2">
-          <span className="text-lg font-bold text-black">
+        <div >
+          <span className="text-gray-500 text-sm">
             {tutor.price}  ETB
           </span>
-          <span className="text-sm text-gray-400 line-through">
-            ${(tutor.price * 1.5).toFixed(2)}
-          </span>
+         
         </div>
            </div>
 
