@@ -8,12 +8,25 @@ import { FaCertificate, FaGraduationCap, FaBook, FaPersonBooth, FaCalculator, Fa
 import { FaLaptopCode, FaChartLine, FaPalette } from "react-icons/fa";
 
 export default function Home() {
+  
   const [exams, setExams] = useState([]);
+   const [tutors, setTutors] = useState([]);
   const [loadingExams, setLoadingExams] = useState(true);
   const [examError, setExamError] = useState("");
 
   useEffect(() => {
     let mounted = true;
+    const fetchTutors = async () => {
+      try {
+        const res = await API.get("/courses");
+        console.log(res.data);
+        setTutors(res.data);
+      } catch (error) {
+        console.error("Error fetching tutors:", error);
+      }
+    };
+
+    
     const fetchExams = async () => {
       try {
         const { data } = await API.get("/admin/exams");
@@ -25,6 +38,7 @@ export default function Home() {
       }
     };
     fetchExams();
+    fetchTutors();
     return () => { mounted = false; };
   }, []);
 
@@ -114,47 +128,31 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
+               { tutors.length > 0 ? tutors.map((t) => (
+                <div className="bg-white shadow-lg rounded-xl p-6"  key={t._id}>
+                  <div className="h-40 w-full overflow-hidden">
+                    <img
+                      src={t.imageUrl || "/default.jpg"}
+                      alt="Tutor Image"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2"> {t.title}</h3>
+                  <p className="text-gray-600 mb-4">
+                    {t.description}
+                  </p>
+                  <button className="bg-teal-700 text-white px-4 py-2 rounded-lg">
+                    Start Course
+                  </button>
+                </div>
+               )) : (
+                 <p>No courses found.</p>
+               )}
             {/* Card 1 */}
-            <div className="bg-white shadow-lg rounded-xl p-6">
-              <div className="text-teal-600 text-4xl mb-2">
-                <FaLaptopCode />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Web Development</h3>
-              <p className="text-gray-600 mb-4">
-                HTML • CSS • JavaScript
-              </p>
-              <button className="bg-teal-700 text-white px-4 py-2 rounded-lg">
-                Start Course
-              </button>
-            </div>
+           
 
-            {/* Card 2 */}
-            <div className="bg-white shadow-lg rounded-xl p-6">
-              <div className="text-teal-700 text-4xl mb-2">
-                <FaChartLine />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Data Science</h3>
-              <p className="text-gray-600 mb-4">
-                Python • ML • Analytics
-              </p>
-              <button className="bg-teal-700 text-white px-4 py-2 rounded-lg">
-                Start Course
-              </button>
-            </div>
+          
 
-            {/* Card 3 */}
-            <div className="bg-white shadow-xl rounded-xl p-6">
-              <div className="text-teal-700 text-4xl mb-2">
-                <FaPalette />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">UI/UX Design</h3>
-              <p className="text-gray-700 mb-4">
-                Figma • Design Thinking
-              </p>
-              <button className="bg-teal-700 text-white px-4 py-2 rounded-lg">
-                Start Course
-              </button>
-            </div>
 
           </div>
         </div>
