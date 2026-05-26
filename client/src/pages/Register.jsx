@@ -13,6 +13,7 @@ export default function Register() {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phone: "",
     password: "",
     role: "student",
   });
@@ -69,6 +70,17 @@ export default function Register() {
               placeholder="Email"
               className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
               onChange={(e) => setForm({ ...form, email: e.target.value })}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-1" htmlFor="email">Phone</label>
+            <input
+              id="phone"
+              type="text"
+              placeholder="Phone"
+              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              onChange={(e) => setForm({ ...phone, phone: e.target.value })}
               required
             />
           </div>
