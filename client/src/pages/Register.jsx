@@ -80,7 +80,7 @@ export default function Register() {
               type="text"
               placeholder="Phone"
               className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
-              onChange={(e) => setForm({ ...phone, phone: e.target.value })}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
               required
             />
           </div>
