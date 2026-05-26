@@ -1,7 +1,8 @@
-import { FaUserGraduate, FaChalkboardTeacher, FaBookOpen, FaBars, FaTimes } from "react-icons/fa";
+import { FaUserGraduate, FaChalkboardTeacher, FaBookOpen, FaBars, FaTimes, FaSignOutAlt } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { NavLink } from "react-router-dom";
-import React, { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 export default function DashboardLayout({
   children,
@@ -12,6 +13,13 @@ export default function DashboardLayout({
   numCourses = 0,
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -27,6 +35,7 @@ export default function DashboardLayout({
           <NavLink
             key={link.to}
             to={link.to}
+            end={link.to === "/admin" || link.to === "/tutor" || link.to === "/student"}
             onClick={() => setSidebarOpen(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-200 ${
@@ -42,9 +51,16 @@ export default function DashboardLayout({
         ))}
       </nav>
 
-      {/* Bottom branding */}
-      <div className="px-6 py-4 border-t border-teal-700">
-        <p className="text-teal-400 text-xs">© 2026 EduLink</p>
+      {/* Logout + branding */}
+      <div className="px-4 py-4 border-t border-teal-700 space-y-3">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-teal-100 hover:bg-red-500 hover:text-white transition-all duration-200"
+        >
+          <FaSignOutAlt className="text-base" />
+          Logout
+        </button>
+        <p className="text-teal-400 text-xs px-1">© 2026 EduLink</p>
       </div>
     </div>
   );
