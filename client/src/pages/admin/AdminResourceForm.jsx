@@ -28,7 +28,7 @@ export default function AdminResources() {
 
   const fetchCategories = async () => {
     try {
-      const res = await API.get("/categories");
+      const res = await API.get("/resources/categories");
       setCategories(res.data);
       if (res.data.length > 0 && !form.category) {
         setForm((f) => ({ ...f, category: res.data[0].value }));
@@ -107,7 +107,7 @@ export default function AdminResources() {
     setCategoryError("");
     setAddingCategory(true);
     try {
-      await API.post("/categories", {
+      await API.post("/resources/categories", {
         label: newCategory.label,
         value: newCategory.value.toLowerCase().replace(/\s+/g, "_"),
       });
@@ -124,7 +124,7 @@ export default function AdminResources() {
   const handleDeleteCategory = async (id) => {
     if (!window.confirm("Delete this category?")) return;
     try {
-      await API.delete(`/categories/${id}`);
+      await API.delete(`/resources/categories/${id}`);
       fetchCategories();
     } catch (err) {
       alert("Failed to delete category");

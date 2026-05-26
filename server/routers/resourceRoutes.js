@@ -7,20 +7,26 @@ import {
   updateResource,
   deleteResource,
   getResourcesByCategory,
+  getCategories,
+  createCategory,
+  deleteCategory,
 } from "../controllers/resourceController.js";
-
 import { upload } from "../middleware/upload.js";
-// import { protect, adminOnly } from "../middleware/auth.js"; // optional
 
 const router = express.Router();
 
-// Admin upload
-router.post("/",  upload.fields([
-    { name: "file", maxCount: 1 },
-    { name: "image", maxCount: 1 }
-  ]), createResource);
+// Category routes (must come before /:id)
+router.get("/categories", getCategories);
+router.post("/categories", createCategory);
+router.delete("/categories/:id", deleteCategory);
 
-// Get all / filter
+// Admin upload
+router.post("/", upload.fields([
+  { name: "file", maxCount: 1 },
+  { name: "image", maxCount: 1 },
+]), createResource);
+
+// Get all
 router.get("/", getResources);
 
 // Get resources by category
@@ -30,10 +36,10 @@ router.get("/category", getResourcesByCategory);
 router.get("/:id", getResourceById);
 
 // Update
-router.put("/:id",  upload.fields([
-    { name: "file", maxCount: 1 },
-    { name: "image", maxCount: 1 }
-  ]), updateResource);
+router.put("/:id", upload.fields([
+  { name: "file", maxCount: 1 },
+  { name: "image", maxCount: 1 },
+]), updateResource);
 
 // Delete
 router.delete("/:id", deleteResource);
