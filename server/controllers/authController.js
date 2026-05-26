@@ -32,7 +32,7 @@ export const login = async (req, res) => {
   if (!isMatch) return res.status(400).json({ msg: "Invalid password" });
 
   res.json({
-    token: generateToken(user),
+    token:generateToken(user),
     user
   });
 };

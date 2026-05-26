@@ -33,7 +33,7 @@ Skill <span className="text-teal-600">Nest</span>
       <div className="hidden md:flex items-center space-x-6 text-gray-700 font-medium">
         <Link to="/" className="hover:text-teal-600">Home</Link>
         <Link to="/tutors" className="hover:text-teal-600">Tutors</Link>
-        <Link to="/resources" className="hover:text-teal-600">Resources</Link>
+        {/* <Link to="/resources" className="hover:text-teal-600">Resources</Link> */}
         
           <Link to="/exams/list" className="hover:text-teal-600">Exams</Link>
      

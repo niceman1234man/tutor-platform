@@ -11,6 +11,7 @@ import applicationRoutes from "./routers/applicationRoutes.js";
 import courseRoutes from "./routers/courseRoutes.js";
 import tutorRoutes from "./routers/tutorRoutes.js";
 import paymentRoutes from "./routers/paymentRoutes.js";
+import categoryRoutes from "./routers/categoryRoutes.js";
 import path from "path";
 
 dotenv.config();
