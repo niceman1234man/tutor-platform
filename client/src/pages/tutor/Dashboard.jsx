@@ -1,16 +1,10 @@
 import React from "react";
-import DashboardLayout from "../../components/DashboardLayout";
-export default function TutorDashboard() {
-  const links = [
-    { to: "/tutor/mycourses", label: "My Courses" },
-    { to: "/tutor/students", label: "Students" },
-    { to: "/tutor/earnings", label: "Earnings" },
-    { to: "/tutor/my-applications", label: "My Applications" },
-  ];
 
+export default function TutorDashboard() {
   return (
-    <DashboardLayout title="Welcome Tutor" links={links}>
-      {/* tutor content */}
-    </DashboardLayout>
+    <div>
+      <h3 className="text-2xl font-bold text-gray-700 mb-2">Welcome, Tutor</h3>
+      <p className="text-gray-500">Use the sidebar to manage your courses, students and applications.</p>
+    </div>
   );
 }
