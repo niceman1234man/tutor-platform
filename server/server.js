@@ -32,6 +32,7 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/tutors", tutorRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/categories", categoryRoutes);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () =>

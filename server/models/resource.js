@@ -9,22 +9,6 @@ const resourceSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: [
-        "grade1",
-        "grade2",
-        "grade3",
-        "grade4",
-        "grade5",
-        "grade6",
-        "grade7",
-        "grade8",
-        "grade9",
-        "grade10",
-        "grade11",
-        "grade12",
-        "freshman",
-        "exit",
-      ],
       required: true,
     },
     department: {
@@ -35,20 +19,20 @@ const resourceSchema = new mongoose.Schema(
     },
     fileUrl: {
       type: String,
-      required: true, // Cloudinary URL
-    },
-    publicId: {
-      type: String, // Cloudinary public_id
       required: true,
     },
-     imageUrl: String,
-  imagePublicId: String,
+    publicId: {
+      type: String,
+      required: true,
+    },
+    imageUrl: String,
+    imagePublicId: String,
     fileName: {
-      type: String, // original file name
+      type: String,
     },
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // optional (admin)
+      ref: "User",
     },
   },
   { timestamps: true }
