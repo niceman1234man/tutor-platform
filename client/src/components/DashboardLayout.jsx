@@ -1,17 +1,10 @@
-import { FaUserGraduate, FaChalkboardTeacher, FaBookOpen, FaBars, FaTimes, FaSignOutAlt } from "react-icons/fa";
+import { FaBars, FaTimes, FaSignOutAlt } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { NavLink, useNavigate } from "react-router-dom";
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
-export default function DashboardLayout({
-  children,
-  links = [],
-  title = "Dashboard",
-  numStudents = 0,
-  numTutors = 0,
-  numCourses = 0,
-}) {
+export default function DashboardLayout({ children, links = [], title = "Dashboard" }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -109,7 +102,6 @@ export default function DashboardLayout({
         {/* Header */}
         <header className="bg-white shadow px-6 py-4 flex items-center justify-between sticky top-0 z-20">
           <div className="flex items-center gap-3">
-            {/* Mobile hamburger */}
             <button
               className="md:hidden text-teal-700 text-xl"
               onClick={() => setSidebarOpen(true)}
@@ -120,36 +112,6 @@ export default function DashboardLayout({
           </div>
           <div className="text-2xl cursor-pointer">🔔</div>
         </header>
-
-        {/* Stats */}
-        {(numStudents > 0 || numTutors > 0 || numCourses > 0) && (
-          <div className="flex flex-wrap gap-5 px-8 pt-8">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-gradient-to-br from-teal-500 to-teal-700 rounded-2xl shadow-lg p-6 min-w-[160px] text-center text-white flex flex-col items-center"
-            >
-              <FaUserGraduate className="text-4xl mb-2 drop-shadow" />
-              <div className="text-3xl font-extrabold">{numStudents}</div>
-              <div className="text-sm mt-1 font-medium">Students</div>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-gradient-to-br from-purple-500 to-indigo-700 rounded-2xl shadow-lg p-6 min-w-[160px] text-center text-white flex flex-col items-center"
-            >
-              <FaChalkboardTeacher className="text-4xl mb-2 drop-shadow" />
-              <div className="text-3xl font-extrabold">{numTutors}</div>
-              <div className="text-sm mt-1 font-medium">Tutors</div>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-gradient-to-br from-amber-500 to-yellow-600 rounded-2xl shadow-lg p-6 min-w-[160px] text-center text-white flex flex-col items-center"
-            >
-              <FaBookOpen className="text-4xl mb-2 drop-shadow" />
-              <div className="text-3xl font-extrabold">{numCourses}</div>
-              <div className="text-sm mt-1 font-medium">Courses</div>
-            </motion.div>
-          </div>
-        )}
 
         {/* Page Content */}
         <main className="flex-1 p-8">
