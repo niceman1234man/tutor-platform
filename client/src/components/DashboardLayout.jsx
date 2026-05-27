@@ -16,13 +16,11 @@ export default function DashboardLayout({ children, links = [], title = "Dashboa
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
-      {/* Sidebar Header */}
       <div className="px-6 py-6 border-b border-teal-700">
         <h1 className="text-xl font-extrabold text-white tracking-wide">EduLink</h1>
         <p className="text-teal-300 text-sm mt-1">{title}</p>
       </div>
 
-      {/* Nav Links */}
       <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
         {links.map((link) => (
           <NavLink
@@ -44,7 +42,6 @@ export default function DashboardLayout({ children, links = [], title = "Dashboa
         ))}
       </nav>
 
-      {/* Logout + branding */}
       <div className="px-4 py-4 border-t border-teal-700 space-y-3">
         <button
           onClick={handleLogout}
@@ -61,12 +58,12 @@ export default function DashboardLayout({ children, links = [], title = "Dashboa
   return (
     <div className="min-h-screen bg-gray-100 flex">
 
-      {/* ===== DESKTOP SIDEBAR ===== */}
+      {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-gradient-to-b from-teal-700 to-teal-900 shadow-xl fixed top-0 left-0 h-full z-30">
         <SidebarContent />
       </aside>
 
-      {/* ===== MOBILE SIDEBAR OVERLAY ===== */}
+      {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
         {sidebarOpen && (
           <>
@@ -96,10 +93,9 @@ export default function DashboardLayout({ children, links = [], title = "Dashboa
         )}
       </AnimatePresence>
 
-      {/* ===== MAIN AREA ===== */}
+      {/* Main Area */}
       <div className="flex-1 flex flex-col md:ml-64">
 
-        {/* Header */}
         <header className="bg-white shadow px-6 py-4 flex items-center justify-between sticky top-0 z-20">
           <div className="flex items-center gap-3">
             <button
@@ -113,7 +109,6 @@ export default function DashboardLayout({ children, links = [], title = "Dashboa
           <div className="text-2xl cursor-pointer">🔔</div>
         </header>
 
-        {/* Page Content */}
         <main className="flex-1 p-8">
           {children}
         </main>
