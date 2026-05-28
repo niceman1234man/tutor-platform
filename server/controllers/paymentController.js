@@ -1,4 +1,5 @@
 import Payment from "../models/payment.js";
+import Notification from "../models/notification.js";
 
 // CREATE
 export const createPayment = async (req, res) => {
@@ -38,14 +39,35 @@ export const getPaymentById = async (req, res) => {
   res.json(payment);
 };
 
-// UPDATE
+// UPDATE — fires notification if status changed to approved/rejected
 export const updatePayment = async (req, res) => {
-  const payment = await Payment.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
-  res.json(payment);
+  try {
+    const previous = await Payment.findById(req.params.id);
+    const payment = await Payment.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    ).populate("studentId", "name email");
+
+    const newStatus = req.body.status;
+    if (previous && newStatus && newStatus !== previous.status && payment?.studentId?._id) {
+      let message, type;
+      if (newStatus === "approved") {
+        message = `Your payment of $${payment.amount} has been approved. ✅`;
+        type = "success";
+      } else if (newStatus === "rejected") {
+        message = `Your payment of $${payment.amount} was rejected. Please contact support.`;
+        type = "warning";
+      }
+      if (message) {
+        await Notification.create({ userId: payment.studentId._id, message, type });
+      }
+    }
+
+    res.json(payment);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update payment", error: err.message });
+  }
 };
 
 // DELETE
@@ -57,12 +79,23 @@ export const deletePayment = async (req, res) => {
 // APPROVE (ADMIN)
 export const approvePayment = async (req, res) => {
   try {
+    const previous = await Payment.findById(req.params.id);
     const payment = await Payment.findByIdAndUpdate(
       req.params.id,
       { status: "approved" },
       { new: true }
-    );
+    ).populate("studentId", "name email");
+
     if (!payment) return res.status(404).json({ message: "Payment not found" });
+
+    if (previous?.status !== "approved" && payment.studentId?._id) {
+      await Notification.create({
+        userId: payment.studentId._id,
+        message: `Your payment of $${payment.amount} has been approved. ✅`,
+        type: "success",
+      });
+    }
+
     res.json(payment);
   } catch (err) {
     res.status(500).json({ message: "Failed to approve payment" });

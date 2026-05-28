@@ -12,6 +12,7 @@ import courseRoutes from "./routers/courseRoutes.js";
 import tutorRoutes from "./routers/tutorRoutes.js";
 import paymentRoutes from "./routers/paymentRoutes.js";
 import categoryRoutes from "./routers/categoryRoutes.js";
+import notificationRoutes from "./routers/notificationRoutes.js";
 import path from "path";
 
 dotenv.config();
@@ -33,6 +34,7 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/tutors", tutorRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () =>
