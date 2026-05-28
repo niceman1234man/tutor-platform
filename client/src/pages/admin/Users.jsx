@@ -12,6 +12,7 @@ import {
   FaTrashAlt,
   FaChartBar,
   FaDownload,
+  FaSearch,
 } from "react-icons/fa";
 
 export default function Users() {
@@ -22,6 +23,7 @@ export default function Users() {
   const [users, setUsers] = useState([]);
   const [filterRole, setFilterRole] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -55,8 +57,16 @@ export default function Users() {
     if (filterRole) filtered = filtered.filter((u) => u.role === filterRole);
     if (filterStatus === "active") filtered = filtered.filter((u) => u.active);
     if (filterStatus === "inactive") filtered = filtered.filter((u) => !u.active);
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      filtered = filtered.filter(
+        (u) =>
+          (u.name || "").toLowerCase().includes(q) ||
+          (u.email || "").toLowerCase().includes(q)
+      );
+    }
     setUsers(filtered);
-  }, [filterRole, filterStatus, allUsers]);
+  }, [filterRole, filterStatus, search, allUsers]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
@@ -226,6 +236,16 @@ export default function Users() {
       <div className="mb-6 flex flex-wrap justify-center gap-4">
         <div className="bg-white rounded-xl shadow px-5 py-3 flex gap-4 items-center flex-wrap">
           <div className="flex items-center gap-2">
+            <FaSearch className="text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name or email…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="border px-3 py-2 rounded-lg focus:ring-2 focus:ring-teal-400 text-sm w-52"
+            />
+          </div>
+          <div className="flex items-center gap-2">
             <label className="font-semibold text-gray-700 text-sm">Role:</label>
             <select
               value={filterRole}
@@ -250,12 +270,12 @@ export default function Users() {
               <option value="inactive">Inactive</option>
             </select>
           </div>
-          {(filterRole || filterStatus) && (
+          {(filterRole || filterStatus || search) && (
             <button
-              onClick={() => { setFilterRole(""); setFilterStatus(""); }}
+              onClick={() => { setFilterRole(""); setFilterStatus(""); setSearch(""); }}
               className="text-sm text-red-500 hover:text-red-700 font-semibold"
             >
-              Clear filters
+              Clear all
             </button>
           )}
           <button
