@@ -11,6 +11,7 @@ import {
   FaSyncAlt,
   FaTrashAlt,
   FaChartBar,
+  FaDownload,
 } from "react-icons/fa";
 
 export default function Users() {
@@ -90,6 +91,25 @@ export default function Users() {
       console.error(err);
       alert("Failed to update user");
     }
+  };
+
+  const downloadCSV = () => {
+    const headers = ["Name", "Email", "Phone", "Role", "Status"];
+    const rows = users.map((u) => [
+      `"${u.name || ""}"`,
+      `"${u.email || ""}"`,
+      `"${u.phone || ""}"`,
+      `"${u.role || ""}"`,
+      `"${u.active ? "Active" : "Inactive"}"`,
+    ]);
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `users_report_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   // Report stats derived from allUsers
@@ -238,6 +258,13 @@ export default function Users() {
               Clear filters
             </button>
           )}
+          <button
+            onClick={downloadCSV}
+            disabled={users.length === 0}
+            className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-40 text-white px-4 py-2 rounded-lg font-semibold shadow transition-all duration-200 text-sm"
+          >
+            <FaDownload /> Download CSV
+          </button>
         </div>
       </div>
 
