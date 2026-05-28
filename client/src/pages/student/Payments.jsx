@@ -70,10 +70,11 @@ export default function Payments() {
 
     setSubmitting(true);
     try {
-      await API.post("/payments", {
-        amount: Number(form.amount),
-        method: form.method,
-      });
+      await API.post(
+        "/payments",
+        { amount: Number(form.amount), method: form.method },
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
 
       setSuccess("Payment submitted successfully!");
       setForm({ amount: "", method: "", receipt: null });

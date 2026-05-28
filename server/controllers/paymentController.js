@@ -9,6 +9,7 @@ export const createPayment = async (req, res) => {
 
     const payment = await Payment.create({
       ...req.body,
+      studentId: req.user?._id,
       ...(receiptImage && { receiptImage }),
     });
     res.json(payment);
@@ -17,15 +18,23 @@ export const createPayment = async (req, res) => {
   }
 };
 
-// READ ALL
+// READ ALL (admin)
 export const getPayments = async (req, res) => {
-  const payments = await Payment.find().populate("courseId");
-  res.json(payments);
+  try {
+    const payments = await Payment.find()
+      .populate("courseId", "title")
+      .populate("studentId", "name email")
+      .sort({ createdAt: -1 });
+    res.json(payments);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch payments", error: err.message });
+  }
 };
 
 // READ ONE
 export const getPaymentById = async (req, res) => {
-  const payment = await Payment.findById(req.params.id);
+  const payment = await Payment.findById(req.params.id)
+    .populate("studentId", "name email");
   res.json(payment);
 };
 
