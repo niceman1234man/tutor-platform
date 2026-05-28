@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import API from "../../api/api";
 import { Link } from "react-router-dom";
 
@@ -20,6 +20,17 @@ export default function ExamForm() {
   const [formError, setFormError] = useState("");
   const [questionError, setQuestionError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    API.get("/resources/categories")
+      .then((res) => {
+        const cats = Array.isArray(res.data) ? res.data : [];
+        setCategories(cats);
+        if (cats.length > 0) setExam((prev) => ({ ...prev, category: cats[0].value || cats[0].name || cats[0] }));
+      })
+      .catch(() => {});
+  }, []);
 
   const validateQuestion = (q) => {
     if (!q.question.trim()) return "Question text is required.";
@@ -112,14 +123,22 @@ export default function ExamForm() {
 
         <div>
           <label className="block text-sm mb-1">Category</label>
-          <input
+          <select
             aria-label="Category"
-            type="text"
-            placeholder="Category"
-            className="border p-2 w-full"
+            className="border p-2 w-full rounded"
             value={exam.category}
             onChange={(e) => setExam({ ...exam, category: e.target.value })}
-          />
+          >
+            {categories.length === 0 && (
+              <option value="">No categories found</option>
+            )}
+            {categories.map((cat, i) => {
+              const val = cat.value || cat.name || cat;
+              return (
+                <option key={i} value={val}>{val}</option>
+              );
+            })}
+          </select>
         </div>
       </div>
 

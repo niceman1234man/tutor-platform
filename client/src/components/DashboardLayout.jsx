@@ -17,7 +17,7 @@ export default function DashboardLayout({ children, links = [], title = "Dashboa
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       <div className="px-6 py-6 border-b border-teal-700">
-        <h1 className="text-xl font-extrabold text-white tracking-wide">EduLink</h1>
+        <h1 className="text-xl font-extrabold text-white tracking-wide">Skill Nest</h1>
         <p className="text-teal-300 text-sm mt-1">{title}</p>
       </div>
 
@@ -50,7 +50,7 @@ export default function DashboardLayout({ children, links = [], title = "Dashboa
           <FaSignOutAlt className="text-base" />
           Logout
         </button>
-        <p className="text-teal-400 text-xs px-1">© 2026 EduLink</p>
+        <p className="text-teal-400 text-xs px-1">© 2026 Skill Nest</p>
       </div>
     </div>
   );
