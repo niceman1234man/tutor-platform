@@ -72,7 +72,13 @@ export default function Payments() {
     try {
       await API.post(
         "/payments",
-        { amount: Number(form.amount), method: form.method },
+        {
+          amount: Number(form.amount),
+          method: form.method,
+          studentId:    user._id   || user.id,
+          studentName:  user.name  || "",
+          studentEmail: user.email || "",
+        },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
 

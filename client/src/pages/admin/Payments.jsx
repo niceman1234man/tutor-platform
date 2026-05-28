@@ -52,8 +52,8 @@ export default function Payments() {
   const downloadCSV = () => {
     const headers = ["Student Name", "Email", "Amount", "Method", "Status", "Date"];
     const rows = displayed.map((p) => [
-      `"${p.studentId?.name || "Unknown"}"`,
-      `"${p.studentId?.email || ""}"`,
+      `"${p.studentId?.name || p.studentName || "Unknown"}"`,
+      `"${p.studentId?.email || p.studentEmail || ""}"`,
       `"${p.amount || 0}"`,
       `"${p.method || ""}"`,
       `"${p.status || ""}"`,
@@ -83,8 +83,8 @@ export default function Payments() {
     const matchStatus = filter === "All" || p.status === filter.toLowerCase();
     const q = search.trim().toLowerCase();
     const matchSearch = !q ||
-      (p.studentId?.name || "").toLowerCase().includes(q) ||
-      (p.studentId?.email || "").toLowerCase().includes(q) ||
+      (p.studentId?.name || p.studentName || "").toLowerCase().includes(q) ||
+      (p.studentId?.email || p.studentEmail || "").toLowerCase().includes(q) ||
       (p.method || "").toLowerCase().includes(q);
     return matchStatus && matchSearch;
   });
@@ -203,8 +203,8 @@ export default function Payments() {
         <div className="space-y-4">
           {displayed.map((p) => {
             const meta = STATUS_META[p.status] || STATUS_META.pending;
-            const studentName  = p.studentId?.name  || "Unknown Student";
-            const studentEmail = p.studentId?.email || "";
+            const studentName  = p.studentId?.name  || p.studentName  || "Unknown Student";
+            const studentEmail = p.studentId?.email || p.studentEmail || "";
             return (
               <div
                 key={p._id}

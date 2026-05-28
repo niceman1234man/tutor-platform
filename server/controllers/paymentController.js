@@ -1,7 +1,7 @@
 import Payment from "../models/payment.js";
 import Notification from "../models/notification.js";
 
-// CREATE
+// CREATE — saves studentId + name/email from the authenticated user or request body
 export const createPayment = async (req, res) => {
   try {
     const receiptImage = req.file
@@ -10,7 +10,9 @@ export const createPayment = async (req, res) => {
 
     const payment = await Payment.create({
       ...req.body,
-      studentId: req.user?._id,
+      studentId:    req.user?._id    || req.body.studentId,
+      studentName:  req.user?.name   || req.body.studentName  || "",
+      studentEmail: req.user?.email  || req.body.studentEmail || "",
       ...(receiptImage && { receiptImage }),
     });
     res.json(payment);
@@ -50,7 +52,8 @@ export const updatePayment = async (req, res) => {
     ).populate("studentId", "name email");
 
     const newStatus = req.body.status;
-    if (previous && newStatus && newStatus !== previous.status && payment?.studentId?._id) {
+    const recipientId = payment?.studentId?._id;
+    if (previous && newStatus && newStatus !== previous.status && recipientId) {
       let message, type;
       if (newStatus === "approved") {
         message = `Your payment of $${payment.amount} has been approved. ✅`;
@@ -60,7 +63,7 @@ export const updatePayment = async (req, res) => {
         type = "warning";
       }
       if (message) {
-        await Notification.create({ userId: payment.studentId._id, message, type });
+        await Notification.create({ userId: recipientId, message, type });
       }
     }
 
