@@ -22,20 +22,67 @@ export default function RegisteredCourses() {
   const [activeVideo, setActiveVideo] = useState(null);
 
   useEffect(() => {
+    if (!user || !user.token) {
+      setLoading(false);
+      return;
+    }
+
     const fetchCourses = async () => {
       setLoading(true);
       try {
-        const res = await API.get("/courses/registered", {
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
-        setCourses(res.data);
+        const headers = { Authorization: `Bearer ${user.token}` };
+
+        // The auth context stores { token, user: { _id, email, ... } }
+        // Support both flat { _id } and nested { user: { _id } } shapes
+        const studentId =
+          user.user?._id?.toString() ||
+          user.user?.id?.toString() ||
+          user._id?.toString() ||
+          user.id?.toString();
+        const studentEmail = user.user?.email || user.email;
+
+        // Primary: courses where student is in Course.students array
+        const registeredRes = await API.get("/courses/registered", { headers });
+        const registered = registeredRes.data || [];
+
+        // Fallback: find approved payments for this student and load those courses
+        // (handles data approved before Course.students was being populated)
+        const paymentsRes = await API.get("/payments", { headers });
+        const approvedCourseIds = (paymentsRes.data || [])
+          .filter((p) => {
+            if (p.status !== "approved" || !p.courseId) return false;
+            const pid =
+              p.studentId?._id?.toString() ||
+              p.studentId?.toString();
+            return pid === studentId || p.studentEmail === studentEmail;
+          })
+          .map((p) =>
+            typeof p.courseId === "object" ? p.courseId._id : p.courseId
+          );
+
+        // Fetch any courses from payments not already in the registered list
+        const registeredIds = new Set(registered.map((c) => c._id?.toString()));
+        const missingIds = [
+          ...new Set(approvedCourseIds.filter((id) => id && !registeredIds.has(id.toString()))),
+        ];
+
+        const extraCourses = await Promise.all(
+          missingIds.map((id) =>
+            API.get(`/courses/${id}`, { headers })
+              .then((r) => r.data)
+              .catch(() => null)
+          )
+        );
+
+        setCourses([...registered, ...extraCourses.filter(Boolean)]);
       } catch {
         setCourses([]);
       } finally {
         setLoading(false);
       }
     };
-    if (user && user.token) fetchCourses();
+
+    fetchCourses();
   }, [user]);
 
   const toggleCourse = (id) => {

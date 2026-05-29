@@ -1,11 +1,37 @@
 import Course from "../models/course.js";
 import cloudinary from "../config/cloudinary.js";
+import Payment from "../models/payment.js";
 
 export const getRegisteredCourses = async (req, res) => {
   try {
-    // Find all courses where this user is in the students array
-    const courses = await Course.find({ students: req.user.id });
-    res.json(courses);
+    // 1. Courses where student is in the students array (new flow)
+    const enrolledCourses = await Course.find({ students: req.user.id });
+
+    // 2. Courses from approved payments (covers legacy data and Render deploys
+    //    where approvePayment didn't yet write to Course.students)
+    const approvedPayments = await Payment.find({
+      studentId: req.user.id,
+      status: "approved",
+      courseId: { $exists: true, $ne: null },
+    });
+
+    const paidCourseIds = approvedPayments.map((p) => p.courseId).filter(Boolean);
+    const paidCourses =
+      paidCourseIds.length > 0
+        ? await Course.find({ _id: { $in: paidCourseIds } })
+        : [];
+
+    // Merge and deduplicate by _id
+    const seen = new Set(enrolledCourses.map((c) => c._id.toString()));
+    const merged = [...enrolledCourses];
+    for (const course of paidCourses) {
+      if (!seen.has(course._id.toString())) {
+        seen.add(course._id.toString());
+        merged.push(course);
+      }
+    }
+
+    res.json(merged);
   } catch (err) {
     console.error("GET REGISTERED COURSES ERROR 👉", err);
     res.status(500).json({ message: err.message });
