@@ -1,5 +1,6 @@
 import Payment from "../models/payment.js";
 import Notification from "../models/notification.js";
+import Course from "../models/course.js";
 
 // CREATE — saves studentId + name/email from the authenticated user or request body
 export const createPayment = async (req, res) => {
@@ -91,10 +92,18 @@ export const approvePayment = async (req, res) => {
 
     if (!payment) return res.status(404).json({ message: "Payment not found" });
 
+    // Add student to the course's students array upon approval
+    if (payment.courseId && payment.studentId?._id) {
+      await Course.findByIdAndUpdate(
+        payment.courseId,
+        { $addToSet: { students: payment.studentId._id } }
+      );
+    }
+
     if (previous?.status !== "approved" && payment.studentId?._id) {
       await Notification.create({
         userId: payment.studentId._id,
-        message: `Your payment of $${payment.amount} has been approved. ✅`,
+        message: `Your enrollment for the course has been approved. ✅`,
         type: "success",
       });
     }

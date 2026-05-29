@@ -147,12 +147,27 @@ export const approveTutor = async (req, res) => {
 
 // PAYMENTS
 export const approvePayment = async (req, res) => {
-  const payment = await Payment.findByIdAndUpdate(
-    req.params.id,
-    { status: "approved" },
-    { new: true }
-  );
-  res.json(payment);
+  try {
+    const payment = await Payment.findByIdAndUpdate(
+      req.params.id,
+      { status: "approved" },
+      { new: true }
+    );
+    if (!payment) return res.status(404).json({ message: "Payment not found" });
+
+    // Add student to the course's students array upon approval
+    if (payment.courseId && payment.studentId) {
+      const Course = (await import("../models/course.js")).default;
+      await Course.findByIdAndUpdate(
+        payment.courseId,
+        { $addToSet: { students: payment.studentId } }
+      );
+    }
+
+    res.json(payment);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to approve payment", error: err.message });
+  }
 };
 
 
