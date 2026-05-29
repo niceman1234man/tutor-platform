@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://tutor-platform-3zkg.onrender.com/api",
+  baseURL: "/api",
 });
 
 API.interceptors.request.use((req) => {
