@@ -16,9 +16,11 @@ import {
     FaFileUpload,
     FaVideo,
     FaFileAlt,
+    FaBroadcastTower,
 } from "react-icons/fa";
 import API from "../../api/api";
 import useAuth from "../../hooks/useAuth";
+import LiveClassRoom from "../../components/LiveClassRoom";
 
 export default function Course() {
     const { user } = useAuth();
@@ -41,6 +43,7 @@ export default function Course() {
     // Edit modals
     const [editCourse, setEditCourse] = useState(null);
     const [editChapter, setEditChapter] = useState(null);
+    const [liveClass, setLiveClass] = useState(null);
 
     // Fetch tutor courses
     useEffect(() => {
@@ -225,6 +228,13 @@ export default function Course() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 py-10">
+            {liveClass && (
+                <LiveClassRoom
+                    course={liveClass}
+                    role="tutor"
+                    onClose={() => setLiveClass(null)}
+                />
+            )}
             {/* Hero Header */}
             <div className="max-w-4xl mx-auto text-center mb-10">
                 <div className="flex justify-center mb-4">
@@ -447,7 +457,13 @@ export default function Course() {
                                     {course.title}
                                 </h3>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-wrap">
+                                <button
+                                    onClick={() => setLiveClass(course)}
+                                    className="bg-gradient-to-r from-teal-500 to-teal-600 px-4 py-2 rounded-xl hover:from-teal-600 hover:to-teal-700 text-white flex items-center gap-2 font-semibold shadow"
+                                >
+                                    <FaBroadcastTower /> Start Live Class
+                                </button>
                                 <button
                                     onClick={() => setEditCourse(course)}
                                     className="bg-yellow-400 px-4 py-2 rounded-xl hover:bg-yellow-500 flex items-center gap-2 font-semibold shadow"
@@ -472,7 +488,7 @@ export default function Course() {
                                 <FaListOl /> {course.category}
                             </span>
                             <span className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-xl font-medium">
-                                <FaDollarSign /> ${course.price}
+                                {course.price} ETB
                             </span>
                         </div>
                         {course.imageUrl && (
@@ -665,8 +681,6 @@ export default function Course() {
                                     }
                                     className="w-full border-2 border-purple-200 p-3 rounded-xl bg-purple-50 focus:ring-2 focus:ring-purple-300"
                                 />
-                               
-                                
                             </div>
                             <div className="flex justify-end gap-2">
                                 <button
