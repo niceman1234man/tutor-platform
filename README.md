@@ -1,6 +1,6 @@
-# EduLink 🎓
+# Skill Nest 🎓
 
-EduLink is a web-based platform that connects students with qualified tutors, provides categorized learning resources, and streamlines tutoring management. It supports session booking, payment verification, follow-up tracking, and role-based dashboards for students, tutors, and administrators.
+Skill Nest is a web-based platform that connects students with qualified tutors, provides categorized learning resources, and streamlines tutoring management. It supports session booking, payment verification, follow-up tracking, and role-based dashboards for students, tutors, and administrators.
 
 ---
 
