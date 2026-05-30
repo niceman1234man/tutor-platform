@@ -35,6 +35,7 @@ import AdminExamManager from "./pages/admin/ManageExam";
 import AdminLayout from "./layouts/AdminLayout";
 import TutorLayout from "./layouts/TutorLayout";
 import StudentLayout from "./layouts/StudentLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const DASHBOARD_PREFIXES = ["/admin", "/tutor", "/student", "/user"];
 
@@ -60,7 +61,7 @@ function AppContent() {
         <Route path="/profile" element={<Profile />} />
 
         {/* Admin routes — persistent sidebar */}
-        <Route element={<AdminLayout />}>
+        <Route element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<User />} />
           <Route path="/admin/resources" element={<AdminResourceForm />} />
@@ -75,7 +76,7 @@ function AppContent() {
         </Route>
 
         {/* Tutor routes — persistent sidebar */}
-        <Route element={<TutorLayout />}>
+        <Route element={<ProtectedRoute role="tutor"><TutorLayout /></ProtectedRoute>}>
           <Route path="/tutor" element={<TutorDashboard />} />
           <Route path="/tutor/mycourses" element={<Course />} />
           <Route path="/tutor/students" element={<AssignedStudents />} />
@@ -84,7 +85,7 @@ function AppContent() {
         </Route>
 
         {/* Student routes — persistent sidebar */}
-        <Route element={<StudentLayout />}>
+        <Route element={<ProtectedRoute role="student"><StudentLayout /></ProtectedRoute>}>
           <Route path="/student" element={<StudentDashboard />} />
           <Route path="/student/courses" element={<RegisteredCourses />} />
           <Route path="/student/progress" element={<CourseProgress />} />
