@@ -14,6 +14,7 @@ import {
   getCourseById,
   getRegisteredCourses
 } from "../controllers/courseController.js";
+import { toggleChapterComplete, getStudentProgress } from "../controllers/progressController.js";
 
 
 const router = express.Router();
@@ -28,6 +29,7 @@ const router = express.Router();
 
 // Get all courses (public)
 router.get("/registered", protect, getRegisteredCourses); // <-- Place before /:id
+router.get("/progress", protect, authorize("student"), getStudentProgress);
 router.get("/my", protect, authorize("tutor"), getMyCourses);
 router.get("/", getAllCourses);
 router.get("/:id", getCourseById);
@@ -42,6 +44,9 @@ router.patch("/:id", protect, authorize("tutor"), upload.single("image"), update
 // Delete a course
 router.delete("/:id", protect, authorize("tutor"), deleteCourse);
 
+
+// Mark/unmark a chapter as complete (student)
+router.post("/:courseId/chapters/:chapterId/complete", protect, authorize("student"), toggleChapterComplete);
 
 // Add a new chapter to a course
 router.post("/:courseId/chapters", protect, authorize("tutor"), upload.array("files", 10), addChapter);
