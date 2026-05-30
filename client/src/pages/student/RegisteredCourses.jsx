@@ -36,11 +36,19 @@ export default function RegisteredCourses() {
         const studentId = user.user?._id?.toString() || user.user?.id?.toString() || user._id?.toString() || user.id?.toString();
         const studentEmail = user.user?.email || user.email;
 
-        const [registeredRes, paymentsRes, progressRes] = await Promise.all([
+        const [registeredRes, paymentsRes] = await Promise.all([
           API.get("/courses/registered", { headers }),
           API.get("/payments", { headers }),
-          API.get("/courses/progress", { headers }),
         ]);
+
+        // Progress is optional — don't let it break the courses list
+        let progressData = [];
+        try {
+          const progressRes = await API.get("/courses/progress", { headers });
+          progressData = progressRes.data || [];
+        } catch {
+          progressData = [];
+        }
 
         const registered = registeredRes.data || [];
         const approvedCourseIds = (paymentsRes.data || [])
@@ -61,7 +69,7 @@ export default function RegisteredCourses() {
 
         // Build completedMap from progress data
         const map = {};
-        for (const p of progressRes.data || []) {
+        for (const p of progressData) {
           map[p.courseId.toString()] = new Set((p.completedChapterIds || []).map(String));
         }
         setCompletedMap(map);
