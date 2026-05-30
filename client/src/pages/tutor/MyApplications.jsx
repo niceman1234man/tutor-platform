@@ -2,92 +2,195 @@ import React, { useEffect, useState } from "react";
 import API from "../../api/api";
 import useAuth from "../../hooks/useAuth";
 import formatDate from "../../utils/formateDate";
+import {
+  FaFileAlt,
+  FaBriefcase,
+  FaCalendarAlt,
+  FaExternalLinkAlt,
+  FaClock,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaPlus,
+  FaBuilding,
+  FaUserTie,
+} from "react-icons/fa";
+
+const STATUS_CONFIG = {
+  pending:  { label: "Pending Review", color: "bg-yellow-100 text-yellow-700 border-yellow-200", icon: <FaClock className="text-yellow-500" /> },
+  approved: { label: "Approved",       color: "bg-green-100 text-green-700 border-green-200",   icon: <FaCheckCircle className="text-green-500" /> },
+  rejected: { label: "Rejected",       color: "bg-red-100 text-red-700 border-red-200",         icon: <FaTimesCircle className="text-red-500" /> },
+};
 
 export default function MyApplications() {
-    const { user } = useAuth();
-    const [applications, setApplications] = useState([]);
+  const { user } = useAuth();
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (!user) return; // ✅ STOP if user not loaded yet
+  useEffect(() => {
+    if (!user) return;
+    const fetchApplications = async () => {
+      try {
+        const res = await API.get("/applications/me", {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+        setApplications(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchApplications();
+  }, [user]);
 
-        const fetchApplications = async () => {
-            try {
-                const res = await API.get("/applications/me", {
-                    headers: {
-                        Authorization: `Bearer ${user.token}`,
-                    },
-                });
-
-                setApplications(res.data);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
-        fetchApplications();
-    }, [user]);
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-100 via-slate-100 to-teal-100 py-0 px-0">
-            {/* Hero Header */}
-            <div className="relative w-full h-44 md:h-52 bg-gradient-to-r from-blue-400 via-teal-400 to-green-300 flex items-center justify-center shadow-lg mb-10">
-                <div className="absolute inset-0 bg-black/20 rounded-b-3xl" />
-                <div className="relative z-10 flex flex-col items-center text-center">
-                    <div className="flex items-center gap-4 mb-2">
-                        <svg className="w-9 h-9 text-white drop-shadow-lg" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 14l6.16-3.422A12.083 12.083 0 0112 21.5a12.083 12.083 0 01-6.16-10.922L12 14z" /></svg>
-                        <h2 className="text-2xl md:text-3xl font-extrabold text-white drop-shadow-lg">My Applications</h2>
-                    </div>
-                    <a href="/tutor/applications" className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold shadow transition mt-2">New Application</a>
-                </div>
-            </div>
-
-            <div className="max-w-5xl mx-auto px-4 pb-16">
-                {applications.length === 0 ? (
-                    <p className="text-gray-500 text-center text-lg">No applications submitted yet.</p>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {applications.map((app) => (
-                            <div
-                                key={app._id}
-                                className="bg-white/95 shadow-xl rounded-2xl p-7 mb-2 border border-slate-100 flex flex-col gap-4 hover:shadow-2xl transition"
-                            >
-                                <div className="flex items-center gap-3 mb-2">
-                                    <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                    <h3 className="text-lg font-bold text-slate-900">Application</h3>
-                                </div>
-                                <div className="mb-2">
-                                    <span className="font-semibold text-slate-700">Letter:</span>
-                                    <span className="text-slate-700 ml-1">{app.letter}</span>
-                                </div>
-                                <div className="mb-2">
-                                    <span className="font-semibold text-slate-700">CV:</span>{" "}
-                                    <a
-                                        href={`https://docs.google.com/viewer?url=${encodeURIComponent(app.cvUrl)}&embedded=true`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-teal-700 underline hover:text-teal-900"
-                                    >
-                                        View CV
-                                    </a>
-                                </div>
-                                <div>
-                                    <h4 className="font-semibold mb-2 text-slate-700">Experiences</h4>
-                                    {app.experiences.map((exp, i) => (
-                                        <div key={i} className="border border-slate-100 bg-slate-50 rounded-lg p-3 mb-2">
-                                            <p><span className="font-medium">Company:</span> {exp.company}</p>
-                                            <p><span className="font-medium">Position:</span> {exp.position}</p>
-                                            <p><span className="font-medium">Description:</span> {exp.description}</p>
-                                            <p>
-                                                <span className="font-medium">Duration:</span>{" "}
-                                                {formatDate(exp.startDate)} → {exp.isCurrent ? "Present" : formatDate(exp.endDate)}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-teal-600 to-blue-600 px-6 py-10">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-extrabold text-white mb-1">My Applications</h1>
+            <p className="text-teal-100 text-sm">Track the status of your tutor applications</p>
+          </div>
+          <a
+            href="/tutor/applications"
+            className="flex items-center gap-2 bg-white text-teal-700 hover:bg-teal-50 font-semibold px-4 py-2 rounded-xl shadow transition text-sm"
+          >
+            <FaPlus /> New Application
+          </a>
         </div>
-    );
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Loading skeleton */}
+        {loading && (
+          <div className="space-y-5">
+            {[1, 2].map((n) => (
+              <div key={n} className="bg-white rounded-2xl shadow border border-gray-100 p-6 animate-pulse space-y-4">
+                <div className="flex justify-between">
+                  <div className="h-5 bg-gray-200 rounded w-1/3" />
+                  <div className="h-6 bg-gray-200 rounded-full w-28" />
+                </div>
+                <div className="h-4 bg-gray-200 rounded w-full" />
+                <div className="h-4 bg-gray-200 rounded w-2/3" />
+                <div className="h-16 bg-gray-100 rounded-xl" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!loading && applications.length === 0 && (
+          <div className="bg-white rounded-2xl shadow border border-gray-100 p-14 text-center">
+            <FaFileAlt className="text-5xl text-gray-200 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-700 mb-1">No applications yet</h3>
+            <p className="text-gray-400 text-sm mb-6">Submit your first tutor application to get started.</p>
+            <a
+              href="/tutor/applications"
+              className="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-xl font-semibold transition shadow"
+            >
+              <FaPlus /> Apply Now
+            </a>
+          </div>
+        )}
+
+        {/* Application cards */}
+        {!loading && applications.length > 0 && (
+          <div className="space-y-6">
+            {applications.map((app, index) => {
+              const status = STATUS_CONFIG[app.status] || STATUS_CONFIG.pending;
+              return (
+                <div
+                  key={app._id}
+                  className="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden hover:shadow-md transition"
+                >
+                  {/* Card header */}
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center flex-shrink-0">
+                        <FaFileAlt className="text-teal-500 text-lg" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-800">Application #{index + 1}</p>
+                        {app.createdAt && (
+                          <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                            <FaCalendarAlt /> Submitted {formatDate(app.createdAt)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${status.color}`}>
+                      {status.icon} {status.label}
+                    </span>
+                  </div>
+
+                  <div className="px-6 py-5 space-y-5">
+                    {/* Cover letter */}
+                    <div>
+                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Cover Letter</p>
+                      <p className="text-gray-700 text-sm leading-relaxed bg-gray-50 rounded-xl px-4 py-3 border border-gray-100">
+                        {app.letter}
+                      </p>
+                    </div>
+
+                    {/* CV link */}
+                    <div className="flex items-center gap-3">
+                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">CV / Resume</p>
+                      <a
+                        href={`https://docs.google.com/viewer?url=${encodeURIComponent(app.cvUrl)}&embedded=true`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-sm text-teal-600 hover:text-teal-800 font-semibold underline underline-offset-2 transition"
+                      >
+                        <FaExternalLinkAlt className="text-xs" /> View CV
+                      </a>
+                    </div>
+
+                    {/* Experiences */}
+                    {app.experiences && app.experiences.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+                          <FaBriefcase /> Work Experience
+                        </p>
+                        <div className="space-y-3">
+                          {app.experiences.map((exp, i) => (
+                            <div key={i} className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-4">
+                              <div className="flex items-start justify-between flex-wrap gap-2 mb-1">
+                                <div>
+                                  <p className="font-semibold text-gray-800 flex items-center gap-1.5">
+                                    <FaUserTie className="text-teal-400 text-sm" /> {exp.position}
+                                  </p>
+                                  <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
+                                    <FaBuilding className="text-gray-400 text-xs" /> {exp.company}
+                                  </p>
+                                </div>
+                                <span className="text-xs text-gray-400 bg-white border border-gray-200 rounded-lg px-2 py-1 whitespace-nowrap">
+                                  {formatDate(exp.startDate)} → {exp.isCurrent ? "Present" : formatDate(exp.endDate)}
+                                </span>
+                              </div>
+                              {exp.description && (
+                                <p className="text-sm text-gray-600 mt-2 leading-relaxed">{exp.description}</p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Approved info */}
+                    {app.status === "approved" && app.approvedAt && (
+                      <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 rounded-xl px-4 py-2.5 border border-green-100">
+                        <FaCheckCircle />
+                        <span>Approved on {formatDate(app.approvedAt)}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
