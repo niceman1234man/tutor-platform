@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import API from "../../api/api";
 import {
   FaCheckCircle,
@@ -10,15 +10,73 @@ import {
   FaChartBar,
   FaTrash,
   FaReceipt,
+  FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
 
 const STATUS_FILTERS = ["All", "Pending", "Approved", "Rejected"];
+const PAGE_SIZE = 10;
 
 const STATUS_META = {
   pending:  { label: "Pending",  icon: <FaHourglassHalf />, classes: "bg-amber-100 text-amber-700 border-amber-200" },
   approved: { label: "Approved", icon: <FaCheckCircle />,   classes: "bg-green-100 text-green-700 border-green-200" },
   rejected: { label: "Rejected", icon: <FaTimesCircle />,   classes: "bg-red-100 text-red-700 border-red-200" },
 };
+
+function Pagination({ page, totalPages, onChange }) {
+  if (totalPages <= 1) return null;
+
+  const pages = [];
+  for (let i = 1; i <= totalPages; i++) {
+    if (
+      i === 1 ||
+      i === totalPages ||
+      (i >= page - 1 && i <= page + 1)
+    ) {
+      pages.push(i);
+    } else if (pages[pages.length - 1] !== "…") {
+      pages.push("…");
+    }
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-1 pt-4 pb-2">
+      <button
+        onClick={() => onChange(page - 1)}
+        disabled={page === 1}
+        className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 transition"
+      >
+        <FaChevronLeft className="text-xs" />
+      </button>
+
+      {pages.map((p, i) =>
+        p === "…" ? (
+          <span key={`ellipsis-${i}`} className="w-8 h-8 flex items-center justify-center text-gray-400 text-sm">…</span>
+        ) : (
+          <button
+            key={p}
+            onClick={() => onChange(p)}
+            className={`w-8 h-8 rounded-lg text-sm font-semibold border transition ${
+              p === page
+                ? "bg-teal-600 text-white border-teal-600"
+                : "border-gray-200 text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            {p}
+          </button>
+        )
+      )}
+
+      <button
+        onClick={() => onChange(page + 1)}
+        disabled={page === totalPages}
+        className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 transition"
+      >
+        <FaChevronRight className="text-xs" />
+      </button>
+    </div>
+  );
+}
 
 export default function Payments() {
   const [payments, setPayments] = useState([]);
@@ -29,6 +87,7 @@ export default function Payments() {
   const [updating, setUpdating] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     setLoading(true);
@@ -37,6 +96,9 @@ export default function Payments() {
       .catch(() => setError("Failed to fetch payments"))
       .finally(() => setLoading(false));
   }, []);
+
+  // Reset to page 1 when filter/search changes
+  useEffect(() => { setPage(1); }, [filter, search]);
 
   const handleStatusChange = async (id, newStatus) => {
     setUpdating(id);
@@ -65,9 +127,32 @@ export default function Payments() {
     }
   };
 
+  const total        = payments.length;
+  const pendingCount  = payments.filter((p) => p.status === "pending").length;
+  const approvedCount = payments.filter((p) => p.status === "approved").length;
+  const rejectedCount = payments.filter((p) => p.status === "rejected").length;
+  const totalRevenue  = payments
+    .filter((p) => p.status === "approved")
+    .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+
+  const filtered = useMemo(() => payments.filter((p) => {
+    const matchStatus = filter === "All" || p.status === filter.toLowerCase();
+    const q = search.trim().toLowerCase();
+    const matchSearch =
+      !q ||
+      (p.studentId?.name || p.studentName || "").toLowerCase().includes(q) ||
+      (p.studentId?.email || p.studentEmail || "").toLowerCase().includes(q) ||
+      (p.method || "").toLowerCase().includes(q) ||
+      (p.courseId?.title || "").toLowerCase().includes(q);
+    return matchStatus && matchSearch;
+  }), [payments, filter, search]);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
   const downloadCSV = () => {
     const headers = ["Student Name", "Email", "Course", "Amount", "Method", "Status", "Date"];
-    const rows = displayed.map((p) => [
+    const rows = filtered.map((p) => [
       `"${p.studentId?.name || p.studentName || "Unknown"}"`,
       `"${p.studentId?.email || p.studentEmail || ""}"`,
       `"${p.courseId?.title || ""}"`,
@@ -85,26 +170,6 @@ export default function Payments() {
     a.click();
     URL.revokeObjectURL(url);
   };
-
-  const total        = payments.length;
-  const pendingCount  = payments.filter((p) => p.status === "pending").length;
-  const approvedCount = payments.filter((p) => p.status === "approved").length;
-  const rejectedCount = payments.filter((p) => p.status === "rejected").length;
-  const totalRevenue  = payments
-    .filter((p) => p.status === "approved")
-    .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
-
-  const displayed = payments.filter((p) => {
-    const matchStatus = filter === "All" || p.status === filter.toLowerCase();
-    const q = search.trim().toLowerCase();
-    const matchSearch =
-      !q ||
-      (p.studentId?.name || p.studentName || "").toLowerCase().includes(q) ||
-      (p.studentId?.email || p.studentEmail || "").toLowerCase().includes(q) ||
-      (p.method || "").toLowerCase().includes(q) ||
-      (p.courseId?.title || "").toLowerCase().includes(q);
-    return matchStatus && matchSearch;
-  });
 
   const reportCards = [
     { label: "Total",    value: total,          color: "from-teal-500 to-teal-700",     icon: <FaMoneyBillWave />, filter: "All" },
@@ -184,7 +249,7 @@ export default function Payments() {
 
         <button
           onClick={downloadCSV}
-          disabled={displayed.length === 0}
+          disabled={filtered.length === 0}
           className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-40 text-white px-4 py-2 rounded-xl font-semibold text-sm transition"
         >
           <FaDownload /> CSV
@@ -206,16 +271,23 @@ export default function Payments() {
         </div>
       ) : error ? (
         <p className="text-red-500 text-center">{error}</p>
-      ) : displayed.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <FaMoneyBillWave className="text-4xl mx-auto mb-3 text-gray-200" />
           <p>No payments found.</p>
         </div>
       ) : (
         <div className="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden">
-          <div className="px-5 py-2.5 border-b border-gray-100 text-xs text-gray-400">
-            Showing {displayed.length} of {total} payments
+          {/* Table header info */}
+          <div className="px-5 py-2.5 border-b border-gray-100 flex items-center justify-between text-xs text-gray-400">
+            <span>
+              Showing {filtered.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} payments
+            </span>
+            {totalPages > 1 && (
+              <span>Page {page} of {totalPages}</span>
+            )}
           </div>
+
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -232,101 +304,77 @@ export default function Payments() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {displayed.map((p, idx) => {
+                {paginated.map((p, idx) => {
                   const meta = STATUS_META[p.status] || STATUS_META.pending;
                   const studentName  = p.studentId?.name  || p.studentName  || "—";
                   const studentEmail = p.studentId?.email || p.studentEmail || "";
                   const isUpdating   = updating === p._id;
                   const isDeleting   = deleting === p._id;
+                  const rowNum       = (page - 1) * PAGE_SIZE + idx + 1;
 
                   return (
                     <tr key={p._id} className="hover:bg-gray-50 transition">
-                      {/* # */}
-                      <td className="px-4 py-3 text-gray-400 font-medium">{idx + 1}</td>
+                      <td className="px-4 py-3 text-gray-400 font-medium">{rowNum}</td>
 
-                      {/* Student */}
                       <td className="px-4 py-3">
                         <p className="font-semibold text-gray-800 leading-tight">{studentName}</p>
                         {studentEmail && <p className="text-xs text-gray-400 mt-0.5">{studentEmail}</p>}
                       </td>
 
-                      {/* Course */}
                       <td className="px-4 py-3 text-gray-600 max-w-[160px] truncate">
                         {p.courseId?.title || <span className="text-gray-300">—</span>}
                       </td>
 
-                      {/* Amount */}
                       <td className="px-4 py-3 font-bold text-green-600 whitespace-nowrap">
                         {p.amount ?? 0} ETB
                       </td>
 
-                      {/* Method */}
                       <td className="px-4 py-3 text-gray-600">
                         {p.method || <span className="text-gray-300">—</span>}
                       </td>
 
-                      {/* Date */}
                       <td className="px-4 py-3 text-gray-400 whitespace-nowrap text-xs">
                         {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : "—"}
                       </td>
 
-                      {/* Receipt */}
                       <td className="px-4 py-3">
                         {p.receiptImage ? (
                           <a href={p.receiptImage} target="_blank" rel="noopener noreferrer">
-                            <img
-                              src={p.receiptImage}
-                              alt="Receipt"
-                              className="w-10 h-10 object-cover rounded-lg border hover:opacity-80 transition"
-                            />
+                            <img src={p.receiptImage} alt="Receipt" className="w-10 h-10 object-cover rounded-lg border hover:opacity-80 transition" />
                           </a>
                         ) : (
                           <span className="text-gray-300"><FaReceipt /></span>
                         )}
                       </td>
 
-                      {/* Status badge */}
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${meta.classes}`}>
                           {meta.icon} {meta.label}
                         </span>
                       </td>
 
-                      {/* Actions */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           {p.status !== "approved" && (
-                            <button
-                              disabled={isUpdating}
-                              onClick={() => handleStatusChange(p._id, "approved")}
-                              className="flex items-center gap-1 bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white px-2.5 py-1 rounded-lg text-xs font-semibold transition"
-                            >
+                            <button disabled={isUpdating} onClick={() => handleStatusChange(p._id, "approved")}
+                              className="flex items-center gap-1 bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white px-2.5 py-1 rounded-lg text-xs font-semibold transition">
                               <FaCheckCircle /> Approve
                             </button>
                           )}
                           {p.status !== "rejected" && (
-                            <button
-                              disabled={isUpdating}
-                              onClick={() => handleStatusChange(p._id, "rejected")}
-                              className="flex items-center gap-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white px-2.5 py-1 rounded-lg text-xs font-semibold transition"
-                            >
+                            <button disabled={isUpdating} onClick={() => handleStatusChange(p._id, "rejected")}
+                              className="flex items-center gap-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white px-2.5 py-1 rounded-lg text-xs font-semibold transition">
                               <FaTimesCircle /> Reject
                             </button>
                           )}
                           {p.status !== "pending" && (
-                            <button
-                              disabled={isUpdating}
-                              onClick={() => handleStatusChange(p._id, "pending")}
-                              className="flex items-center gap-1 bg-amber-400 hover:bg-amber-500 disabled:opacity-50 text-white px-2.5 py-1 rounded-lg text-xs font-semibold transition"
-                            >
+                            <button disabled={isUpdating} onClick={() => handleStatusChange(p._id, "pending")}
+                              className="flex items-center gap-1 bg-amber-400 hover:bg-amber-500 disabled:opacity-50 text-white px-2.5 py-1 rounded-lg text-xs font-semibold transition">
                               <FaHourglassHalf /> Pending
                             </button>
                           )}
-                          <button
-                            disabled={isDeleting}
-                            onClick={() => setConfirmDelete(p._id)}
-                            className="flex items-center gap-1 bg-gray-100 hover:bg-red-50 hover:text-red-600 disabled:opacity-50 text-gray-500 px-2.5 py-1 rounded-lg text-xs font-semibold transition border border-gray-200 hover:border-red-200"
-                          >
+                          <button disabled={isDeleting} onClick={() => setConfirmDelete(p._id)}
+                            className="flex items-center gap-1 bg-gray-100 hover:bg-red-50 hover:text-red-600 disabled:opacity-50 text-gray-500 px-2.5 py-1 rounded-lg text-xs font-semibold transition border border-gray-200 hover:border-red-200">
                             <FaTrash /> Delete
                           </button>
                         </div>
@@ -336,6 +384,11 @@ export default function Payments() {
                 })}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="border-t border-gray-100 px-4">
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>
         </div>
       )}
@@ -351,17 +404,12 @@ export default function Payments() {
               <h3 className="text-lg font-bold text-gray-800 mb-1">Delete Payment?</h3>
               <p className="text-gray-500 text-sm mb-6">This action cannot be undone. The payment record will be permanently removed.</p>
               <div className="flex gap-3">
-                <button
-                  onClick={() => setConfirmDelete(null)}
-                  className="flex-1 border border-gray-200 text-gray-600 py-2.5 rounded-xl hover:bg-gray-50 font-semibold transition"
-                >
+                <button onClick={() => setConfirmDelete(null)}
+                  className="flex-1 border border-gray-200 text-gray-600 py-2.5 rounded-xl hover:bg-gray-50 font-semibold transition">
                   Cancel
                 </button>
-                <button
-                  onClick={() => handleDelete(confirmDelete)}
-                  disabled={deleting === confirmDelete}
-                  className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl font-semibold transition disabled:opacity-60"
-                >
+                <button onClick={() => handleDelete(confirmDelete)} disabled={deleting === confirmDelete}
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl font-semibold transition disabled:opacity-60">
                   {deleting === confirmDelete ? "Deleting…" : "Yes, Delete"}
                 </button>
               </div>
