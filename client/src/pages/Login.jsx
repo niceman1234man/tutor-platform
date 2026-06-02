@@ -1,41 +1,65 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import API from "../api/api";
 import useAuth from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { FaBan } from "react-icons/fa";
+
+function SuspendedScreen() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
+      <div className="w-full max-w-md p-10 bg-white rounded-2xl shadow-2xl flex flex-col items-center text-center">
+        <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mb-5">
+          <FaBan className="text-red-500 text-4xl" />
+        </div>
+        <h2 className="text-2xl font-extrabold text-red-600 mb-2">Account Suspended</h2>
+        <p className="text-gray-600 mb-6 leading-relaxed">
+          Your account has been deactivated. Please contact the administrator to restore access.
+        </p>
+        <a
+          href="mailto:admin@skillnest.com"
+          className="inline-block bg-red-500 hover:bg-red-600 text-white px-6 py-2.5 rounded-xl font-semibold transition"
+        >
+          Contact Admin
+        </a>
+      </div>
+    </div>
+  );
+}
 
 export default function Login() {
   const [form, setForm] = useState({});
   const [error, setError] = useState("");
+  const [suspended, setSuspended] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login, setUser } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuspended(false);
     try {
       const res = await API.post("/auth/login", form);
       login(res.data);
-      
-      // Redirect based on role
+
       const role = res.data.user.role;
-      if (role === "admin") {
-        navigate("/admin");
-      } else if (role === "tutor") {
-        navigate("/tutor");
-      } else {
-        navigate("/student");
-      }
+      if (role === "admin") navigate("/admin");
+      else if (role === "tutor") navigate("/tutor");
+      else navigate("/student");
     } catch (err) {
-      setError(
-        err?.response?.data?.message || "Invalid email or password."
-      );
+      const message = err?.response?.data?.message || "";
+      if (message === "SUSPENDED") {
+        setSuspended(true);
+      } else {
+        setError(message || "Invalid email or password.");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  if (suspended) return <SuspendedScreen />;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-200">
@@ -43,7 +67,7 @@ export default function Login() {
         <h2 className="text-3xl font-bold mb-6 text-teal-700">Welcome Back</h2>
         <form onSubmit={handleSubmit} className="w-full">
           {error && (
-            <div className="bg-red-100 text-red-700 p-2 mb-3 rounded text-center">
+            <div className="bg-red-100 text-red-700 p-2 mb-3 rounded text-center text-sm">
               {error}
             </div>
           )}
