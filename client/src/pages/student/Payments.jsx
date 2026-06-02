@@ -13,9 +13,7 @@ import {
 const PAYMENT_METHODS = [
   "Telebirr",
   "Bank Transfer",
-  "Credit Card",
-  "PayPal",
-  "Cash",
+
 ];
 const STATUS_FILTERS = ["All", "Pending", "Approved", "Rejected"];
 
@@ -252,7 +250,7 @@ export default function Payments() {
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-gray-800">Amount:</span>
                   <span className="text-green-700 font-semibold">
-                    ${p.amount}
+                    {p.amount} ETB
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
