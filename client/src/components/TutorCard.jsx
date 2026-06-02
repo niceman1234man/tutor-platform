@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import API from "../api/api";
 
-const PAYMENT_METHODS = ["Telebirr", "Bank Transfer", "Credit Card", "PayPal", "Cash"];
+const PAYMENT_METHODS = ["Telebirr", "Bank Transfer"];
 
 export default function TutorCard({ tutor }) {
   const navigate = useNavigate();
