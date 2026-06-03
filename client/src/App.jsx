@@ -25,6 +25,7 @@ import ManageTutor from "./pages/admin/ManageTutor";
 import AdminTutorDetail from "./pages/admin/TutorDetail";
 import Payments from "./pages/student/Payments";
 import AdminPayments from "./pages/admin/Payments";
+import AdminContacts from "./pages/admin/Contacts";
 import CourseProgress from "./pages/student/CourseProgress";
 import RegisteredCourses from "./pages/student/RegisteredCourses";
 import AssignStudent from "./pages/admin/AssignStudent";
@@ -73,6 +74,7 @@ function AppContent() {
           <Route path="/admin/assign-student" element={<AssignStudent />} />
           <Route path="/admin/tutors-materials" element={<TutorsMaterials />} />
           <Route path="/admin/tutors/:id" element={<AdminTutorDetail />} />
+          <Route path="/admin/contacts" element={<AdminContacts />} />
         </Route>
 
         {/* Tutor routes — persistent sidebar */}
