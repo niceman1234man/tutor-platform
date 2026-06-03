@@ -10,11 +10,7 @@ import {
   FaPaperPlane,
 } from "react-icons/fa";
 
-const PAYMENT_METHODS = [
-  "Telebirr",
-  "Bank Transfer",
-
-];
+const PAYMENT_METHODS = ["Telebirr", "Bank Transfer"];
 const STATUS_FILTERS = ["All", "Pending", "Approved", "Rejected"];
 
 export default function Payments() {
@@ -29,7 +25,7 @@ export default function Payments() {
 
   const fetchPayments = async () => {
     try {
-      const res = await API.get("/payments", {
+      const res = await API.get("/payments/my", {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setPayments(res.data);
@@ -73,11 +69,11 @@ export default function Payments() {
         {
           amount: Number(form.amount),
           method: form.method,
-          studentId:    user._id   || user.id,
-          studentName:  user.name  || "",
+          studentId: user._id || user.id,
+          studentName: user.name || "",
           studentEmail: user.email || "",
         },
-        { headers: { Authorization: `Bearer ${user.token}` } }
+        { headers: { Authorization: `Bearer ${user.token}` } },
       );
 
       setSuccess("Payment submitted successfully!");
