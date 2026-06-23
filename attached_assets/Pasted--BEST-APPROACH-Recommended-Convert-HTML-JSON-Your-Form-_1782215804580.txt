@@ -1,0 +1,111 @@
+✅ ✅ BEST APPROACH (Recommended)
+🔥 Convert HTML → JSON → Your Form
+Example HTML (what you might have)
+<div class="question">
+  <p>What is React?</p>
+  <ul>
+    <li>A library</li>
+    <li>A database</li>
+    <li>An OS</li>
+    <li>A browser</li>
+  </ul>
+  <span class="answer">0</span>
+  <span class="explanation">React is a JS library.</span>
+</div>
+🧠 Step 1: Parse HTML in Backend (Node.js)
+
+Install:
+
+npm install cheerio
+Controller example:
+import cheerio from "cheerio";
+
+export const importExamFromHTML = async (req, res) => {
+  try {
+    const html = req.body.html; // send HTML string from frontend
+
+    const $ = cheerio.load(html);
+    const questions = [];
+
+    $(".question").each((i, el) => {
+      const question = $(el).find("p").text();
+
+      const options = [];
+      $(el).find("li").each((j, li) => {
+        options.push($(li).text());
+      });
+
+      const correctAnswer = Number($(el).find(".answer").text());
+      const explanation = $(el).find(".explanation").text();
+
+      questions.push({
+        question,
+        options,
+        correctAnswer,
+        explanation,
+      });
+    });
+
+    res.json({ questions });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+🧑‍💻 Step 2: Frontend (Upload HTML)
+
+Add input:
+
+<input type="file" accept=".html" onChange={handleHTMLUpload} />
+Handle upload:
+const handleHTMLUpload = async (e) => {
+  const file = e.target.files[0];
+  const text = await file.text();
+
+  const res = await API.post("/admin/exams/import-html", {
+    html: text,
+  });
+
+  setExam((prev) => ({
+    ...prev,
+    questions: res.data.questions,
+  }));
+};
+⚡ RESULT
+
+Instead of manually writing:
+❌ Question by question
+
+You can:
+✅ Upload HTML file
+✅ Auto-fill all questions
+
+🚀 EVEN BETTER (PRO TIP)
+
+Instead of HTML, use:
+
+🔥 JSON format (BEST)
+[
+  {
+    "question": "What is React?",
+    "options": ["Library", "Database", "OS", "Browser"],
+    "correctAnswer": 0,
+    "explanation": "React is a JS library"
+  }
+]
+
+👉 Much easier, cleaner, and faster.
+
+⚠️ IMPORTANT WARNING
+
+HTML parsing:
+
+❌ Can break if format changes
+❌ Hard to maintain
+❌ Not scalable
+
+👉 JSON is always better for production
+
+💡 FINAL RECOMMENDATION
+For YOU:
+If you already have HTML → use parsing (Cheerio)
+For future → switch to JSON import

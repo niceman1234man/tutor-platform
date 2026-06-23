@@ -4,6 +4,7 @@ import User from "../models/user.js";
 import Tutor from "../models/tutor.js";
 import Payment from "../models/payment.js";
 import Exam from "../models/exam.js";
+import * as cheerio from "cheerio";
 
 // USERS
 export const getAssignedStudents = async (req, res) => {
@@ -336,6 +337,71 @@ export const addQuestion = async (req, res) => {
     res.status(201).json(exam.questions[exam.questions.length - 1]);
   } catch (err) {
     console.error("ADD QUESTION ERROR 👉", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// IMPORT EXAM QUESTIONS FROM HTML
+export const importExamFromHTML = async (req, res) => {
+  try {
+    const { html } = req.body;
+    if (!html) return res.status(400).json({ message: "No HTML content provided." });
+
+    const $ = cheerio.load(html);
+    const questions = [];
+    const errors = [];
+
+    $(".question").each((i, el) => {
+      const questionText = $(el).find(".question-text").text().trim()
+        || $(el).find("p").first().text().trim()
+        || $(el).find("h3").text().trim()
+        || $(el).find("h4").text().trim();
+
+      const options = [];
+      $(el).find(".options li, ul li, ol li").each((j, li) => {
+        options.push($(li).text().trim());
+      });
+
+      // Correct answer: index from .answer span, or index of li.correct, or data-correct attr
+      let correctAnswer = null;
+      const answerSpan = $(el).find(".answer").text().trim();
+      if (answerSpan !== "") {
+        correctAnswer = Number(answerSpan);
+      } else {
+        $(el).find(".options li, ul li, ol li").each((j, li) => {
+          if (
+            $(li).hasClass("correct") ||
+            $(li).attr("data-correct") === "true" ||
+            $(li).attr("correct") !== undefined
+          ) {
+            correctAnswer = j;
+          }
+        });
+      }
+
+      const explanation = $(el).find(".explanation").text().trim()
+        || $(el).find("blockquote").text().trim();
+
+      // Validate
+      if (!questionText) { errors.push(`Question ${i + 1}: missing question text.`); return; }
+      if (options.length < 2) { errors.push(`Question ${i + 1}: needs at least 2 options.`); return; }
+      if (correctAnswer === null || correctAnswer < 0 || correctAnswer >= options.length) {
+        errors.push(`Question ${i + 1}: correct answer not found or out of range.`); return;
+      }
+
+      questions.push({ question: questionText, options, correctAnswer, explanation });
+    });
+
+    if (questions.length === 0 && errors.length === 0) {
+      return res.status(422).json({
+        message: 'No ".question" elements found. Check your HTML format.',
+        questions: [],
+        errors: [],
+      });
+    }
+
+    res.json({ questions, errors, total: questions.length });
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
