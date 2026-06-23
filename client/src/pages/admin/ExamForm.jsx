@@ -130,7 +130,7 @@ export default function ExamForm() {
     }
   };
 
-  // ── HTML Import ──────────────────────────────────────────
+  // ── HTML Import — parsed entirely in the browser with DOMParser ──
   const handleHTMLUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -139,10 +139,68 @@ export default function ExamForm() {
     setImportResult(null);
     try {
       const text = await file.text();
-      const res = await API.post("/admin/exams/import-html", { html: text });
-      setImportResult(res.data);
+      const doc = new DOMParser().parseFromString(text, "text/html");
+      const questionEls = doc.querySelectorAll(".question");
+
+      if (questionEls.length === 0) {
+        setImportError('No elements with class "question" found. Make sure each question is wrapped in <div class="question">.');
+        return;
+      }
+
+      const questions = [];
+      const errors = [];
+
+      questionEls.forEach((el, i) => {
+        // Question text: .question-text > first <p> > <h3> > <h4>
+        const questionText =
+          el.querySelector(".question-text")?.textContent?.trim() ||
+          el.querySelector("p")?.textContent?.trim() ||
+          el.querySelector("h3")?.textContent?.trim() ||
+          el.querySelector("h4")?.textContent?.trim() ||
+          "";
+
+        // Options: li inside .options, or any ul/ol
+        const liEls = el.querySelectorAll(".options li, ul li, ol li");
+        const options = Array.from(liEls).map((li) => li.textContent.trim());
+
+        // Correct answer: <span class="answer">0</span>  OR  li.correct  OR  li[data-correct]
+        let correctAnswer = null;
+        const answerSpan = el.querySelector(".answer");
+        if (answerSpan) {
+          const idx = Number(answerSpan.textContent.trim());
+          if (!isNaN(idx)) correctAnswer = idx;
+        } else {
+          Array.from(liEls).forEach((li, j) => {
+            if (
+              li.classList.contains("correct") ||
+              li.getAttribute("data-correct") === "true" ||
+              li.hasAttribute("correct")
+            ) {
+              correctAnswer = j;
+            }
+          });
+        }
+
+        // Explanation
+        const explanation =
+          el.querySelector(".explanation")?.textContent?.trim() ||
+          el.querySelector("blockquote")?.textContent?.trim() ||
+          "";
+
+        // Validate
+        if (!questionText) { errors.push(`Question ${i + 1}: missing question text.`); return; }
+        if (options.length < 2) { errors.push(`Question ${i + 1}: needs at least 2 options.`); return; }
+        if (correctAnswer === null || correctAnswer < 0 || correctAnswer >= options.length) {
+          errors.push(`Question ${i + 1}: correct answer not found — mark one <li class="correct"> or add <span class="answer">0</span>.`);
+          return;
+        }
+
+        questions.push({ question: questionText, options, correctAnswer, explanation });
+      });
+
+      setImportResult({ questions, errors, total: questions.length });
     } catch (err) {
-      setImportError(err?.response?.data?.message || "Failed to parse HTML. Check the format.");
+      setImportError("Could not read the file. Make sure it is a valid HTML file.");
     } finally {
       setImporting(false);
       if (htmlFileRef.current) htmlFileRef.current.value = "";
