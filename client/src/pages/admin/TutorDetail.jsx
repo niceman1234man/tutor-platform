@@ -34,7 +34,7 @@ export default function TutorDetails() {
     if (!window.confirm(`Are you sure you want to change the course type to '${newType}'?`)) return;
     try {
       setUpdatingType(true);
-      const res = await API.patch(`/courses/${id}`, { type: newType });
+      const res = await API.patch(`/admin/courses/${id}/type`, { type: newType });
       setCourse((prev) => ({ ...prev, type: res.data.type }));
     } catch (err) {
       alert("Failed to update course type.");

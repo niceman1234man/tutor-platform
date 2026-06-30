@@ -405,3 +405,23 @@ export const importExamFromHTML = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// UPDATE COURSE TYPE (admin only)
+export const updateCourseType = async (req, res) => {
+  try {
+    const { type } = req.body;
+    if (!type || !["free", "pro"].includes(type)) {
+      return res.status(400).json({ message: "Invalid type. Must be 'free' or 'pro'." });
+    }
+    const Course = (await import("../models/course.js")).default;
+    const course = await Course.findByIdAndUpdate(
+      req.params.id,
+      { type },
+      { new: true }
+    );
+    if (!course) return res.status(404).json({ message: "Course not found" });
+    res.json(course);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
