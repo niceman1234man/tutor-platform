@@ -1,7 +1,7 @@
 
 import express from "express";
 import { getUsers, deleteUser, toggleUserStatus, updateUserRole } from "../controllers/userController.js";
-import { getAllTutors, getApprovedTutorApplications, getAssignedStudents, approveTutor, approvePayment, assignStudentToTutor, createExam, getExams, getExamById, updateQuestion, deleteQuestion, deleteExam, addQuestion, importExamFromHTML, updateCourseType } from "../controllers/adminCotroller.js";
+import { getAllTutors, getApprovedTutorApplications, getAssignedStudents, approveTutor, approvePayment, assignStudentToTutor, createExam, getExams, getExamById, updateQuestion, deleteQuestion, deleteExam, addQuestion, updateCourseType } from "../controllers/adminCotroller.js";
 
 const router = express.Router();
 
@@ -10,7 +10,6 @@ router.get("/students/assigned", getAssignedStudents);
 router.delete("/users/:id", deleteUser);
 router.patch("/users/:id", assignStudentToTutor);
 router.post("/exams", createExam);
-router.post("/exams/import-html", importExamFromHTML);
 router.get("/exams", getExams);
 router.get("/exams/:id", getExamById);
 router.put("/exams/:examId/questions/:questionId", updateQuestion);
