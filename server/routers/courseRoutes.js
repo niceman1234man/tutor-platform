@@ -39,10 +39,10 @@ router.get("/:id", getCourseById);
 router.post("/", protect, authorize("tutor"), upload.single("image"), createCourse);
 
 // Update a course
-router.patch("/:id", protect, authorize("tutor"), upload.single("image"), updateCourse);
+router.patch("/:id", protect, authorize("tutor", "admin"), upload.single("image"), updateCourse);
 
 // Delete a course
-router.delete("/:id", protect, authorize("tutor"), deleteCourse);
+router.delete("/:id", protect, authorize("tutor", "admin"), deleteCourse);
 
 
 // Mark/unmark a chapter as complete (student)

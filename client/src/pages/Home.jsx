@@ -153,7 +153,8 @@ export default function Home() {
                   </div>
                   <h3 className="text-xl font-semibold mb-2">{t.title}</h3>
                   <p className="text-gray-600 mb-4">{t.description}</p>
-                  <button className="bg-teal-700 text-white px-4 py-2 rounded-lg">Start Course</button>
+                  <button className="bg-teal-700 text-white px-4 py-2 rounded-lg"               onClick={() => (window.location.href = "/tutors")}
+                    >Start Course</button>
                 </div>
               ))
             ) : (

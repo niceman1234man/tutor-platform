@@ -256,7 +256,8 @@ export const updateCourse = async (req, res) => {
     const { title, description, category, price, type, imageUrl } = req.body;
     const course = await Course.findById(req.params.id);
     if (!course) return res.status(404).json({ message: "Course not found" });
-    if (course.tutorId.toString() !== req.user.id)
+    const isAdmin = req.user.role === "admin";
+    if (!isAdmin && course.tutorId.toString() !== req.user.id)
       return res.status(403).json({ message: "Not authorized" });
 
     course.title = title ?? course.title;
