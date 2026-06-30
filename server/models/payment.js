@@ -8,6 +8,7 @@ const paymentSchema = new mongoose.Schema({
   amount:       Number,
   receiptImage: String,
   method:       String,
+  bankName:     { type: String, default: "" },
   status: {
     type: String,
     enum: ["pending", "approved", "rejected"],

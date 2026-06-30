@@ -143,6 +143,7 @@ export default function Payments() {
       (p.studentId?.name || p.studentName || "").toLowerCase().includes(q) ||
       (p.studentId?.email || p.studentEmail || "").toLowerCase().includes(q) ||
       (p.method || "").toLowerCase().includes(q) ||
+      (p.bankName || "").toLowerCase().includes(q) ||
       (p.courseId?.title || "").toLowerCase().includes(q);
     return matchStatus && matchSearch;
   }), [payments, filter, search]);
@@ -151,13 +152,14 @@ export default function Payments() {
   const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const downloadCSV = () => {
-    const headers = ["Student Name", "Email", "Course", "Amount", "Method", "Status", "Date"];
+    const headers = ["Student Name", "Email", "Course", "Amount", "Method", "Bank Name", "Status", "Date"];
     const rows = filtered.map((p) => [
       `"${p.studentId?.name || p.studentName || "Unknown"}"`,
       `"${p.studentId?.email || p.studentEmail || ""}"`,
       `"${p.courseId?.title || ""}"`,
       `"${p.amount || 0}"`,
       `"${p.method || ""}"`,
+      `"${p.bankName || ""}"`,
       `"${p.status || ""}"`,
       `"${p.createdAt ? new Date(p.createdAt).toLocaleDateString() : ""}"`,
     ]);
@@ -297,6 +299,7 @@ export default function Payments() {
                   <th className="px-4 py-3 text-left font-semibold">Course</th>
                   <th className="px-4 py-3 text-left font-semibold">Amount</th>
                   <th className="px-4 py-3 text-left font-semibold">Method</th>
+                  <th className="px-4 py-3 text-left font-semibold">Bank</th>
                   <th className="px-4 py-3 text-left font-semibold">Date</th>
                   <th className="px-4 py-3 text-left font-semibold">Receipt</th>
                   <th className="px-4 py-3 text-left font-semibold">Status</th>
@@ -331,6 +334,10 @@ export default function Payments() {
 
                       <td className="px-4 py-3 text-gray-600">
                         {p.method || <span className="text-gray-300">—</span>}
+                      </td>
+
+                      <td className="px-4 py-3 text-gray-600 text-xs max-w-[140px] truncate">
+                        {p.bankName || <span className="text-gray-300">—</span>}
                       </td>
 
                       <td className="px-4 py-3 text-gray-400 whitespace-nowrap text-xs">
