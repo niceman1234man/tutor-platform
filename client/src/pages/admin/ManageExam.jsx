@@ -41,6 +41,7 @@ export default function AdminExamManager() {
             }
         };
     const [loading, setLoading] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
 
   
     const fetchExams = async () => {
@@ -122,6 +123,14 @@ export default function AdminExamManager() {
     };
 
     
+    const filteredExams = exams.filter((exam) => {
+        const q = searchQuery.toLowerCase();
+        return (
+            exam.title?.toLowerCase().includes(q) ||
+            exam.category?.toLowerCase().includes(q)
+        );
+    });
+
     return (
         <div className="p-6 max-w-6xl mx-auto space-y-8 bg-gradient-to-br from-blue-50 to-purple-100 min-h-screen">
 
@@ -132,11 +141,37 @@ export default function AdminExamManager() {
                     All Exams
                 </h2>
 
-                {exams.length === 0 ? (
-                    <p className="text-gray-500">No exams found</p>
+                {/* Search Bar */}
+                <div className="relative mb-6">
+                    <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                        </svg>
+                    </span>
+                    <input
+                        type="text"
+                        placeholder="Search exams by title or category..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 border-2 border-blue-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300 text-gray-700 bg-blue-50 transition"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery("")}
+                            className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    )}
+                </div>
+
+                {filteredExams.length === 0 ? (
+                    <p className="text-gray-500">{exams.length === 0 ? "No exams found" : "No exams match your search"}</p>
                 ) : (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {exams.map((exam) => (
+                        {filteredExams.map((exam) => (
                             <div key={exam._id} className="transition-all duration-200 border border-blue-100 bg-gradient-to-br from-white to-blue-50 p-5 rounded-xl shadow hover:shadow-2xl hover:scale-[1.02] flex flex-col justify-between min-h-[140px]">
                                 <div>
                                     <h3 className="font-bold text-lg text-blue-800 mb-1">{exam.title}</h3>
