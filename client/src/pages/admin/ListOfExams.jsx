@@ -13,6 +13,7 @@ export default function ListOfExams() {
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     let mounted = true;
@@ -40,13 +41,47 @@ export default function ListOfExams() {
     <>
       <style>{animationStyles}</style>
       <div className="max-w-5xl mx-auto p-6 bg-gradient-to-br from-blue-50 via-white to-teal-50 shadow-2xl rounded-2xl">
-        <h2 className="text-3xl font-extrabold text-teal-700 drop-shadow-sm tracking-tight mb-6 animate-fade-in">Exams</h2>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 animate-fade-in">
+          <h2 className="text-3xl font-extrabold text-teal-700 drop-shadow-sm tracking-tight">Exams</h2>
+          <div className="relative w-full sm:w-72">
+            <span className="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+              </svg>
+            </span>
+            <input
+              type="text"
+              placeholder="Search by title or category…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-8 py-2 border-2 border-teal-100 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-teal-300 text-gray-700 text-sm transition"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
 
-        {exams.length === 0 ? (
-          <div className="text-gray-600">No exams found.</div>
+        {(() => {
+          const filtered = exams.filter((ex) => {
+            const q = search.toLowerCase();
+            return (
+              ex.title?.toLowerCase().includes(q) ||
+              (ex.category || "").toLowerCase().includes(q)
+            );
+          });
+          return filtered.length === 0 ? (
+          <div className="text-gray-600">{exams.length === 0 ? "No exams found." : "No exams match your search."}</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {exams.map((ex, idx) => (
+            {filtered.map((ex, idx) => (
               <div
                 key={ex._id}
                 className="p-6 border-2 border-indigo-100 rounded-2xl bg-white shadow-xl flex flex-col justify-between animate-pop hover:shadow-2xl hover:border-teal-300 transition-all duration-200"
@@ -66,7 +101,8 @@ export default function ListOfExams() {
               </div>
             ))}
           </div>
-        )}
+        );
+        })()}
       </div>
     </>
   );
