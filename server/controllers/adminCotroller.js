@@ -4,7 +4,7 @@ import User from "../models/user.js";
 import Tutor from "../models/tutor.js";
 import Payment from "../models/payment.js";
 import Exam from "../models/exam.js";
-import * as cheerio from "cheerio";
+
 
 // USERS
 export const getAssignedStudents = async (req, res) => {
