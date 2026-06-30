@@ -42,7 +42,7 @@ const DASHBOARD_PREFIXES = ["/admin", "/tutor", "/student", "/user"];
 
 function AppContent() {
   const location = useLocation();
-  const isDashboard = DASHBOARD_PREFIXES.some((p) => location.pathname.startsWith(p));
+  const isDashboard = DASHBOARD_PREFIXES.some((p) => location.pathname === p || location.pathname.startsWith(p + "/"));
 
   return (
     <>
