@@ -11,13 +11,32 @@ import {
 } from "react-icons/fa";
 
 const PAYMENT_METHODS = ["Telebirr", "Bank Transfer"];
+const ETHIOPIAN_BANKS = [
+  "Commercial Bank of Ethiopia (CBE)",
+  "Awash Bank",
+  "Dashen Bank",
+  "Abyssinia Bank",
+  "United Bank",
+  "Nib International Bank",
+  "Wegagen Bank",
+  "Lion International Bank",
+  "Cooperative Bank of Oromia",
+  "Berhan Bank",
+  "Abay Bank",
+  "Addis International Bank",
+  "Enat Bank",
+  "ZamZam Bank",
+  "Hijra Bank",
+  "Tsehay Bank",
+  "Amhara Bank",
+];
 const STATUS_FILTERS = ["All", "Pending", "Approved", "Rejected"];
 
 export default function Payments() {
   const { user } = useAuth();
   const [payments, setPayments] = useState([]);
   const [filter, setFilter] = useState("All");
-  const [form, setForm] = useState({ amount: "", method: "", receipt: null });
+  const [form, setForm] = useState({ amount: "", method: "", bankName: "", receipt: null });
   const [preview, setPreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -43,6 +62,8 @@ export default function Payments() {
     if (name === "receipt" && files[0]) {
       setForm((prev) => ({ ...prev, receipt: files[0] }));
       setPreview(URL.createObjectURL(files[0]));
+    } else if (name === "method") {
+      setForm((prev) => ({ ...prev, method: value, bankName: "" }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
@@ -61,6 +82,10 @@ export default function Payments() {
       setError("Please select a payment method.");
       return;
     }
+    if (form.method === "Bank Transfer" && !form.bankName) {
+      setError("Please select the bank you paid from.");
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -69,6 +94,7 @@ export default function Payments() {
         {
           amount: Number(form.amount),
           method: form.method,
+          bankName: form.method === "Bank Transfer" ? form.bankName : undefined,
           studentId: user._id || user.id,
           studentName: user.name || "",
           studentEmail: user.email || "",
@@ -77,7 +103,7 @@ export default function Payments() {
       );
 
       setSuccess("Payment submitted successfully!");
-      setForm({ amount: "", method: "", receipt: null });
+      setForm({ amount: "", method: "", bankName: "", receipt: null });
       setPreview(null);
       fetchPayments();
     } catch {
@@ -155,6 +181,27 @@ export default function Payments() {
               ))}
             </select>
           </div>
+
+          {form.method === "Bank Transfer" && (
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-semibold text-gray-700">
+                Bank Name
+              </label>
+              <select
+                name="bankName"
+                value={form.bankName}
+                onChange={handleChange}
+                className="border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-800 bg-white"
+              >
+                <option value="">-- Select your bank --</option>
+                {ETHIOPIAN_BANKS.map((bank) => (
+                  <option key={bank} value={bank}>
+                    {bank}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-semibold text-gray-700">
@@ -253,6 +300,12 @@ export default function Payments() {
                   <span className="font-bold text-gray-800">Method:</span>
                   <span className="text-gray-700">{p.method}</span>
                 </div>
+                {p.bankName && (
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-gray-800">Bank:</span>
+                    <span className="text-gray-700">{p.bankName}</span>
+                  </div>
+                )}
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-gray-800">Status:</span>
                   {statusBadge(p.status)}
