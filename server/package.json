@@ -13,7 +13,6 @@
   "engines": {
     "node": "20.x"
   },
-
   "dependencies": {
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
