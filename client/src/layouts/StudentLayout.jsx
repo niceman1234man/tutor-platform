@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 
 const links = [
+  {to:"/exams/list",label:"Exams"},
   { to: "/student", label: "Dashboard" },
   { to: "/student/courses", label: "My Courses" },
   { to: "/student/progress", label: "Progress" },

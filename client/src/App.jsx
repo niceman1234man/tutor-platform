@@ -57,8 +57,8 @@ function AppContent() {
         <Route path="/resources" element={<Resources />} />
         <Route path="/resources/:category" element={<CategoryResources />} />
         <Route path="/tutors/:id" element={<TutorDetails />} />
-        <Route path="/exams/list" element={<ListOfExams />} />
-        <Route path="/exam/:id" element={<ExamDetail />} />
+      
+        
         <Route path="/profile" element={<Profile />} />
 
         {/* Admin routes — persistent sidebar */}
@@ -93,6 +93,8 @@ function AppContent() {
           <Route path="/student/progress" element={<CourseProgress />} />
           <Route path="/student/payments" element={<Payments />} />
           <Route path="/user" element={<StudentDashboard />} />
+          <Route path="/exams/list" element={<ListOfExams />} />
+          <Route path="/exam/:id" element={<ExamDetail />} />
         </Route>
       </Routes>
     </>
