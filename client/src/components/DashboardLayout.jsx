@@ -1,6 +1,6 @@
 import { FaBars, FaTimes, FaSignOutAlt } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import NotificationBell from "./NotificationBell";
@@ -107,6 +107,8 @@ export default function DashboardLayout({ children, links = [], title = "Dashboa
             </button>
             <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
           </div>
+
+          <Link to="/"> Back to Home</Link>
           <NotificationBell />
         </header>
 
