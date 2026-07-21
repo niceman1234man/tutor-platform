@@ -56,6 +56,7 @@ function AppContent() {
         <Route path="/register" element={<Register />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/resources/:category" element={<CategoryResources />} />
+         <Route path="/exams/list" element={<ListOfExams />} />
         <Route path="/tutors/:id" element={<TutorDetails />} />
       
         
@@ -93,7 +94,7 @@ function AppContent() {
           <Route path="/student/progress" element={<CourseProgress />} />
           <Route path="/student/payments" element={<Payments />} />
           <Route path="/user" element={<StudentDashboard />} />
-          <Route path="/exams/list" element={<ListOfExams />} />
+     
           <Route path="/exam/:id" element={<ExamDetail />} />
         </Route>
       </Routes>
