@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import API from "../api/api";
 import Hero from "../assets/Hero.jpg";
 import why from "../assets/why.jpg";
@@ -42,6 +42,8 @@ export default function Home() {
   const [loadingExams, setLoadingExams] = useState(true);
   const [examError, setExamError]   = useState("");
   const [contacts, setContacts]     = useState([]);
+  const examSliderRef   = useRef(null);
+  const courseSliderRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
@@ -100,7 +102,19 @@ export default function Home() {
       {/* ========== FEATURED EXAMS ========== */}
       <section className="py-16">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-gray-800 mb-10 text-center">Featured Exams</h2>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-gray-800">Featured Exams</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => examSliderRef.current?.scrollBy({ left: -320, behavior: "smooth" })}
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow hover:bg-indigo-50 transition text-indigo-600 font-bold text-lg"
+              >‹</button>
+              <button
+                onClick={() => examSliderRef.current?.scrollBy({ left: 320, behavior: "smooth" })}
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow hover:bg-indigo-50 transition text-indigo-600 font-bold text-lg"
+              >›</button>
+            </div>
+          </div>
           {loadingExams ? (
             <div className="text-center text-gray-500 py-10">Loading exams…</div>
           ) : examError ? (
@@ -108,33 +122,38 @@ export default function Home() {
           ) : exams.length === 0 ? (
             <div className="text-center text-gray-500 py-10">No exams found.</div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-8">
-              {exams.slice(0, 3).map((ex, idx) => (
-                <div
-                  key={ex._id || idx}
-                  className={`bg-white shadow-lg rounded-xl p-6 flex flex-col items-start border-t-4 ${
-                    idx === 0 ? "border-teal-500" : idx === 1 ? "border-indigo-500" : "border-pink-500"
-                  }`}
-                >
-                  <div className="text-xl font-semibold text-indigo-700 mb-1 truncate">{ex.title}</div>
-                  <div className="text-sm text-gray-500 mb-2">Category: {ex.category || "—"}</div>
-                  <div className="text-xs text-gray-400 mb-4">Duration: {ex.duration ? `${ex.duration} min` : "—"}</div>
-                  <button
-                    className="mt-auto bg-gradient-to-r from-teal-500 to-indigo-500 text-white px-4 py-2 rounded-lg shadow hover:scale-105 transition"
-                    onClick={() => (window.location.href = `/exam/${ex._id}`)}
+            <div
+              ref={examSliderRef}
+              className="flex gap-6 overflow-x-auto pb-4 scroll-smooth"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {exams.map((ex, idx) => {
+                const borders = ["border-teal-500", "border-indigo-500", "border-pink-500"];
+                return (
+                  <div
+                    key={ex._id || idx}
+                    className={`bg-white shadow-lg rounded-xl p-6 flex flex-col items-start border-t-4 ${borders[idx % 3]} flex-shrink-0 w-72`}
                   >
-                    Start
-                  </button>
-                </div>
-              ))}
+                    <div className="text-xl font-semibold text-indigo-700 mb-1 truncate w-full">{ex.title}</div>
+                    <div className="text-sm text-gray-500 mb-2">Category: {ex.category || "—"}</div>
+                    <div className="text-xs text-gray-400 mb-4">Duration: {ex.duration ? `${ex.duration} min` : "—"}</div>
+                    <button
+                      className="mt-auto bg-gradient-to-r from-teal-500 to-indigo-500 text-white px-4 py-2 rounded-lg shadow hover:scale-105 transition"
+                      onClick={() => (window.location.href = `/exam/${ex._id}`)}
+                    >
+                      Start
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           )}
-          <div className="flex justify-center">
+          <div className="flex justify-center mt-6">
             <button
               className="bg-indigo-600 text-white px-8 py-2 rounded-lg font-semibold shadow hover:bg-indigo-700 transition"
               onClick={() => (window.location.href = "/exams/list")}
             >
-              Show More Exams
+              View All Exams
             </button>
           </div>
         </div>
@@ -142,32 +161,52 @@ export default function Home() {
 
       {/* ================= POPULAR COURSES ================= */}
       <section className="py-16">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-12">Popular Courses</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {tutors.length > 0 ? (
-              tutors.slice(0, 3).map((t) => (
-                <div className="bg-white shadow-lg rounded-xl p-6" key={t._id}>
-                  <div className="h-40 w-full overflow-hidden">
-                    <img src={t.imageUrl || "/default.jpg"} alt="Tutor" className="w-full h-full object-cover" />
+        <div className="container mx-auto px-6">
+          <div className="flex items-center justify-between mb-10">
+            <h2 className="text-3xl font-bold text-gray-800">Popular Courses</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => courseSliderRef.current?.scrollBy({ left: -320, behavior: "smooth" })}
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow hover:bg-teal-50 transition text-teal-600 font-bold text-lg"
+              >‹</button>
+              <button
+                onClick={() => courseSliderRef.current?.scrollBy({ left: 320, behavior: "smooth" })}
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-gray-200 shadow hover:bg-teal-50 transition text-teal-600 font-bold text-lg"
+              >›</button>
+            </div>
+          </div>
+          {tutors.length === 0 ? (
+            <p className="text-center text-gray-500">No courses found.</p>
+          ) : (
+            <div
+              ref={courseSliderRef}
+              className="flex gap-6 overflow-x-auto pb-4 scroll-smooth"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {tutors.map((t) => (
+                <div className="bg-white shadow-lg rounded-xl p-6 flex-shrink-0 w-72 flex flex-col" key={t._id}>
+                  <div className="h-40 w-full overflow-hidden rounded-lg mb-4">
+                    <img src={t.imageUrl || "/default.jpg"} alt="Course" className="w-full h-full object-cover" />
                   </div>
                   <h3 className="text-xl font-semibold mb-2">{t.title}</h3>
-                  <p className="text-gray-600 mb-4">{t.description}</p>
-                  <button className="bg-teal-700 text-white px-4 py-2 rounded-lg"               onClick={() => (window.location.href = "/tutors")}
-                    >Start Course</button>
+                  <p className="text-gray-600 mb-4 text-sm line-clamp-2">{t.description}</p>
+                  <button
+                    className="mt-auto bg-teal-700 text-white px-4 py-2 rounded-lg hover:bg-teal-800 transition"
+                    onClick={() => (window.location.href = "/tutors")}
+                  >
+                    Start Course
+                  </button>
                 </div>
-              ))
-            ) : (
-              <p>No courses found.</p>
-            )}
-            <div className="flex justify-center">
-              <button
-                className="bg-indigo-600 text-white px-8 py-2 rounded-lg font-semibold shadow hover:bg-indigo-700 transition"
-                onClick={() => (window.location.href = "/tutors")}
-              >
-                Show More Tutors
-              </button>
+              ))}
             </div>
+          )}
+          <div className="flex justify-center mt-6">
+            <button
+              className="bg-indigo-600 text-white px-8 py-2 rounded-lg font-semibold shadow hover:bg-indigo-700 transition"
+              onClick={() => (window.location.href = "/tutors")}
+            >
+              View All Courses
+            </button>
           </div>
         </div>
       </section>
