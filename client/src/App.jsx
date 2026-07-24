@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import About from "./pages/About";
+import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import Resources from "./pages/Resources";
@@ -56,6 +57,7 @@ function AppContent() {
         <Route path="/forgot" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/resources/:category" element={<CategoryResources />} />
          <Route path="/exams/list" element={<ListOfExams />} />
