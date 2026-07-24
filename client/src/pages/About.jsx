@@ -1,9 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import {
-  FaGraduationCap, FaBullseye, FaUsers, FaChalkboardTeacher,
-  FaBook, FaCertificate, FaLightbulb, FaHandshake,
-  FaCheckCircle, FaArrowRight,
+  FaGraduationCap,
+  FaBullseye,
+  FaUsers,
+  FaChalkboardTeacher,
+  FaBook,
+  FaCertificate,
+  FaLightbulb,
+  FaHandshake,
+  FaCheckCircle,
+  FaArrowRight,
 } from "react-icons/fa";
 
 const values = [
@@ -34,17 +41,42 @@ const values = [
 ];
 
 const offerings = [
-  { icon: FaChalkboardTeacher, label: "Expert Tutors", desc: "Verified, experienced tutors across all subjects and grade levels." },
-  { icon: FaBook,              label: "Rich Resources", desc: "Study materials, notes, and reference documents organized by category." },
-  { icon: FaCertificate,       label: "Exam Practice",  desc: "Grade 8, Grade 12, University Exit, and Freshman exam archives." },
-  { icon: FaGraduationCap,     label: "Courses",        desc: "Structured courses with progress tracking and certificate of completion." },
+  {
+    icon: FaChalkboardTeacher,
+    label: "Expert Tutors",
+    desc: "Verified, experienced tutors across all subjects and grade levels.",
+  },
+  {
+    icon: FaBook,
+    label: "Rich Resources",
+    desc: "Study materials, notes, and reference documents organized by category.",
+  },
+  {
+    icon: FaCertificate,
+    label: "Exam Practice",
+    desc: "Grade 8, Grade 12, University Exit, and Freshman exam archives.",
+  },
+  {
+    icon: FaGraduationCap,
+    label: "Courses",
+    desc: "Structured courses with progress tracking and certificate of completion.",
+  },
 ];
 
 const stats = [
   { value: "500+", label: "Students Enrolled" },
-  { value: "50+",  label: "Expert Tutors" },
+  { value: "50+", label: "Expert Tutors" },
   { value: "200+", label: "Courses & Resources" },
-  { value: "4",    label: "Exam Categories" },
+  { value: "4", label: "Exam Categories" },
+];
+
+const checkpoints = [
+  "Curriculum-aligned content for Ethiopian students",
+  "Verified and approved tutors",
+  "Exam archives for all major national exams",
+  "Secure, simple payment and enrollment",
+  "Progress tracking for every registered course",
+  "Admin-managed quality control",
 ];
 
 export default function About() {
@@ -61,8 +93,9 @@ export default function About() {
             Empowering Ethiopian Students to Learn, Grow &amp; Succeed
           </h1>
           <p className="text-lg md:text-xl text-teal-100 leading-relaxed">
-            Skill Nest is Ethiopia's dedicated e-learning platform — built to bridge the gap between
-            talented students and the quality education they deserve, right from their devices.
+            Skill Nest is Ethiopia&apos;s dedicated e-learning platform — built to bridge the
+            gap between talented students and the quality education they deserve, right from
+            their devices.
           </p>
         </div>
       </section>
@@ -85,29 +118,28 @@ export default function About() {
           <div className="md:w-1/2">
             <h2 className="text-3xl font-bold mb-4">Who We Are</h2>
             <p className="text-gray-600 leading-relaxed mb-4">
-              Skill Nest was founded with a single mission: to make high-quality, exam-focused education
-              accessible to every Ethiopian student — from grade school through university.
+              Skill Nest was founded with a single mission: to make high-quality,
+              exam-focused education accessible to every Ethiopian student — from grade
+              school through university.
             </p>
             <p className="text-gray-600 leading-relaxed mb-4">
-              We partner with qualified tutors across the country to deliver live and self-paced courses,
-              curated study materials, and a growing library of national exam archives covering Grade 8 Ministry
-              exams, Grade 12 University Entrance exams, Freshman assessments, and University Exit exams.
+              We partner with qualified tutors across the country to deliver live and
+              self-paced courses, curated study materials, and a growing library of
+              national exam archives covering Grade 8 Ministry exams, Grade 12 University
+              Entrance exams, Freshman assessments, and University Exit exams.
             </p>
             <p className="text-gray-600 leading-relaxed">
-              Every tutor on Skill Nest goes through a review and approval process to ensure that the guidance
-              students receive is accurate, up-to-date, and aligned with the Ethiopian curriculum.
+              Every tutor on Skill Nest goes through a review and approval process to
+              ensure that the guidance students receive is accurate, up-to-date, and
+              aligned with the Ethiopian curriculum.
             </p>
           </div>
           <div className="md:w-1/2 grid grid-cols-1 gap-4">
-            {[
-              "Curriculum-aligned content for Ethiopian students",
-              "Verified and approved tutors",
-              "Exam archives for all major national exams",
-              "Secure, simple payment and enrollment",
-              "Progress tracking for every registered course",
-              "Admin-managed quality control",
-            ].map((point) => (
-              <div key={point} className="flex items-start gap-3 bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            {checkpoints.map((point) => (
+              <div
+                key={point}
+                className="flex items-start gap-3 bg-white rounded-xl p-4 shadow-sm border border-gray-100"
+              >
                 <FaCheckCircle className="text-teal-500 mt-0.5 flex-shrink-0 text-lg" />
                 <span className="text-gray-700 text-sm">{point}</span>
               </div>
@@ -125,9 +157,9 @@ export default function About() {
             </div>
             <h3 className="text-2xl font-bold text-teal-800 mb-3">Our Mission</h3>
             <p className="text-teal-900 leading-relaxed">
-              To provide every Ethiopian student with affordable, curriculum-aligned, expert-led education —
-              breaking barriers of geography, resource availability, and economic inequality so that every
-              learner can reach their full potential.
+              To provide every Ethiopian student with affordable, curriculum-aligned,
+              expert-led education — breaking barriers of geography, resource availability,
+              and economic inequality so that every learner can reach their full potential.
             </p>
           </div>
           <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl p-8 border border-indigo-200">
@@ -136,9 +168,9 @@ export default function About() {
             </div>
             <h3 className="text-2xl font-bold text-indigo-800 mb-3">Our Vision</h3>
             <p className="text-indigo-900 leading-relaxed">
-              To become Ethiopia's most trusted and widely used e-learning platform — a place where students
-              excel in national exams, tutors grow their reach, and families invest confidently in education
-              that delivers real results.
+              To become Ethiopia&apos;s most trusted and widely used e-learning platform — a
+              place where students excel in national exams, tutors grow their reach, and
+              families invest confidently in education that delivers real results.
             </p>
           </div>
         </div>
@@ -170,7 +202,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* ── VALUES ── */}
+      {/* ── CORE VALUES ── */}
       <section className="py-20 px-6 bg-white">
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-12">
@@ -181,8 +213,13 @@ export default function About() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {values.map(({ icon: Icon, color, title, desc }) => (
-              <div key={title} className="flex gap-5 items-start bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${color}`}>
+              <div
+                key={title}
+                className="flex gap-5 items-start bg-gray-50 rounded-2xl p-6 border border-gray-100"
+              >
+                <div
+                  className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${color}`}
+                >
                   <Icon className="text-xl" />
                 </div>
                 <div>
