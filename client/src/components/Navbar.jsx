@@ -33,6 +33,7 @@ Skill <span className="text-teal-600">Nest</span>
       <div className="hidden md:flex items-center space-x-6 text-gray-700 font-medium">
         <Link to="/" className="hover:text-teal-600">Home</Link>
         <Link to="/tutors" className="hover:text-teal-600">Tutors</Link>
+        <Link to="/about" className="hover:text-teal-600">About</Link>
         {/* <Link to="/resources" className="hover:text-teal-600">Resources</Link> */}
         
           <Link to="/exams/list" className="hover:text-teal-600">Exams</Link>
@@ -79,6 +80,7 @@ Skill <span className="text-teal-600">Nest</span>
       {menuOpen && (
         <div className="absolute top-full left-0 w-full bg-white shadow-md flex flex-col items-center py-4 z-50 md:hidden animate-fade-in">
           <Link to="/" className="py-2 w-full text-center hover:text-teal-600" onClick={() => setMenuOpen(false)}>Home</Link>
+          <Link to="/about" className="py-2 w-full text-center hover:text-teal-600" onClick={() => setMenuOpen(false)}>About</Link>
           <Link to="/tutors" className="py-2 w-full text-center hover:text-teal-600" onClick={() => setMenuOpen(false)}>Tutors</Link>
           {/* <Link to="/resources" className="py-2 w-full text-center hover:text-teal-600" onClick={() => setMenuOpen(false)}>Resources</Link> */}
 

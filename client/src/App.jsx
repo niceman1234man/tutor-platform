@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import About from "./pages/About";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import Resources from "./pages/Resources";
@@ -54,6 +55,7 @@ function AppContent() {
         <Route path="/tutors" element={<Tutors />} />
         <Route path="/forgot" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/about" element={<About />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/resources/:category" element={<CategoryResources />} />
          <Route path="/exams/list" element={<ListOfExams />} />
