@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import API from "../api/api";
 import Hero from "../assets/Hero.jpg";
 import why from "../assets/why.jpg";
@@ -95,6 +96,99 @@ export default function Home() {
           </div>
           <div className="md:w-1/2 mt-10 md:mt-0">
             <img src={Hero} alt="learning" className="w-full max-w-md mx-auto" />
+          </div>
+        </div>
+      </section>
+      
+      {/* ========== EXAM CATEGORIES ========== */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-gray-800 mb-3">Explore Exam Categories</h2>
+            <p className="text-gray-500 max-w-xl mx-auto">
+              Practice and prepare for Ethiopia's most important national exams — all in one place.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Grade 12 Entrance */}
+            <Link
+              to="/exams/list"
+              className="group relative bg-white rounded-2xl shadow hover:shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col"
+            >
+              <div className="h-2 bg-gradient-to-r from-teal-400 to-teal-600" />
+              <div className="p-6 flex flex-col items-center text-center flex-1">
+                <div className="w-16 h-16 rounded-full bg-teal-50 flex items-center justify-center mb-4 group-hover:bg-teal-100 transition">
+                  <FaGraduationCap className="text-3xl text-teal-600" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">Grade 12 Entrance</h3>
+                <p className="text-sm text-gray-500 flex-1">
+                  University entrance exams for Ethiopian grade 12 students. Practice past papers and sharpen your skills.
+                </p>
+                <span className="mt-4 inline-block text-teal-600 font-semibold text-sm group-hover:underline">
+                  Explore →
+                </span>
+              </div>
+            </Link>
+
+            {/* University Exit */}
+            <Link
+              to="/exams/list"
+              className="group relative bg-white rounded-2xl shadow hover:shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col"
+            >
+              <div className="h-2 bg-gradient-to-r from-indigo-400 to-indigo-600" />
+              <div className="p-6 flex flex-col items-center text-center flex-1">
+                <div className="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center mb-4 group-hover:bg-indigo-100 transition">
+                  <FaBook className="text-3xl text-indigo-600" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">University Exit Exams</h3>
+                <p className="text-sm text-gray-500 flex-1">
+                  Comprehensive exit exams for university graduates across all faculties and programs.
+                </p>
+                <span className="mt-4 inline-block text-indigo-600 font-semibold text-sm group-hover:underline">
+                  Explore →
+                </span>
+              </div>
+            </Link>
+
+            {/* Grade 8 Ministry */}
+            <Link
+              to="/exams/list"
+              className="group relative bg-white rounded-2xl shadow hover:shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col"
+            >
+              <div className="h-2 bg-gradient-to-r from-amber-400 to-amber-600" />
+              <div className="p-6 flex flex-col items-center text-center flex-1">
+                <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mb-4 group-hover:bg-amber-100 transition">
+                  <FaCertificate className="text-3xl text-amber-500" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">Grade 8 Ministry Exams</h3>
+                <p className="text-sm text-gray-500 flex-1">
+                  Ministry of Education standardized exams for grade 8 students across all subjects.
+                </p>
+                <span className="mt-4 inline-block text-amber-600 font-semibold text-sm group-hover:underline">
+                  Explore →
+                </span>
+              </div>
+            </Link>
+
+            {/* Freshman */}
+            <Link
+              to="/exams/list"
+              className="group relative bg-white rounded-2xl shadow hover:shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col"
+            >
+              <div className="h-2 bg-gradient-to-r from-rose-400 to-rose-600" />
+              <div className="p-6 flex flex-col items-center text-center flex-1">
+                <div className="w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center mb-4 group-hover:bg-rose-100 transition">
+                  <FaPersonBooth className="text-3xl text-rose-500" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">Freshman Exams</h3>
+                <p className="text-sm text-gray-500 flex-1">
+                  First-year university placement and assessment exams to evaluate incoming students.
+                </p>
+                <span className="mt-4 inline-block text-rose-600 font-semibold text-sm group-hover:underline">
+                  Explore →
+                </span>
+              </div>
+            </Link>
           </div>
         </div>
       </section>
