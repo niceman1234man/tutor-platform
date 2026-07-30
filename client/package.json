@@ -2,7 +2,10 @@
   "name": "client",
   "private": true,
   "version": "0.0.0",
-  "type": "commonjs",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
