@@ -234,7 +234,7 @@ export const createExam = async (req, res) => {
 // EXAMS
 export const getExams = async (req, res) => {
   try {
-    const exams = await Exam.find({}, "title category duration createdAt").sort({ createdAt: -1 });
+    const exams = await Exam.find({}, "title category department duration createdAt").sort({ createdAt: -1 });
     res.json(exams);
   } catch (err) {
     console.error("GET EXAMS ERROR 👉", err);

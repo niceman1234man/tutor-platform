@@ -10,6 +10,8 @@ const animationStyles = `
 
 const getCategoryValue = (category) => category?.value || category?.name || category;
 const getCategoryLabel = (category) => category?.label || getCategoryValue(category);
+const UNASSIGNED_DEPARTMENT = "__unassigned__";
+const UNASSIGNED_DEPARTMENT_LABEL = "Department not assigned";
 
 export default function ListOfExams() {
   const [exams, setExams] = useState([]);
@@ -88,16 +90,30 @@ export default function ListOfExams() {
         if (department) departments.set(department, (departments.get(department) || 0) + 1);
       });
 
+    exams
+      .filter((exam) => exam.category === selectedCategory && !exam.department?.trim())
+      .forEach(() => {
+        departments.set(
+          UNASSIGNED_DEPARTMENT,
+          (departments.get(UNASSIGNED_DEPARTMENT) || 0) + 1
+        );
+      });
+
     return Array.from(departments.entries())
-      .map(([name, count]) => ({ name, count }))
-      .filter((department) => department.name.toLowerCase().includes(query));
+      .map(([name, count]) => ({
+        name,
+        label: name === UNASSIGNED_DEPARTMENT ? UNASSIGNED_DEPARTMENT_LABEL : name,
+        count,
+      }))
+      .filter((department) => department.label.toLowerCase().includes(query));
   }, [exams, search, selectedCategory]);
 
   const visibleExams = useMemo(() => {
     const query = search.trim().toLowerCase();
     return exams.filter((exam) => {
       if (exam.category !== selectedCategory) return false;
-      if (isExitCategory && exam.department !== selectedDepartment) return false;
+      const departmentKey = exam.department?.trim() || UNASSIGNED_DEPARTMENT;
+      if (isExitCategory && departmentKey !== selectedDepartment) return false;
       return (
         exam.title?.toLowerCase().includes(query) ||
         exam.category?.toLowerCase().includes(query) ||
@@ -242,7 +258,7 @@ export default function ListOfExams() {
                   className="text-left p-6 border-2 border-indigo-100 rounded-2xl bg-white shadow-xl animate-pop hover:shadow-2xl hover:border-teal-300 transition-all duration-200"
                   style={{ animationDelay: `${index * 60}ms` }}
                 >
-                  <div className="font-bold text-xl text-indigo-700 mb-2">{department.name}</div>
+                  <div className="font-bold text-xl text-indigo-700 mb-2">{department.label}</div>
                   <div className="text-sm text-gray-500">
                     {department.count} {department.count === 1 ? "exam" : "exams"}
                   </div>
