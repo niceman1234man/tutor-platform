@@ -131,6 +131,9 @@ export default function ExamDetail() {
           <div>
             <h2 className="text-3xl font-extrabold text-teal-700 drop-shadow-sm tracking-tight mb-1 animate-fade-in">{exam.title}</h2>
             <div className="text-sm text-gray-500">Category: <span className="font-semibold text-indigo-600">{exam.category || "—"}</span></div>
+            {exam.category === "exit" && (
+              <div className="text-sm text-gray-500">Department: <span className="font-semibold text-indigo-600">{exam.department || "—"}</span></div>
+            )}
             <div className="text-sm text-gray-500">Duration: <span className="font-semibold text-indigo-600">{exam.duration ? `${exam.duration} minutes` : "—"}</span></div>
           </div>
           <div className="flex items-center gap-3">

@@ -18,6 +18,7 @@ const examSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     category: String,
+    department: String,
     duration: Number, // minutes
 
     questions: [questionSchema],

@@ -55,6 +55,13 @@ const JSON_TEMPLATE = JSON.stringify(
   2
 );
 
+const DEPARTMENTS = [
+  "Computer Science",
+  "Software Engineering",
+  "Information Technology",
+  "Electrical Engineering",
+];
+
 function downloadFile(filename, content, mime) {
   const blob = new Blob([content], { type: mime });
   const url = URL.createObjectURL(blob);
@@ -66,7 +73,7 @@ function downloadFile(filename, content, mime) {
 }
 
 export default function ExamForm() {
-  const [exam, setExam] = useState({ title: "", category: "", duration: "", questions: [] });
+  const [exam, setExam] = useState({ title: "", category: "", department: "", duration: "", questions: [] });
   const [question, setQuestion] = useState({ question: "", options: ["", "", "", ""], correctAnswer: null, explanation: "" });
   const [formError, setFormError] = useState("");
   const [questionError, setQuestionError] = useState("");
@@ -116,13 +123,21 @@ export default function ExamForm() {
     setFormError("");
     if (!exam.title.trim()) { setFormError("Exam title is required."); return; }
     if (!exam.category.trim()) { setFormError("Category is required."); return; }
+    if (exam.category === "exit" && !exam.department.trim()) {
+      setFormError("Department is required for Exit exams.");
+      return;
+    }
     if (!exam.duration || Number(exam.duration) <= 0) { setFormError("Duration must be a positive number."); return; }
     if (exam.questions.length === 0) { setFormError("Add at least one question."); return; }
     try {
       setSubmitting(true);
-      await API.post("/admin/exams", { ...exam, duration: Number(exam.duration) });
+      await API.post("/admin/exams", {
+        ...exam,
+        department: exam.category === "exit" ? exam.department : "",
+        duration: Number(exam.duration),
+      });
       alert("Exam created successfully");
-      setExam({ title: "", category: exam.category, duration: "", questions: [] });
+      setExam({ title: "", category: exam.category, department: "", duration: "", questions: [] });
     } catch {
       setFormError("Failed to create exam. Try again.");
     } finally {
@@ -290,7 +305,11 @@ export default function ExamForm() {
           <select
             className="border p-2 w-full rounded focus:ring-2 focus:ring-indigo-200"
             value={exam.category}
-            onChange={(e) => setExam({ ...exam, category: e.target.value })}
+            onChange={(e) => setExam({
+              ...exam,
+              category: e.target.value,
+              department: e.target.value === "exit" ? exam.department : "",
+            })}
           >
             {categories.length === 0 && <option value="">No categories found</option>}
             {categories.map((cat, i) => {
@@ -299,6 +318,21 @@ export default function ExamForm() {
             })}
           </select>
         </div>
+        {exam.category === "exit" && (
+          <div>
+            <label className="block text-sm font-medium mb-1">Department</label>
+            <select
+              className="border p-2 w-full rounded focus:ring-2 focus:ring-indigo-200"
+              value={exam.department}
+              onChange={(e) => setExam({ ...exam, department: e.target.value })}
+            >
+              <option value="">Select department</option>
+              {DEPARTMENTS.map((department) => (
+                <option key={department} value={department}>{department}</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       <div>

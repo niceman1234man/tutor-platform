@@ -174,7 +174,7 @@ export const approvePayment = async (req, res) => {
 
 export const createExam = async (req, res) => {
   try {
-    let { title, category, duration, questions } = req.body;
+    let { title, category, department, duration, questions } = req.body;
 
     // Normalize incoming questions to match the schema:
     // question: String
@@ -204,6 +204,7 @@ export const createExam = async (req, res) => {
     const exam = await Exam.create({
       title,
       category,
+      department: category === "exit" ? department : "",
       duration,
       questions: normalizedQuestions,
     });
