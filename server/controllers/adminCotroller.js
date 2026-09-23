@@ -239,6 +239,44 @@ export const getExamById = async (req, res) => {
   }
 };
 
+export const updateExam = async (req, res) => {
+  try {
+    const { title, category, department, duration } = req.body;
+
+    if (!title?.trim()) {
+      return res.status(400).json({ message: "Exam title is required." });
+    }
+    if (!category?.trim()) {
+      return res.status(400).json({ message: "Category is required." });
+    }
+
+    const numericDuration = Number(duration);
+    if (!Number.isFinite(numericDuration) || numericDuration <= 0) {
+      return res.status(400).json({ message: "Duration must be a positive number." });
+    }
+    if (category === "exit" && !department?.trim()) {
+      return res.status(400).json({ message: "Department is required for Exit exams." });
+    }
+
+    const exam = await Exam.findByIdAndUpdate(
+      req.params.id,
+      {
+        title: title.trim(),
+        category,
+        department: category === "exit" ? department.trim() : "",
+        duration: numericDuration,
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!exam) return res.status(404).json({ message: "Exam not found" });
+    res.json(exam);
+  } catch (err) {
+    console.error("UPDATE EXAM ERROR 👉", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
 
 export const updateQuestion = async (req, res) => {
   try {

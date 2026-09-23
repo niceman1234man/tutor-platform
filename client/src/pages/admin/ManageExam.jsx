@@ -1,9 +1,20 @@
 import React, { useEffect, useState } from "react";
 import API from "../../api/api";
 
+const DEPARTMENTS = [
+    "Computer Science",
+    "Software Engineering",
+    "Information Technology",
+    "Electrical Engineering",
+];
+
 export default function AdminExamManager() {
     const [exams, setExams] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [selectedExam, setSelectedExam] = useState(null);
+    const [editingDetails, setEditingDetails] = useState(null);
+    const [detailsError, setDetailsError] = useState("");
+    const [savingDetails, setSavingDetails] = useState(false);
     const [editingQuestion, setEditingQuestion] = useState(null);
     const [addingQuestion, setAddingQuestion] = useState(false);
     const [newQuestion, setNewQuestion] = useState({
@@ -56,6 +67,9 @@ export default function AdminExamManager() {
 
     useEffect(() => {
         fetchExams();
+        API.get("/resources/categories")
+            .then((res) => setCategories(Array.isArray(res.data) ? res.data : []))
+            .catch((err) => console.error("Failed to load categories", err));
     }, []);
 
     const handleManageExam = async (examId) => {
@@ -63,11 +77,62 @@ export default function AdminExamManager() {
         try {
             const res = await API.get(`/admin/exams/${examId}`);
             setSelectedExam(res.data); // This now includes the questions array
+            setEditingDetails({
+                title: res.data.title || "",
+                category: res.data.category || "",
+                department: res.data.department || "",
+                duration: res.data.duration || "",
+            });
+            setDetailsError("");
         } catch (err) {
             console.error(err);
             alert("Failed to load exam details");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const updateExamDetails = async () => {
+        setDetailsError("");
+        if (!editingDetails.title.trim()) {
+            setDetailsError("Exam title is required.");
+            return;
+        }
+        if (!editingDetails.category.trim()) {
+            setDetailsError("Category is required.");
+            return;
+        }
+        if (!editingDetails.duration || Number(editingDetails.duration) <= 0) {
+            setDetailsError("Duration must be a positive number.");
+            return;
+        }
+        if (editingDetails.category === "exit" && !editingDetails.department.trim()) {
+            setDetailsError("Department is required for Exit exams.");
+            return;
+        }
+
+        try {
+            setSavingDetails(true);
+            const res = await API.patch(`/admin/exams/${selectedExam._id}`, {
+                ...editingDetails,
+                duration: Number(editingDetails.duration),
+                department: editingDetails.category === "exit" ? editingDetails.department : "",
+            });
+            setSelectedExam(res.data);
+            setEditingDetails({
+                title: res.data.title || "",
+                category: res.data.category || "",
+                department: res.data.department || "",
+                duration: res.data.duration || "",
+            });
+            setExams((prev) => prev.map((exam) => (
+                exam._id === res.data._id ? { ...exam, ...res.data } : exam
+            )));
+        } catch (err) {
+            console.error(err);
+            setDetailsError(err?.response?.data?.message || "Failed to update exam details.");
+        } finally {
+            setSavingDetails(false);
         }
     };
 
@@ -206,6 +271,80 @@ export default function AdminExamManager() {
                         <span className="inline-block w-2 h-6 bg-purple-400 rounded-full"></span>
                         {selectedExam.title} <span className="text-lg font-normal text-gray-400">- Questions</span>
                     </h2>
+
+                    {/* ================= EDIT EXAM DETAILS ================= */}
+                    {editingDetails && (
+                        <div className="border-2 border-indigo-200 p-6 mb-8 rounded-xl bg-indigo-50 shadow-md">
+                            <h3 className="font-bold mb-4 text-indigo-700">Edit Exam Details</h3>
+                            {detailsError && (
+                                <div className="text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2 mb-4 text-sm">
+                                    {detailsError}
+                                </div>
+                            )}
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <label className="text-sm font-medium text-gray-700">
+                                    Exam Title
+                                    <input
+                                        type="text"
+                                        value={editingDetails.title}
+                                        onChange={(e) => setEditingDetails({ ...editingDetails, title: e.target.value })}
+                                        className="border-2 border-indigo-200 p-2 w-full mt-1 rounded focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                    />
+                                </label>
+                                <label className="text-sm font-medium text-gray-700">
+                                    Duration (minutes)
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={editingDetails.duration}
+                                        onChange={(e) => setEditingDetails({ ...editingDetails, duration: e.target.value })}
+                                        className="border-2 border-indigo-200 p-2 w-full mt-1 rounded focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                    />
+                                </label>
+                                <label className="text-sm font-medium text-gray-700">
+                                    Category
+                                    <select
+                                        value={editingDetails.category}
+                                        onChange={(e) => setEditingDetails({
+                                            ...editingDetails,
+                                            category: e.target.value,
+                                            department: e.target.value === "exit" ? editingDetails.department : "",
+                                        })}
+                                        className="border-2 border-indigo-200 p-2 w-full mt-1 rounded focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                    >
+                                        {categories.length === 0 && <option value="">No categories found</option>}
+                                        {categories.map((category, index) => {
+                                            const value = category.value || category.name || category;
+                                            return <option key={category._id || index} value={value}>{category.label || value}</option>;
+                                        })}
+                                    </select>
+                                </label>
+                                {editingDetails.category === "exit" && (
+                                    <label className="text-sm font-medium text-gray-700">
+                                        Department
+                                        <select
+                                            value={editingDetails.department}
+                                            onChange={(e) => setEditingDetails({ ...editingDetails, department: e.target.value })}
+                                            className="border-2 border-indigo-200 p-2 w-full mt-1 rounded focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                                        >
+                                            <option value="">Select department</option>
+                                            {DEPARTMENTS.map((department) => (
+                                                <option key={department} value={department}>{department}</option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                )}
+                            </div>
+                            <button
+                                type="button"
+                                onClick={updateExamDetails}
+                                disabled={savingDetails}
+                                className="mt-4 bg-gradient-to-r from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 disabled:opacity-60 text-white px-5 py-2 rounded-lg font-bold shadow transition"
+                            >
+                                {savingDetails ? "Saving..." : "Save Exam Details"}
+                            </button>
+                        </div>
+                    )}
 
                     {/* Add Question Button */}
                     {!addingQuestion && (
