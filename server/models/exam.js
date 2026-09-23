@@ -17,8 +17,14 @@ const questionSchema = new mongoose.Schema({
 const examSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    category: String,
-    department: String,
+    category: { type: String, required: true, trim: true },
+    department: {
+      type: String,
+      trim: true,
+      required: function () {
+        return this.category === "exit";
+      },
+    },
     duration: Number, // minutes
 
     questions: [questionSchema],

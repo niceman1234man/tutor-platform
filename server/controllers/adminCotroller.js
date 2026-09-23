@@ -175,6 +175,19 @@ export const approvePayment = async (req, res) => {
 export const createExam = async (req, res) => {
   try {
     let { title, category, department, duration, questions } = req.body;
+    const normalizedTitle = typeof title === "string" ? title.trim() : "";
+    const normalizedCategory = typeof category === "string" ? category.trim() : "";
+    const normalizedDepartment = typeof department === "string" ? department.trim() : "";
+
+    if (!normalizedTitle) {
+      return res.status(400).json({ message: "Exam title is required." });
+    }
+    if (!normalizedCategory) {
+      return res.status(400).json({ message: "Category is required." });
+    }
+    if (normalizedCategory === "exit" && !normalizedDepartment) {
+      return res.status(400).json({ message: "Department is required for Exit exams." });
+    }
 
     // Normalize incoming questions to match the schema:
     // question: String
@@ -202,9 +215,9 @@ export const createExam = async (req, res) => {
     });
 
     const exam = await Exam.create({
-      title,
-      category,
-      department: category === "exit" ? department : "",
+      title: normalizedTitle,
+      category: normalizedCategory,
+      department: normalizedCategory === "exit" ? normalizedDepartment : "",
       duration,
       questions: normalizedQuestions,
     });
@@ -212,7 +225,8 @@ export const createExam = async (req, res) => {
     res.status(201).json(exam);
   } catch (err) {
     console.error("CREATE EXAM ERROR 👉", err);
-    res.status(500).json({ message: err.message });
+    const status = err.name === "ValidationError" ? 400 : 500;
+    res.status(status).json({ message: err.message });
   }
 };
 
@@ -242,11 +256,14 @@ export const getExamById = async (req, res) => {
 export const updateExam = async (req, res) => {
   try {
     const { title, category, department, duration } = req.body;
+    const normalizedTitle = typeof title === "string" ? title.trim() : "";
+    const normalizedCategory = typeof category === "string" ? category.trim() : "";
+    const normalizedDepartment = typeof department === "string" ? department.trim() : "";
 
-    if (!title?.trim()) {
+    if (!normalizedTitle) {
       return res.status(400).json({ message: "Exam title is required." });
     }
-    if (!category?.trim()) {
+    if (!normalizedCategory) {
       return res.status(400).json({ message: "Category is required." });
     }
 
@@ -254,16 +271,16 @@ export const updateExam = async (req, res) => {
     if (!Number.isFinite(numericDuration) || numericDuration <= 0) {
       return res.status(400).json({ message: "Duration must be a positive number." });
     }
-    if (category === "exit" && !department?.trim()) {
+    if (normalizedCategory === "exit" && !normalizedDepartment) {
       return res.status(400).json({ message: "Department is required for Exit exams." });
     }
 
     const exam = await Exam.findByIdAndUpdate(
       req.params.id,
       {
-        title: title.trim(),
-        category,
-        department: category === "exit" ? department.trim() : "",
+        title: normalizedTitle,
+        category: normalizedCategory,
+        department: normalizedCategory === "exit" ? normalizedDepartment : "",
         duration: numericDuration,
       },
       { new: true, runValidators: true }
