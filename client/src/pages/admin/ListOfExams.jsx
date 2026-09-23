@@ -1,48 +1,183 @@
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import API from "../../api/api";
 
+const animationStyles = `
+  .animate-fade-in { animation: fadeIn 0.5s; }
+  .animate-pop { animation: popIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: none; } }
+  @keyframes popIn { 0% { transform: scale(0.95); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
+`;
+
+const getCategoryValue = (category) => category?.value || category?.name || category;
+const getCategoryLabel = (category) => category?.label || getCategoryValue(category);
+
 export default function ListOfExams() {
-  // Animation styles for this component only
-  const animationStyles = `
-    .animate-fade-in { animation: fadeIn 0.5s; }
-    .animate-pop { animation: popIn 0.3s; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: none; } }
-    @keyframes popIn { 0% { transform: scale(0.95); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
-  `;
   const [exams, setExams] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     let mounted = true;
-    const fetchExams = async () => {
+
+    const fetchData = async () => {
       try {
-        const { data } = await API.get("/admin/exams");
+        const [examResponse, categoryResponse] = await Promise.all([
+          API.get("/admin/exams"),
+          API.get("/resources/categories").catch(() => ({ data: [] })),
+        ]);
+
         if (!mounted) return;
-        setExams(data || []);
+        const loadedExams = Array.isArray(examResponse.data) ? examResponse.data : [];
+        const loadedCategories = Array.isArray(categoryResponse.data) ? categoryResponse.data : [];
+
+        const categoriesByValue = new Map();
+        loadedCategories.forEach((category) => {
+          const value = getCategoryValue(category);
+          if (value) categoriesByValue.set(value, category);
+        });
+        loadedExams.forEach((exam) => {
+          if (exam.category && !categoriesByValue.has(exam.category)) {
+            categoriesByValue.set(exam.category, { value: exam.category, label: exam.category });
+          }
+        });
+
+        setExams(loadedExams);
+        setCategoryOptions(Array.from(categoriesByValue.values()));
       } catch (err) {
         console.error(err);
-        setError("Failed to load exams.");
+        if (mounted) setError("Failed to load exams.");
       } finally {
         if (mounted) setLoading(false);
       }
     };
 
-    fetchExams();
-    return () => (mounted = false);
+    fetchData();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  if (loading) return <div className="p-6">Loading exams…</div>;
-  if (error) return <div className="p-6 text-red-600">{error}</div>;
+  const isExitCategory = selectedCategory.toLowerCase() === "exit";
+
+  const categoryCards = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return categoryOptions
+      .map((category) => {
+        const value = getCategoryValue(category);
+        return {
+          value,
+          label: getCategoryLabel(category),
+          count: exams.filter((exam) => exam.category === value).length,
+        };
+      })
+      .filter((category) => category.value && category.label?.toLowerCase().includes(query));
+  }, [categoryOptions, exams, search]);
+
+  const departmentCards = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    const departments = new Map();
+
+    exams
+      .filter((exam) => exam.category === selectedCategory && exam.department)
+      .forEach((exam) => {
+        const department = exam.department.trim();
+        if (department) departments.set(department, (departments.get(department) || 0) + 1);
+      });
+
+    return Array.from(departments.entries())
+      .map(([name, count]) => ({ name, count }))
+      .filter((department) => department.name.toLowerCase().includes(query));
+  }, [exams, search, selectedCategory]);
+
+  const visibleExams = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return exams.filter((exam) => {
+      if (exam.category !== selectedCategory) return false;
+      if (isExitCategory && exam.department !== selectedDepartment) return false;
+      return (
+        exam.title?.toLowerCase().includes(query) ||
+        exam.category?.toLowerCase().includes(query) ||
+        exam.department?.toLowerCase().includes(query)
+      );
+    });
+  }, [exams, isExitCategory, search, selectedCategory, selectedDepartment]);
+
+  const pageTitle = !selectedCategory
+    ? "Exam Categories"
+    : isExitCategory && !selectedDepartment
+      ? "Exit Exam Departments"
+      : `${selectedCategory} Exams`;
+
+  const goBack = () => {
+    if (isExitCategory && selectedDepartment) {
+      setSelectedDepartment("");
+      setSearch("");
+      return;
+    }
+    setSelectedCategory("");
+    setSelectedDepartment("");
+    setSearch("");
+  };
+
+  const renderExamCards = () => (
+    visibleExams.length === 0 ? (
+      <div className="text-gray-600">No exams found{search ? " matching your search" : ""}.</div>
+    ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {visibleExams.map((exam, index) => (
+          <div
+            key={exam._id}
+            className="p-6 border-2 border-indigo-100 rounded-2xl bg-white shadow-xl flex flex-col justify-between animate-pop hover:shadow-2xl hover:border-teal-300 transition-all duration-200"
+            style={{ animationDelay: `${index * 60}ms` }}
+          >
+            <div>
+              <div className="font-bold text-lg text-indigo-700 mb-1 truncate">{exam.title}</div>
+              <div className="text-sm text-gray-500 mb-2">
+                Category: <span className="font-semibold text-indigo-600">{exam.category || "—"}</span>
+              </div>
+              {isExitCategory && (
+                <div className="text-sm text-gray-500 mb-2">
+                  Department: <span className="font-semibold text-indigo-600">{exam.department || "—"}</span>
+                </div>
+              )}
+              <div className="text-xs text-gray-400 mb-4">
+                Duration: <span className="font-semibold">{exam.duration ? `${exam.duration} min` : "—"}</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="mt-auto bg-gradient-to-r from-teal-500 to-indigo-500 text-white px-5 py-2 rounded-lg shadow-md font-semibold text-base hover:scale-105 active:scale-100 transition-transform duration-150"
+              onClick={() => window.location.href = `/exam/${exam._id}`}
+            >
+              Start
+            </button>
+          </div>
+        ))}
+      </div>
+    )
+  );
 
   return (
     <>
       <style>{animationStyles}</style>
       <div className="max-w-5xl mx-auto p-6 bg-gradient-to-br from-blue-50 via-white to-teal-50 shadow-2xl rounded-2xl">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 animate-fade-in">
-          <h2 className="text-3xl font-extrabold text-teal-700 drop-shadow-sm tracking-tight">Exams</h2>
+          <div className="flex items-center gap-3">
+            {selectedCategory && (
+              <button
+                type="button"
+                onClick={goBack}
+                className="border border-teal-200 text-teal-700 px-3 py-2 rounded-lg hover:bg-teal-50 transition"
+              >
+                ← Back
+              </button>
+            )}
+            <h2 className="text-3xl font-extrabold text-teal-700 drop-shadow-sm tracking-tight">{pageTitle}</h2>
+          </div>
           <div className="relative w-full sm:w-72">
             <span className="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,58 +186,74 @@ export default function ListOfExams() {
             </span>
             <input
               type="text"
-              placeholder="Search by title or category…"
+              placeholder={!selectedCategory ? "Search categories…" : isExitCategory && !selectedDepartment ? "Search departments…" : "Search exams…"}
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(event) => setSearch(event.target.value)}
               className="w-full pl-9 pr-8 py-2 border-2 border-teal-100 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-teal-300 text-gray-700 text-sm transition"
             />
             {search && (
               <button
+                type="button"
                 onClick={() => setSearch("")}
                 className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                ×
               </button>
             )}
           </div>
         </div>
 
-        {(() => {
-          const filtered = exams.filter((ex) => {
-            const q = search.toLowerCase();
-            return (
-              ex.title?.toLowerCase().includes(q) ||
-              (ex.category || "").toLowerCase().includes(q)
-            );
-          });
-          return filtered.length === 0 ? (
-          <div className="text-gray-600">{exams.length === 0 ? "No exams found." : "No exams match your search."}</div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {filtered.map((ex, idx) => (
-              <div
-                key={ex._id}
-                className="p-6 border-2 border-indigo-100 rounded-2xl bg-white shadow-xl flex flex-col justify-between animate-pop hover:shadow-2xl hover:border-teal-300 transition-all duration-200"
-                style={{ animationDelay: `${idx * 60}ms` }}
-              >
-                <div>
-                  <div className="font-bold text-lg text-indigo-700 mb-1 truncate">{ex.title}</div>
-                  <div className="text-sm text-gray-500 mb-2">Category: <span className="font-semibold text-indigo-600">{ex.category || "—"}</span></div>
-                  <div className="text-xs text-gray-400 mb-4">Duration: <span className="font-semibold">{ex.duration ? `${ex.duration} min` : "—"}</span></div>
-                </div>
+        {loading ? (
+          <div className="text-gray-600">Loading exams…</div>
+        ) : error ? (
+          <div className="text-red-600">{error}</div>
+        ) : !selectedCategory ? (
+          categoryCards.length === 0 ? (
+            <div className="text-gray-600">No exam categories found.</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {categoryCards.map((category, index) => (
                 <button
-                  className="mt-auto bg-gradient-to-r from-teal-500 to-indigo-500 text-white px-5 py-2 rounded-lg shadow-md font-semibold text-base hover:scale-105 active:scale-100 transition-transform duration-150"
-                  onClick={() => window.location.href = `/exam/${ex._id}`}
+                  type="button"
+                  key={category.value}
+                  onClick={() => { setSelectedCategory(category.value); setSearch(""); }}
+                  className="text-left p-6 border-2 border-indigo-100 rounded-2xl bg-white shadow-xl animate-pop hover:shadow-2xl hover:border-teal-300 transition-all duration-200"
+                  style={{ animationDelay: `${index * 60}ms` }}
                 >
-                  Start
+                  <div className="font-bold text-xl text-indigo-700 mb-2">{category.label}</div>
+                  <div className="text-sm text-gray-500">
+                    {category.count} {category.count === 1 ? "exam" : "exams"}
+                  </div>
+                  <div className="text-teal-600 font-semibold mt-4">View exams →</div>
                 </button>
-              </div>
-            ))}
-          </div>
-        );
-        })()}
+              ))}
+            </div>
+          )
+        ) : isExitCategory && !selectedDepartment ? (
+          departmentCards.length === 0 ? (
+            <div className="text-gray-600">No Exit exam departments found.</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {departmentCards.map((department, index) => (
+                <button
+                  type="button"
+                  key={department.name}
+                  onClick={() => { setSelectedDepartment(department.name); setSearch(""); }}
+                  className="text-left p-6 border-2 border-indigo-100 rounded-2xl bg-white shadow-xl animate-pop hover:shadow-2xl hover:border-teal-300 transition-all duration-200"
+                  style={{ animationDelay: `${index * 60}ms` }}
+                >
+                  <div className="font-bold text-xl text-indigo-700 mb-2">{department.name}</div>
+                  <div className="text-sm text-gray-500">
+                    {department.count} {department.count === 1 ? "exam" : "exams"}
+                  </div>
+                  <div className="text-teal-600 font-semibold mt-4">View exams →</div>
+                </button>
+              ))}
+            </div>
+          )
+        ) : (
+          renderExamCards()
+        )}
       </div>
     </>
   );
