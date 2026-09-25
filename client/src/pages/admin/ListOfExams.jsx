@@ -76,7 +76,12 @@ export default function ListOfExams() {
           count: exams.filter((exam) => exam.category === value).length,
         };
       })
-      .filter((category) => category.value && category.label?.toLowerCase().includes(query));
+      .filter(
+        (category) =>
+          category.value &&
+          category.count > 0 &&
+          category.label?.toLowerCase().includes(query)
+      );
   }, [categoryOptions, exams, search]);
 
   const departmentCards = useMemo(() => {
