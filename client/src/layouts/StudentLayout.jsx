@@ -8,6 +8,7 @@ const links = [
   { to: "/student/courses", label: "My Courses" },
   { to: "/student/progress", label: "Progress" },
   { to: "/student/payments", label: "Payments" },
+  { to: "/change-password", label: "Change Password" },
 ];
 
 export default function StudentLayout() {

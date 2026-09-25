@@ -8,6 +8,7 @@ const links = [
   { to: "/tutor/students", label: "Students" },
   { to: "/tutor/my-applications", label: "My Applications" },
   { to: "/tutor/applications", label: "Apply as Tutor" },
+  { to: "/change-password", label: "Change Password" },
 ];
 
 export default function TutorLayout() {

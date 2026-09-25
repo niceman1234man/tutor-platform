@@ -63,6 +63,10 @@ Skill <span className="text-teal-600">Nest</span>
               <span className="hidden md:block">Profile</span>
             </Link>
 
+            <Link to="/change-password" className="text-gray-700 hover:text-teal-600">
+              Change Password
+            </Link>
+
             {/* Logout */}
             <button
               onClick={() => {
@@ -104,6 +108,13 @@ Skill <span className="text-teal-600">Nest</span>
             </>
           ) : (
             <>
+              <Link
+                to="/change-password"
+                className="py-2 w-full text-center hover:text-teal-600"
+                onClick={() => setMenuOpen(false)}
+              >
+                Change Password
+              </Link>
               <Link
                 to="/profile"
                 className="flex items-center gap-2 py-2 w-full justify-center text-gray-700 hover:text-teal-600"

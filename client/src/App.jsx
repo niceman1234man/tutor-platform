@@ -6,6 +6,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
+import ChangePassword from "./pages/ChangePassword";
 import Resources from "./pages/Resources";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -55,6 +56,10 @@ function AppContent() {
         <Route path="/login" element={<Login />} />
         <Route path="/tutors" element={<Tutors />} />
         <Route path="/forgot" element={<ForgotPassword />} />
+        <Route
+          path="/change-password"
+          element={<ProtectedRoute><ChangePassword /></ProtectedRoute>}
+        />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />

@@ -1,0 +1,1 @@
+- [Nested Node package installs](nested-node-package-installs.md) — Verify package dependencies are installed in the subproject manifest used by deployment.

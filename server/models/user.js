@@ -9,6 +9,9 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   phone: { type: String },
   password: String,
+  passwordResetToken: { type: String, default: null, select: false },
+  passwordResetExpires: { type: Date, default: null, select: false },
+  tokenVersion: { type: Number, default: 0 },
 
   role: {
     type: String,
