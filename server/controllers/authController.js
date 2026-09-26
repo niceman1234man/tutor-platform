@@ -4,7 +4,6 @@ import generateToken from "../utils/generateToken.js";
 import {
   createPasswordResetToken,
   hashPasswordResetToken,
-  isValidPasswordResetToken,
   isValidNewPassword,
 } from "../utils/passwordReset.js";
 import {
@@ -122,21 +121,12 @@ export const resetPassword = async (req, res) => {
   }
 
   try {
-    const currentTime = Date.now();
     const user = await User.findOne({
       passwordResetToken: hashPasswordResetToken(token),
-      passwordResetExpires: { $gt: new Date(currentTime) },
+      passwordResetExpires: { $gt: new Date() },
     }).select("+passwordResetToken +passwordResetExpires");
 
-    if (
-      !user ||
-      !isValidPasswordResetToken(
-        user.passwordResetToken,
-        user.passwordResetExpires,
-        token,
-        currentTime
-      )
-    ) {
+    if (!user) {
       return res.status(400).json({ message: "The reset link is invalid or expired." });
     }
 
