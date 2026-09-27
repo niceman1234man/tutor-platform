@@ -10,6 +10,9 @@ import {
   getCategories,
   createCategory,
   deleteCategory,
+  getDepartments,
+  createDepartment,
+  deleteDepartment,
 } from "../controllers/resourceController.js";
 import { upload } from "../middleware/upload.js";
 
@@ -19,6 +22,9 @@ const router = express.Router();
 router.get("/categories", getCategories);
 router.post("/categories", createCategory);
 router.delete("/categories/:id", deleteCategory);
+router.get("/departments", getDepartments);
+router.post("/departments", createDepartment);
+router.delete("/departments/:id", deleteDepartment);
 
 // Admin upload
 router.post("/", upload.fields([

@@ -1,5 +1,6 @@
 import Resource from "../models/resource.js";
 import Category from "../models/category.js";
+import Department from "../models/department.js";
 import cloudinary from "../config/cloudinary.js";
 
 // GET all categories
@@ -35,6 +36,46 @@ export const deleteCategory = async (req, res) => {
   try {
     await Category.findByIdAndDelete(req.params.id);
     res.json({ message: "Category deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// GET all departments
+export const getDepartments = async (req, res) => {
+  try {
+    const departments = await Department.find().sort({ name: 1 });
+    res.json(departments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// CREATE department (Admin)
+export const createDepartment = async (req, res) => {
+  try {
+    const name = typeof req.body.name === "string" ? req.body.name.trim() : "";
+    if (!name) {
+      return res.status(400).json({ message: "Department name is required" });
+    }
+
+    const existing = await Department.findOne({ name: { $regex: `^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } });
+    if (existing) {
+      return res.status(400).json({ message: "Department already exists" });
+    }
+
+    const department = await Department.create({ name });
+    res.status(201).json(department);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// DELETE department (Admin)
+export const deleteDepartment = async (req, res) => {
+  try {
+    await Department.findByIdAndDelete(req.params.id);
+    res.json({ message: "Department deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

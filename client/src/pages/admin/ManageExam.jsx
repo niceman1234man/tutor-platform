@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
 import API from "../../api/api";
 
-const DEPARTMENTS = [
-    "Computer Science",
-    "Software Engineering",
-    "Information Technology",
-    "Electrical Engineering",
-];
-
 export default function AdminExamManager() {
     const [exams, setExams] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [departments, setDepartments] = useState([]);
     const [selectedExam, setSelectedExam] = useState(null);
     const [editingDetails, setEditingDetails] = useState(null);
     const [detailsError, setDetailsError] = useState("");
@@ -70,6 +64,9 @@ export default function AdminExamManager() {
         API.get("/resources/categories")
             .then((res) => setCategories(Array.isArray(res.data) ? res.data : []))
             .catch((err) => console.error("Failed to load categories", err));
+        API.get("/resources/departments")
+            .then((res) => setDepartments(Array.isArray(res.data) ? res.data : []))
+            .catch((err) => console.error("Failed to load departments", err));
     }, []);
 
     const handleManageExam = async (examId) => {
@@ -328,8 +325,8 @@ export default function AdminExamManager() {
                                             className="border-2 border-indigo-200 p-2 w-full mt-1 rounded focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                         >
                                             <option value="">Select department</option>
-                                            {DEPARTMENTS.map((department) => (
-                                                <option key={department} value={department}>{department}</option>
+                                            {departments.map((department) => (
+                                                <option key={department._id} value={department.name}>{department.name}</option>
                                             ))}
                                         </select>
                                     </label>

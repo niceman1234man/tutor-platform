@@ -55,13 +55,6 @@ const JSON_TEMPLATE = JSON.stringify(
   2
 );
 
-const DEPARTMENTS = [
-  "Computer Science",
-  "Software Engineering",
-  "Information Technology",
-  "Electrical Engineering",
-];
-
 function downloadFile(filename, content, mime) {
   const blob = new Blob([content], { type: mime });
   const url = URL.createObjectURL(blob);
@@ -79,6 +72,7 @@ export default function ExamForm() {
   const [questionError, setQuestionError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [departments, setDepartments] = useState([]);
 
   // Import state
   const [importTab, setImportTab] = useState("html"); // "html" | "json"
@@ -96,6 +90,9 @@ export default function ExamForm() {
         setCategories(cats);
         if (cats.length > 0) setExam((prev) => ({ ...prev, category: cats[0].value || cats[0].name || cats[0] }));
       })
+      .catch(() => {});
+    API.get("/resources/departments")
+      .then((res) => setDepartments(Array.isArray(res.data) ? res.data : []))
       .catch(() => {});
   }, []);
 
@@ -327,8 +324,8 @@ export default function ExamForm() {
               onChange={(e) => setExam({ ...exam, department: e.target.value })}
             >
               <option value="">Select department</option>
-              {DEPARTMENTS.map((department) => (
-                <option key={department} value={department}>{department}</option>
+              {departments.map((department) => (
+                <option key={department._id} value={department.name}>{department.name}</option>
               ))}
             </select>
           </div>
